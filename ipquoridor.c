@@ -231,12 +231,14 @@ void showboard(char **w_mtx, int boardsize, int black_walls, int white_walls, st
             else putchar(' ');
             putchar(' ');
             
+            if (j==boardsize-1) break;
+            
             //the vertical seperating line/wall
             if (w_mtx[i][j]=='r') putchar('H');
             else if (i<boardsize-1 && w_mtx[i+1][j]=='r') putchar('H');
             else putchar('|');
         }
-        printf(" %-*d  ", mfw, i+1);
+        printf("| %-*d  ", mfw, i+1);
         if (i==boardsize-1) printf("Black walls: %d", black_walls);
         else if (i==boardsize-2) printf("White walls: %d", white_walls);
         putchar('\n');
