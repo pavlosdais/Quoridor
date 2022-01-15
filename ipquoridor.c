@@ -33,7 +33,8 @@ void list_commands();
 int main(void)
 {
     char winner, buff[80], *p, m, *parameters;
-    int black_walls = -1, white_walls = -1, walls, i;
+    int black_walls = -1, white_walls = -1, i;
+    int boardsize = 9, walls = 10;
     
     while (1)
     {
