@@ -209,7 +209,7 @@ void showboard(char **w_mtx, int boardsize, int black_walls, int white_walls, st
     int i, j, ch;
     //letters above
     for (i = 1; i <= mfw+1; i++) putchar(' ');
-    for (i = 1; i <= boardsize; i++) printf("  %c", 'A'+i-1);
+    for (i = 1; i <= boardsize; i++) printf("  %c ", 'A'+i-1);
     putchar('\n');
     
     //top edge
@@ -271,6 +271,6 @@ void showboard(char **w_mtx, int boardsize, int black_walls, int white_walls, st
     
     //letters below
     for (i=1; i<= mfw+1; i++) putchar(' ');
-    for (i=1; i<=boardsize; i++) printf("  %c", 'A'+i-1);
+    for (i=1; i<=boardsize; i++) printf("  %c ", 'A'+i-1);
     printf("\n\n");
 }    
