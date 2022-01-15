@@ -206,8 +206,8 @@ showboard(int w_mtx, int boardsize, int black_walls, int white_walls, struct pos
         {
             //the cell content
             putchar(' ');
-            if (black.i == i && black.j == j) putchar('B');
-            else if (white.i == i && white.j == j) putchar('W');
+            if (black->i == i && black->j == j) putchar('B');
+            else if (white->i == i && white->j == j) putchar('W');
             else putchar(' ');
             putchar(' ');
             
