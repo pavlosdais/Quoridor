@@ -70,7 +70,7 @@ int main(void)
     there. If wall_matrix[3][2] is 'b' the wall starting at */
     
     int i;
-    char **wall_matrix = malloc(9, sizeof(char *));
+    char **wall_matrix = malloc(9*sizeof(char *));
     for (i = 0; i < 9; i++)
     {
         wall_matrix[i] = calloc(9, sizeof(char));
