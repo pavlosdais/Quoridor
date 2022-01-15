@@ -42,7 +42,9 @@ struct position
 int main(void)
 {
     char winner, buff[80], *p, m, *parameters;
-    int black_walls = -1, white_walls = -1, i;
+    
+    //default values
+    int black_walls = 10, white_walls = 10
     int boardsize = 9, walls = 10;
     struct position black;
     struct position white;
@@ -51,7 +53,10 @@ int main(void)
     black.i = 8; //row with number 9
     black.j = 4; //column with number 5 (letter 'E')
     
-    /* */
+    /*wall_matrix is used to represent if a wall begins next to a specific cell. for example wall_matrix[2][5] informs us
+    about whether or not a wall starts next to the cell (3,6) or else C6. For that purpose we use a two-digit number "br".
+    If 'b'=1 it means that a horizontal wall of l*/
+    int i;
     char **wall_matrix = calloc(9, sizeof(char *));
     for (i = 0; i < 9; i++)
     {
@@ -121,6 +126,7 @@ int main(void)
         {
             printf("Entered 13\n");
             showboard(wall_matrix, boardsize, black_walls, white_walls, &black, &white);
+            fflush(stdout);
         }
         else  // command not recognized
         {
@@ -153,6 +159,7 @@ int mode(char *ans)
     else if (strcmp("undo", ans) == 0) return 11;
     else if (strcmp("winner", ans) == 0) return 12;
     else if (strcmp("showboard", ans) == 0) return 13;
+    else return -1;
 }
 
 char valid_number_of_walls(int walls)
@@ -229,7 +236,9 @@ showboard(int w_mtx, int boardsize, int black_walls, int white_walls, struct pos
         for (j = 0; j <= boardsize-1; j++)
         {
             //the horizontal seperating lines/walls
-            ch = (w_mtx[i][j]==10 || w_mtx[i][j]==11) ? '=' : '-';
+            if (w_mtx[i][j]==10 || w_mtx[i][j]==11) ch = '=';
+            else if (j>0 && (w_mtx[i][j-1]==10 || w_mtx[i][j-1]==11)) ch = '=';
+            else ch = '-';
             printf("%c%c%c", ch, ch, ch);
             
             if (j==boardsize-1) break;
