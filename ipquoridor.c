@@ -32,13 +32,13 @@ void list_commands();
 */
 int main(void)
 {
-    char winner, buff[80], *p, m;
+    char winner, buff[80], *p, m, *parameters;
     int black_walls = -1, white_walls = -1, walls, i;
     
     while (1)
     {
         scanf("%s", buff);
-        p = strtok(buff, " ");
+        p = strtok_r(buff, " ", &parameters);
         m = mode(p);
         if (m == 1)  // name
         {
