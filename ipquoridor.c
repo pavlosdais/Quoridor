@@ -55,7 +55,7 @@ int main(void)
     char **wall_matrix = calloc(9, sizeof(char *));
     for (i = 0; i < 9; i++)
     {
-        wall_matrix = calloc(9, sizeof(char))
+        wall_matrix[i] = calloc(9, sizeof(char))
     }
     
     while (1)
