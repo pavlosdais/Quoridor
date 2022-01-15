@@ -4,20 +4,14 @@
 #include <ctype.h>
 
 // Function Prototypes
-int mode(char *ans);
-char valid_number_of_walls(int walls);
+char command_num(char *ans);
 void unsuccessful_response(char *msg);
 void list_commands();
+void successful_command(char *msg);
+char isnumber(char *n);
+void known_command(char *command);
 struct position;
-void showboard(char **walls_matrix, int boardsize, int black_walls, int white_walls, struct position *white, struct position *white);
-
-struct position
-{
-    /*i and j will follow the matrix numbering, from 0 to n-1, and will refer to the cell (i+1,j+1)
-    eg if black.i is 3 and black.j is 6, it means that the black pawn is on (4,7) or else H4*/
-    int i;
-    int j;
-};
+void showboard(char **walls_matrix, int boardsize, int black_walls, int white_walls, struct position *black, struct position *white);
 
 /*
     Commands:
@@ -40,13 +34,22 @@ struct position
     -Debug
     13 - showboard
 */
+
+struct position
+{
+    /*i and j will follow the matrix numbering, from 0 to n-1, and will refer to the cell (i+1,j+1)
+    eg if black.i is 3 and black.j is 6, it means that the black pawn is on (4,7) or else H4*/
+    int i;
+    int j;
+};
+
 int main(void)
 {
-    char winner, buff[80], *p, m, *parameters;
+    char winner, buff[80], *p, m;
+    int black_walls = 10, white_walls = 10, walls, i = 0, boardsize = 9, prev_boardsize;
     
     //default values
-    int black_walls = 10, white_walls = 10;
-    int boardsize = 9, walls = 10;
+    black_walls = 10, white_walls = 10;
     struct position black;
     struct position white;
     white.i = 0; //row with number 1
@@ -68,30 +71,41 @@ int main(void)
     !It is important to notice that if a cell is 0 it does not mean that there might not be walls below or on its right. For example, even though
     wall_matrix[3][3] might be 0, it does NOT necessarily mean that no wall EXISTS below or on the right of D4, but simply a wall does not START
     there. If wall_matrix[3][2] is 'b' the wall starting at */
-    
-    int i;
-    char **wall_matrix = malloc(9*sizeof(char *));
+
+    char **wall_matrix = malloc(boardsize*sizeof(char *));
     for (i = 0; i < 9; i++)
     {
-        wall_matrix[i] = calloc(9, sizeof(char));
+        wall_matrix[i] = calloc(boardsize, sizeof(char));
     }
-    
+
     while (1)
     {
-        scanf("%s", buff);
-        p = strtok_r(buff, " ", &parameters);
-        m = mode(p);
+        fgets(buff, 80, stdin);
+
+        // command
+        char *p = strtok(buff, " ,.");
+        char temp[80];
+        i = 0;
+        while (p[i] != '\n' && p[i] != '\0')
+        {
+            temp[i] = p[i];
+            i++;
+        }
+        temp[i] = '\0';
+
+        char m = command_num(temp);
+        
         if (m == 1)  // name
         {
             printf("Entered 1\n");
         }
         else if (m == 2)  // known_command
         {
-            printf("Entered 2\n");
+            p = strtok(NULL, " ");
+            known_command(p);
         }
         else if (m == 3)  // list_commands
         {
-            printf("Entered 3\n");
             list_commands();
         }
         else if (m == 4)  // quit
@@ -100,7 +114,40 @@ int main(void)
         }
         else if (m == 5)  // boardsize
         {
-            printf("Entered 5\n");
+            p = strtok(NULL, " ");
+            if (isnumber(p))
+            {
+                prev_boardsize = boardsize;
+                boardsize = atoi(p);
+                if (boardsize <= 0)
+                {
+                    boardsize = -1;
+                    unsuccessful_response("unacceptable size");
+                }
+                else
+                {
+                    // free previous matrix
+                    for (i = 0; i < prev_boardsize; i++)
+                    {
+                        free(wall_matrix[i]);
+                    }
+                    free(wall_matrix);
+
+                    char **wall_matrix = malloc(boardsize*sizeof(char *));
+                    for (i = 0; i < boardsize; i++)
+                    {
+                        wall_matrix[i] = calloc(boardsize, sizeof(char));
+                    }
+
+                    white.j = boardsize / 2;
+                    black.j = boardsize / 2;
+                    black.i = boardsize-1;
+                }
+            }
+            else
+            {
+                unsuccessful_response("invalid syntax");
+            }
         }
         else if (m == 6)  // clear_board
         {
@@ -108,11 +155,16 @@ int main(void)
         }
         else if (m == 7)  // walls
         {
-            printf("Entered 7\n");
-            while(p != NULL)
+            p = strtok(NULL, " ");
+            if (isnumber(p))
             {
-                printf("%s\n", p);
-                p = strtok(NULL, " ");
+                walls = atoi(p);
+                black_walls = walls;
+                white_walls = walls;
+            }
+            else
+            {
+                unsuccessful_response("invalid syntax");
             }
         }
         else if (m == 8)  // playmove
@@ -138,33 +190,26 @@ int main(void)
         else if (m == 13)  // showboard
         {
             printf("Entered 13\n");
+            printf("boardsize: %d\n", boardsize);
             showboard(wall_matrix, boardsize, black_walls, white_walls, &black, &white);
-            fflush(stdout);
+            fflush(stdout);      
         }
         else  // command not recognized
         {
             unsuccessful_response("unknown command");
         }
-
-        /*
-        while(p != NULL)
-        {
-            //printf("%s\n", p);
-            p = strtok(NULL, " ");
-        }
-        */
     }
     return 0;
 }
 
-int mode(char *ans)
+char command_num(char *ans)
 {
     if (strcmp("name", ans) == 0) return 1;
     else if (strcmp("known_command", ans) == 0) return 2;
     else if (strcmp("list_commands", ans) == 0) return 3;
     else if (strcmp("quit", ans) == 0) return 4;
     else if (strcmp("boardsize", ans) == 0) return 5;
-    else if (strcmp("playwall", ans) == 0) return 6;
+    else if (strcmp("clear_board", ans) == 0) return 6;
     else if (strcmp("walls", ans) == 0) return 7;
     else if (strcmp("playmove", ans) == 0) return 8;
     else if (strcmp("playwall", ans) == 0) return 9;
@@ -172,14 +217,8 @@ int mode(char *ans)
     else if (strcmp("undo", ans) == 0) return 11;
     else if (strcmp("winner", ans) == 0) return 12;
     else if (strcmp("showboard", ans) == 0) return 13;
-    else return -1;
-}
+    else return 14;
 
-char valid_number_of_walls(int walls)
-{
-    if (walls % 2 == 1)  // valid
-        return 1; 
-    return 0;  // non-valid
 }
 
 void unsuccessful_response(char *msg)
@@ -190,8 +229,54 @@ void unsuccessful_response(char *msg)
 
 void list_commands()
 {
-    printf("protocol_version\nname\nversion\nknown_command\nlist_commands\nquit\nboardsize\n");
-    printf("clear_board\nwalls\nplaymove\nplaywall\ngenmove\nundo\nwinner\nshowboard\n");
+    printf("=\nprotocol_version\nname\nversion\nknown_command\nlist_commands\nquit\nboardsize\n");
+    fflush(stdout);
+    printf("clear_board\nwalls\nplaymove\nplaywall\ngenmove\nundo\nwinner\nshowboard\n\n");
+    fflush(stdout);
+}
+
+void successful_command(char *msg)
+{
+    printf("=%s\n\n", msg);
+    fflush(stdout);
+}
+
+char isnumber(char *n)
+{
+    int i = 0;
+    if (n[0] == '-') i = 1;
+    while(n[i] != '\n' && n[i] != '\0')
+    {
+        if (!isdigit(n[i]))
+        {
+            return 0;
+        }
+        i++;
+    }
+    if (n[0] == '-' && i == 1) return 0;
+    return 1;
+}
+
+void known_command(char *command)
+{
+    char temp[80];
+    int i = 0;
+    while (command[i] != '\n' && command[i] != '\0')
+    {
+        temp[i] = command[i];
+        i++;
+    }
+    temp[i] = '\0';
+
+    char m = command_num(temp);
+    if(m >= 1 && m <= 13)
+    {
+        successful_command(" true");
+    }
+    else
+    {
+        unsuccessful_response("false");
+    }
 }
 
 void showboard(char **w_mtx, int boardsize, int black_walls, int white_walls, struct position *black, struct position *white)
@@ -231,14 +316,12 @@ void showboard(char **w_mtx, int boardsize, int black_walls, int white_walls, st
             else putchar(' ');
             putchar(' ');
             
-            if (j==boardsize-1) break;
-            
             //the vertical seperating line/wall
             if (w_mtx[i][j]=='r') putchar('H');
             else if (i<boardsize-1 && w_mtx[i+1][j]=='r') putchar('H');
             else putchar('|');
         }
-        printf("| %-*d  ", mfw, i+1);
+        printf(" %-*d  ", mfw, i+1);
         if (i==boardsize-1) printf("Black walls: %d", black_walls);
         else if (i==boardsize-2) printf("White walls: %d", white_walls);
         putchar('\n');
@@ -275,4 +358,4 @@ void showboard(char **w_mtx, int boardsize, int black_walls, int white_walls, st
     for (i=1; i<= mfw+1; i++) putchar(' ');
     for (i=1; i<=boardsize; i++) printf("  %c ", 'A'+i-1);
     printf("\n\n");
-}    
+}
