@@ -8,6 +8,15 @@ int mode(char *ans);
 char valid_number_of_walls(int walls);
 void unsuccessful_response(char *msg);
 void list_commands();
+void showboard(int walls_matrix, int boardsize, int black_walls, int white_walls);
+
+struct position
+{
+    /*i and j will follow the matrix numbering, from 0 to n-1, and will refer to the cell (i+1,j+1)
+    eg if black.i is 3 and black.j is 6, it means that the black pawn is on (4,7)*/
+    int i;
+    int j;
+}
 
 /*
     Commands:
@@ -35,6 +44,19 @@ int main(void)
     char winner, buff[80], *p, m, *parameters;
     int black_walls = -1, white_walls = -1, i;
     int boardsize = 9, walls = 10;
+    struct position black;
+    struct position white;
+    white.i = 0; //row with number 1
+    white.j = 4; //column with number 5 (letter 'E')
+    black.i = 8; //row with number 9
+    black.j = 4; //column with number 5 (letter 'E')
+    
+    /* */
+    char **wall_matrix = calloc(9, sizeof(char *));
+    for (i = 0; i < 9; i++)
+    {
+        wall_matrix = calloc(9, sizeof(char))
+    }
     
     while (1)
     {
@@ -98,6 +120,7 @@ int main(void)
         else if (m == 13)  // showboard
         {
             printf("Entered 13\n");
+            showboard(wall_matrix, boardsize, black_walls, white_walls, &black, &white);
         }
         else  // command not recognized
         {
@@ -151,3 +174,81 @@ void list_commands()
     printf("clear_board\nwalls\nplaymove\nplaywall\ngenmove\nundo\nwinner\nshowboard\n");
 }
 
+showboard(int w_mtx, int boardsize, int black_walls, int white_walls, struct position *black, struct position *white)
+{
+    /*min field width is the greatest power of 10 in which when 10 is raised gives a result less than or equal to boardsize
+    More simply, it is the number of digits of boardsize, eg. boardsize 9 -> mfw 1, boardsize 10 -> mfw 2*/
+    int pow = 1;
+    int mfw = 0;
+    while (boardsize%pow == 0)
+    {
+        mfw++;
+        pow*= 10;
+    }
+    
+    int i, j, ch;
+    //letters above
+    for (i = 1; i <= mfw+1; i++) putchar(' ');
+    for (i = 1; i <= boardsize; i++) printf("  %c", 'A'+i-1);
+    putchar('\n');
+    
+    //top edge
+    for (i=1; i<= mfw+1; i++) putchar(' ');
+    for (i=1; i<=boardsize; i++) printf("+---", 'A'+i-1);
+    printf("+\n");
+    
+    //main board
+    for (i = boardsize-1; i >= 0; i--)
+    {
+        //printing the cell contents and the seperating lines/walls
+        printf("%*d |", mfw, i+1);
+        for (j = 0; j <= boardsize-1; j++)
+        {
+            //the cell content
+            putchar(' ');
+            if (black.i == i && black.j == j) putchar('B');
+            else if (white.i == i && white.j == j) putchar('W');
+            else putchar(' ');
+            putchar(' ');
+            
+            //the vertical seperating line/wall
+            if (w_mtx[i][j]==01 || w_mtx[i][j]==11) putchar('H');
+            else if (i<boardsize+1 && (w_mtx[i+1][j]==01 || w_mtx[i+1][j]==11)) putchar('H');
+            else putchar('|');
+        }
+        printf(" %-*d  ", mfw, i+1);
+        if (i==boardsize-1) printf("Black walls: %d", black_walls);
+        else if (i==boardsize-2) printf("White walls: %d", white_walls);
+        putchar('\n');
+        
+        if (i==0) break; //so that the bottom edge is printed without checking for walls
+        
+        //printing grid lines 
+        for (j = 1; j <= mfw+1; j++) putchar(' ');
+        putchar('+');
+        for (j = 0; j <= boardsize-1; j++)
+        {
+            //the horizontal seperating lines/walls
+            ch = (w_mtx[i][j]==10 || w_mtx[i][j]==11) ? '=' : '-';
+            printf("%c%c%c", ch, ch, ch);
+            
+            if (j==boardsize-1) break;
+            
+            //the intersection of grid lines
+            if(w_mtx[i][j]==10 || w_mtx[i][j]==11) putchar('=');
+            else if (w_mtx[i][j]==01 || w_mtx[i][j]==11) putchar('H');
+            else putchar('+');
+        }
+        printf("+\n");
+    }
+    
+    //bottom edge
+    for (i=1; i<= mfw+1; i++) putchar(' ');
+    for (i=1; i<=boardsize; i++) printf("+---", 'A'+i-1);
+    printf("+\n");
+    
+    //letters below
+    for (i=1; i<= mfw+1; i++) putchar(' ');
+    for (i=1; i<=boardsize; i++) printf("  %c", 'A'+i-1);
+    printf("\n\n");
+}    
