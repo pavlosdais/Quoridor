@@ -8,7 +8,8 @@ int mode(char *ans);
 char valid_number_of_walls(int walls);
 void unsuccessful_response(char *msg);
 void list_commands();
-void showboard(char **walls_matrix, int boardsize, int black_walls, int white_walls);
+struct position;
+void showboard(char **walls_matrix, int boardsize, int black_walls, int white_walls, struct position *white, struct position *white);
 
 struct position
 {
