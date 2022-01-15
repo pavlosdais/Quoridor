@@ -54,10 +54,14 @@ int main(void)
     black.j = 4; //column with number 5 (letter 'E')
     
     /*wall_matrix is used to represent if a wall begins next to a specific cell. for example wall_matrix[2][5] informs us
-    about whether or not a wall starts next to the cell (3,6) or else C6. For that purpose we use a two-digit number "br".
-    If 'b'=1 it means that a horizontal wall of l*/
+    about whether or not a wall starts next to the cell (3,6) or else C6. For that purpose we use a character.
+    If the character is 'b' it means that a horizontal wall of length 2 has been placed below the specific cell and the cell on its right.
+    If the character is 'r' it means that a vertical wall of length 2 has been placed on the right of the specific cell and the cell below.
+    If not the character is the one with ascii code 0, as initialized by the following calloc.
+    Some examples:
+        wall_matrix[3][7]== 01 means that a wall is no horizontal wall starts at D8, but a vertical one does*/
     int i;
-    char **wall_matrix = calloc(9, sizeof(char *));
+    char **wall_matrix = malloc(9, sizeof(char *));
     for (i = 0; i < 9; i++)
     {
         wall_matrix[i] = calloc(9, sizeof(char))
