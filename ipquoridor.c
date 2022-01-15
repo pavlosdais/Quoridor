@@ -17,7 +17,7 @@ struct position
     eg if black.i is 3 and black.j is 6, it means that the black pawn is on (4,7) or else H4*/
     int i;
     int j;
-}
+};
 
 /*
     Commands:
