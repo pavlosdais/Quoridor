@@ -138,7 +138,7 @@ int main(void)
                     {
                         wall_matrix[i] = calloc(boardsize, sizeof(char));
                     }
-
+                    white.i = 0;
                     white.j = boardsize / 2;
                     black.j = boardsize / 2;
                     black.i = boardsize-1;
