@@ -193,7 +193,7 @@ void list_commands()
     printf("clear_board\nwalls\nplaymove\nplaywall\ngenmove\nundo\nwinner\nshowboard\n");
 }
 
-showboard(int w_mtx, int boardsize, int black_walls, int white_walls, struct position *black, struct position *white)
+void showboard(int **w_mtx, int boardsize, int black_walls, int white_walls, struct position *black, struct position *white)
 {
     /*min field width is the greatest power of 10 in which when 10 is raised gives a result less than or equal to boardsize
     More simply, it is the number of digits of boardsize, eg. boardsize 9 -> mfw 1, boardsize 10 -> mfw 2*/
