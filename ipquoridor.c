@@ -5,6 +5,9 @@
 
 // Function Prototypes
 int mode(char *ans);
+char valid_number_of_walls(int walls);
+void unsuccessful_response(char *msg);
+void list_commands();
 
 /*
     Commands:
@@ -30,6 +33,7 @@ int mode(char *ans);
 int main(void)
 {
     char winner, buff[80], *p, m;
+    int black_walls = -1, white_walls = -1, walls, i;
     
     while (1)
     {
@@ -38,15 +42,16 @@ int main(void)
         m = mode(p);
         if (m == 1)  // name
         {
-
+            printf("Entered 1\n");
         }
         else if (m == 2)  // known_command
         {
-            
+            printf("Entered 2\n");
         }
         else if (m == 3)  // list_commands
         {
-            
+            printf("Entered 3\n");
+            list_commands();
         }
         else if (m == 4)  // quit
         {
@@ -54,53 +59,57 @@ int main(void)
         }
         else if (m == 5)  // boardsize
         {
-            
+            printf("Entered 5\n");
         }
         else if (m == 6)  // clear_board
         {
-            
+            printf("Entered 6\n");
         }
         else if (m == 7)  // walls
         {
-            
+            printf("Entered 7\n");
+            while(p != NULL)
+            {
+                printf("%s\n", p);
+                p = strtok(NULL, " ");
+            }
         }
         else if (m == 8)  // playmove
         {
-            
+            printf("Entered 8\n");
         }
         else if (m == 9)  // playwall
         {
-            
+            printf("Entered 9\n");
         }
         else if (m == 10)  // genmove
         {
-            
+            printf("Entered 10\n");
         }
         else if (m == 11)  // undo
         {
-            
+            printf("Entered 11\n");
         }
         else if (m == 12)  // winner
         {
-            
+            printf("Entered 12\n");
         }
         else if (m == 13)  // showboard
         {
-            
+            printf("Entered 13\n");
         }
-        else
+        else  // command not recognized
         {
-            printf("Unknown command\n");
-            return 1;
+            unsuccessful_response("unknown command");
         }
 
-        printf("%d\n", mode(p));
-
+        /*
         while(p != NULL)
         {
             //printf("%s\n", p);
             p = strtok(NULL, " ");
         }
+        */
     }
     return 0;
 }
@@ -113,11 +122,31 @@ int mode(char *ans)
     else if (strcmp("quit", ans) == 0) return 4;
     else if (strcmp("boardsize", ans) == 0) return 5;
     else if (strcmp("playwall", ans) == 0) return 6;
-    else if (strcmp("clear_board", ans) == 0) return 7;
-    else if (strcmp("walls", ans) == 0) return 8;
+    else if (strcmp("walls", ans) == 0) return 7;
+    else if (strcmp("playmove", ans) == 0) return 8;
     else if (strcmp("playwall", ans) == 0) return 9;
     else if (strcmp("genmove", ans) == 0) return 10;
     else if (strcmp("undo", ans) == 0) return 11;
     else if (strcmp("winner", ans) == 0) return 12;
     else if (strcmp("showboard", ans) == 0) return 13;
 }
+
+char valid_number_of_walls(int walls)
+{
+    if (walls % 2 == 1)  // valid
+        return 1; 
+    return 0;  // non-valid
+}
+
+void unsuccessful_response(char *msg)
+{
+    printf("? %s\n\n", msg);
+    fflush(stdout);
+}
+
+void list_commands()
+{
+    printf("protocol_version\nname\nversion\nknown_command\nlist_commands\nquit\nboardsize\n");
+    printf("clear_board\nwalls\nplaymove\nplaywall\ngenmove\nundo\nwinner\nshowboard\n");
+}
+
