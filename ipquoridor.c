@@ -13,7 +13,7 @@ void showboard(int walls_matrix, int boardsize, int black_walls, int white_walls
 struct position
 {
     /*i and j will follow the matrix numbering, from 0 to n-1, and will refer to the cell (i+1,j+1)
-    eg if black.i is 3 and black.j is 6, it means that the black pawn is on (4,7)*/
+    eg if black.i is 3 and black.j is 6, it means that the black pawn is on (4,7) or else H4*/
     int i;
     int j;
 }
@@ -256,8 +256,8 @@ showboard(int w_mtx, int boardsize, int black_walls, int white_walls, struct pos
             if (j==boardsize-1) break;
             
             //the intersection of grid lines
-            if(w_mtx[i][j]==10 || w_mtx[i][j]==11) putchar('=');
-            else if (w_mtx[i][j]==01 || w_mtx[i][j]==11) putchar('H');
+            if(w_mtx[i][j]=='b') putchar('=');
+            else if (w_mtx[i][j]=='r') putchar('H');
             else putchar('+');
         }
         printf("+\n");
