@@ -54,12 +54,20 @@ int main(void)
     black.j = 4; //column with number 5 (letter 'E')
     
     /*wall_matrix is used to represent if a wall begins next to a specific cell. for example wall_matrix[2][5] informs us
-    about whether or not a wall starts next to the cell (3,6) or else C6. For that purpose we use a character.
+    about whether or not a wall starts next to the cell (3,6) or else F6. For that purpose we use a character.
     If the character is 'b' it means that a horizontal wall of length 2 has been placed below the specific cell and the cell on its right.
     If the character is 'r' it means that a vertical wall of length 2 has been placed on the right of the specific cell and the cell below.
-    If not the character is the one with ascii code 0, as initialized by the following calloc.
+    If not the character is the one with ascii code 0, as initialized by the following calloc. Since no walls cannot stack on top of another 
+    or somehow cross, it is not possible that there are walls starting both horizontally below and vertically on the right of the specific cell
     Some examples:
-        wall_matrix[3][7]== 01 means that a wall is no horizontal wall starts at D8, but a vertical one does*/
+        1.  wall_matrix[3][7]== 'r' means that no horizontal wall starts below H4, but a vertical one does on its right. So there is a vertical 
+            wall between H4 and I4, which keeps going between H3 and I3.
+        2.  wall_matrix[5][2]== 'b' means that no vertical wall starts on the right of C6, but a horizontal one does below it. So there is a
+            horizontal wall between C6 and C5, which keeps going between D6 and D5.
+    !It is important to notice that if a cell is 0 it does not mean that there might not be walls below or on its right. For example, even though
+    wall_matrix[3][3] might be 0, it does NOT necessarily mean that no wall EXISTS below or on the right of D4, but simply a wall does not START
+    there. If wall_matrix[3][2] is 'b' the wall starting at */
+    
     int i;
     char **wall_matrix = malloc(9, sizeof(char *));
     for (i = 0; i < 9; i++)
@@ -223,8 +231,8 @@ showboard(int w_mtx, int boardsize, int black_walls, int white_walls, struct pos
             putchar(' ');
             
             //the vertical seperating line/wall
-            if (w_mtx[i][j]==01 || w_mtx[i][j]==11) putchar('H');
-            else if (i<boardsize+1 && (w_mtx[i+1][j]==01 || w_mtx[i+1][j]==11)) putchar('H');
+            if (w_mtx[i][j]=='r') putchar('H');
+            else if (i<boardsize+1 && w_mtx[i+1][j]=='r') putchar('H');
             else putchar('|');
         }
         printf(" %-*d  ", mfw, i+1);
@@ -240,8 +248,8 @@ showboard(int w_mtx, int boardsize, int black_walls, int white_walls, struct pos
         for (j = 0; j <= boardsize-1; j++)
         {
             //the horizontal seperating lines/walls
-            if (w_mtx[i][j]==10 || w_mtx[i][j]==11) ch = '=';
-            else if (j>0 && (w_mtx[i][j-1]==10 || w_mtx[i][j-1]==11)) ch = '=';
+            if (w_mtx[i][j]=='b') ch = '=';
+            else if (j>0 && w_mtx[i][j-1]=='b') ch = '=';
             else ch = '-';
             printf("%c%c%c", ch, ch, ch);
             
