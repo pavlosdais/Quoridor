@@ -45,7 +45,7 @@ int main(void)
     char winner, buff[80], *p, m, *parameters;
     
     //default values
-    int black_walls = 10, white_walls = 10
+    int black_walls = 10, white_walls = 10;
     int boardsize = 9, walls = 10;
     struct position black;
     struct position white;
@@ -73,7 +73,7 @@ int main(void)
     char **wall_matrix = malloc(9, sizeof(char *));
     for (i = 0; i < 9; i++)
     {
-        wall_matrix[i] = calloc(9, sizeof(char))
+        wall_matrix[i] = calloc(9, sizeof(char));
     }
     
     while (1)
