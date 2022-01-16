@@ -238,7 +238,7 @@ void list_commands()
 
 void successful_command(char *msg)
 {
-    printf("=%s\n\n", msg);
+    printf("= %s\n\n", msg);
     fflush(stdout);
 }
 
