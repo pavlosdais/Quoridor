@@ -183,6 +183,10 @@ int main(void)
         else if (m == 12)  // winner
         {
             printf("Entered 12\n");
+            if (white.i == boardsize-1) printf("= true white\n\n");
+            else if (board.j == 0) printf("= true black\n\n");
+            else printf("= false");
+            fflush(stdout);
         }
         else if (m == 13)  // showboard
         {
