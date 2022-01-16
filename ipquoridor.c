@@ -3,18 +3,23 @@
 #include <string.h>
 #include <ctype.h>
 
+#define BUFFER_SIZE 80
+
 // Function Prototypes
+struct position;
 char command_num(char *ans);
 void unsuccessful_response(char *msg);
 void list_commands();
 void successful_command(char *msg);
 char isnumber(char *n);
 void known_command(char *command);
-struct position;
 void showboard(char **walls_matrix, int boardsize, int black_walls, int white_walls, struct position *black, struct position *white);
-void reset(int boardsize, struct position *white, struct position *black);
+void reset_pawns(int boardsize, struct position *white, struct position *black);
 char **allocate_memory(int boardsize);
 void free_array(char **A, int boardsize);
+void clear_board(int boardsize, char **wall_matrix, struct position *white, struct position *black);
+void update_boardsize(char* p, int *boardsize, int *prev_boardsize);
+void update_walls(char *p, int *black_walls, int *white_walls);
 
 /*
     Commands:
@@ -40,53 +45,57 @@ void free_array(char **A, int boardsize);
 
 struct position
 {
-    /*i and j will follow the matrix numbering, from 0 to n-1, and will refer to the cell (i+1,j+1)
-    eg if black.i is 3 and black.j is 6, it means that the black pawn is on (4,7) or else H4*/
+    /*
+    i and j will follow the matrix numbering, from 0 to n-1, and will refer to the cell (i+1,j+1)
+    eg if black.i is 3 and black.j is 6, it means that the black pawn is on (4,7) or else H4
+    */
     int i;
     int j;
 };
 
 int main(void)
 {
-    char winner, buff[80], *p, m;
-    int walls, i = 0, j, prev_boardsize;
+    char winner, buff[BUFFER_SIZE], *p, m;
+    int i = 0, j, prev_boardsize;
     
     //default values
     int black_walls = 10, white_walls = 10, boardsize = 9;
     struct position black;
     struct position white;
-    white.i = 0; //row with number 1
-    white.j = 4; //column with number 5 (letter 'E')
-    black.i = 8; //row with number 9
-    black.j = 4; //column with number 5 (letter 'E')
+    white.i = 0;  // row with number 1
+    white.j = 4;  // column with number 5 (letter 'E')
+    black.i = 8;  // row with number 9
+    black.j = 4;  // column with number 5 (letter 'E')
     
-    /*wall_matrix is used to represent if a wall begins next to a specific cell. for example wall_matrix[2][5] informs us
+    /* 
+    Wall_matrix is used to represent if a wall begins next to a specific cell. for example wall_matrix[2][5] informs us
     about whether or not a wall starts next to the cell (3,6) or else F6. For that purpose we use a character.
     If the character is 'b' it means that a horizontal wall of length 2 has been placed below the specific cell and the cell on its right.
     If the character is 'r' it means that a vertical wall of length 2 has been placed on the right of the specific cell and the cell below.
     If not the character is the one with ascii code 0, as initialized by the following calloc. Since no walls cannot stack on top of another 
     or somehow cross, it is not possible that there are walls starting both horizontally below and vertically on the right of the specific cell
     Some examples:
-        1.  wall_matrix[3][7]== 'r' means that no horizontal wall starts below H4, but a vertical one does on its right. So there is a vertical 
+        1.  wall_matrix[3][7] == 'r' means that no horizontal wall starts below H4, but a vertical one does on its right. So there is a vertical 
             wall between H4 and I4, which keeps going between H3 and I3.
-        2.  wall_matrix[5][2]== 'b' means that no vertical wall starts on the right of C6, but a horizontal one does below it. So there is a
+        2.  wall_matrix[5][2] == 'b' means that no vertical wall starts on the right of C6, but a horizontal one does below it. So there is a
             horizontal wall between C6 and C5, which keeps going between D6 and D5.
     !It is important to notice that if a cell is 0 it does not mean that there might not be walls below or on its right. For example, even though
     wall_matrix[3][3] might be 0, it does NOT necessarily mean that no wall EXISTS below or on the right of D4, but simply a wall does not START
-    there. If wall_matrix[3][2] is 'b', the wall starting below C4 keeps going below D4, or if wall_matrix[4][3] is 'r', the walll starting on the
+    there. If wall_matrix[3][2] is 'b', the wall starting below C4 keeps going below D4, or if wall_matrix[4][3] is 'r', the wall starting on the
     right of D5 keeps going on the right of D4. The same applies for cells with 'r'/'b'. Even though a wall does not start
     beneath them / on their right, it is possiblr that a wall starts below their left cell / on the right of the cell above and keeps going adjacently
-    to the specific cell.*/
+    to the specific cell.
+    */
 
-    char **wall_matrix = allocate_memory(9);
+    char **wall_matrix = allocate_memory(boardsize);
 
     while (1)
     {
-        fgets(buff, 80, stdin);
+        fgets(buff, BUFFER_SIZE, stdin);
 
         // command
         char *p = strtok(buff, " ,.");
-        char temp[80];
+        char temp[BUFFER_SIZE];
         i = 0;
         while (p[i] != '\n' && p[i] != '\0')
         {
@@ -120,8 +129,7 @@ int main(void)
             p = strtok(NULL, " ");
             if (isnumber(p))
             {
-                prev_boardsize = boardsize;
-                boardsize = atoi(p);
+                update_boardsize(p, &boardsize, &prev_boardsize);
                 if (boardsize <= 0)
                 {
                     boardsize = -1;
@@ -134,7 +142,7 @@ int main(void)
 
                     // allocate memory for the new matrix
                     wall_matrix = allocate_memory(boardsize);
-                    reset(boardsize, &white, &black);
+                    reset_pawns(boardsize, &white, &black);
                 }
             }
             else
@@ -144,23 +152,13 @@ int main(void)
         }
         else if (m == 6)  // clear_board
         {
-            for (i = 0; i < boardsize; i++) for (j = 0; j < boardsize; j++) wall_matrix[i][j] = 0;
-            reset(boardsize, &white, &black);
+            clear_board(boardsize, wall_matrix, &white, &black);
             successful_command("");
         }
         else if (m == 7)  // walls
         {
             p = strtok(NULL, " ");
-            if (isnumber(p))
-            {
-                walls = atoi(p);
-                black_walls = walls;
-                white_walls = walls;
-            }
-            else
-            {
-                unsuccessful_response("invalid syntax");
-            }
+            update_walls(p, &black_walls, &white_walls);
         }
         else if (m == 8) // playmove
         {  
@@ -249,7 +247,7 @@ char isnumber(char *n)
 
 void known_command(char *command)
 {
-    char temp[80];
+    char temp[BUFFER_SIZE];
     int i = 0;
     while (command[i] != '\n' && command[i] != '\0')
     {
@@ -282,24 +280,24 @@ void showboard(char **w_mtx, int boardsize, int black_walls, int white_walls, st
     }
     
     int i, j, ch;
-    //letters above
+    // letters above
     for (i = 1; i <= mfw+1; i++) putchar(' ');
     for (i = 1; i <= boardsize; i++) printf("  %c ", 'A'+i-1);
     putchar('\n');
     
-    //top edge
+    // top edge
     for (i=1; i<= mfw+1; i++) putchar(' ');
     for (i=1; i<=boardsize; i++) printf("+---");
     printf("+\n");
     
-    //main board
+    // main board
     for (i = boardsize-1; i >= 0; i--)
     {
-        //printing the cell contents and the seperating lines/walls
+        // printing the cell contents and the seperating lines/walls
         printf("%*d |", mfw, i+1);
         for (j = 0; j <= boardsize-1; j++)
         {
-            //the cell content
+            // the cell content
             putchar(' ');
             if (black->i == i && black->j == j) putchar('B');
             else if (white->i == i && white->j == j) putchar('W');
@@ -308,7 +306,7 @@ void showboard(char **w_mtx, int boardsize, int black_walls, int white_walls, st
             
             if (j==boardsize-1) break;
             
-            //the vertical seperating line/wall
+            // the vertical seperating line/wall
             if (w_mtx[i][j]=='r') putchar('H');
             else if (i<boardsize-1 && w_mtx[i+1][j]=='r') putchar('H');
             else putchar('|');
@@ -318,9 +316,9 @@ void showboard(char **w_mtx, int boardsize, int black_walls, int white_walls, st
         else if (i==boardsize-2) printf("White walls: %d", white_walls);
         putchar('\n');
         
-        if (i==0) break; //so that the bottom edge is printed without checking for walls
+        if (i==0) break;  // so that the bottom edge is printed without checking for walls
         
-        //printing grid lines 
+        // printing grid lines 
         for (j = 1; j <= mfw+1; j++) putchar(' ');
         putchar('+');
         for (j = 0; j <= boardsize-1; j++)
@@ -333,7 +331,7 @@ void showboard(char **w_mtx, int boardsize, int black_walls, int white_walls, st
             
             if (j==boardsize-1) break;
             
-            //the intersection of grid lines
+            // the intersection of grid lines
             if(w_mtx[i][j]=='b') putchar('=');
             else if (w_mtx[i][j]=='r') putchar('H');
             else putchar('+');
@@ -341,23 +339,15 @@ void showboard(char **w_mtx, int boardsize, int black_walls, int white_walls, st
         printf("+\n");
     }
     
-    //bottom edge
+    // bottom edge
     for (i=1; i<= mfw+1; i++) putchar(' ');
     for (i=1; i<=boardsize; i++) printf("+---");
     printf("+\n");
     
-    //letters below
+    // letters below
     for (i=1; i<= mfw+1; i++) putchar(' ');
     for (i=1; i<=boardsize; i++) printf("  %c ", 'A'+i-1);
     printf("\n\n");
-}
-
-void reset(int boardsize, struct position *white, struct position *black)
-{
-    white->i = 0;
-    white->j = boardsize / 2;
-    black->j = boardsize / 2;
-    black->i = boardsize - 1;
 }
 
 char **allocate_memory(int boardsize)
@@ -376,4 +366,44 @@ void free_array(char **A, int boardsize)
 {
     for (int i = 0; i < boardsize; i++) free(A[i]);
     free(A);
+}
+
+void reset_pawns(int boardsize, struct position *white, struct position *black)
+{
+    white->i = 0;
+    white->j = boardsize / 2;
+    black->j = boardsize / 2;
+    black->i = boardsize - 1;
+}
+
+void clear_board(int boardsize, char **wall_matrix, struct position *white, struct position *black)
+{
+    for (int i = 0; i < boardsize; i++) 
+        for (int j = 0; j < boardsize; j++) 
+            wall_matrix[i][j] = 0;
+    
+    // white's and black's pawns return to their starting position
+    reset_pawns(boardsize, white, black);
+}
+
+void update_boardsize(char* p, int *boardsize, int *prev_boardsize)
+{
+    if (*boardsize > 0) *prev_boardsize = *boardsize;
+    *boardsize = atoi(p);
+}
+
+void update_walls(char *p, int *black_walls, int *white_walls)
+{
+    int walls;
+    if (isnumber(p))
+    {
+        walls = atoi(p);
+
+        *black_walls = walls;
+        *white_walls = walls;
+    }
+    else
+    {
+        unsuccessful_response("invalid syntax");
+    }
 }
