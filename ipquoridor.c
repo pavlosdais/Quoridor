@@ -180,6 +180,7 @@ int main(void)
         }
         else if (m == 13)  // showboard
         {
+            printf("=\n");
             showboard(wall_matrix, boardsize, black_walls, white_walls, &black, &white);
             fflush(stdout);      
         }
