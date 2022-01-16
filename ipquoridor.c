@@ -19,7 +19,7 @@ char **allocate_memory(int boardsize);
 void free_array(char **A, int boardsize);
 void clear_board(int boardsize, char **wall_matrix, struct position *white, struct position *black);
 void update_boardsize(char* p, int *boardsize, int *prev_boardsize);
-void update_walls(char *p, int *black_walls, int *white_walls);
+void update_walls(char *p, int *black_walls, int *white_walls, int* number_of_walls);
 
 /*
     Commands:
@@ -56,7 +56,7 @@ struct position
 int main(void)
 {
     char winner, buff[BUFFER_SIZE], *p, m;
-    int i = 0, j, prev_boardsize;
+    int i = 0, j, prev_boardsize, number_of_walls;
     
     //default values
     int black_walls = 10, white_walls = 10, boardsize = 9;
@@ -158,7 +158,7 @@ int main(void)
         else if (m == 7)  // walls
         {
             p = strtok(NULL, " ");
-            update_walls(p, &black_walls, &white_walls);
+            update_walls(p, &black_walls, &white_walls, &number_of_walls);
         }
         else if (m == 8) // playmove
         {  
@@ -392,15 +392,14 @@ void update_boardsize(char* p, int *boardsize, int *prev_boardsize)
     *boardsize = atoi(p);
 }
 
-void update_walls(char *p, int *black_walls, int *white_walls)
+void update_walls(char *p, int *black_walls, int *white_walls, int* number_of_walls)
 {
-    int walls;
     if (isnumber(p))
     {
-        walls = atoi(p);
+        *number_of_walls = atoi(p);
 
-        *black_walls = walls;
-        *white_walls = walls;
+        *black_walls = *number_of_walls;
+        *white_walls = *number_of_walls;
     }
     else
     {
