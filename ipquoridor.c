@@ -302,6 +302,8 @@ void showboard(char **w_mtx, int boardsize, int black_walls, int white_walls, st
             else putchar(' ');
             putchar(' ');
             
+            if (j==boardsize-1) break;
+            
             //the vertical seperating line/wall
             if (w_mtx[i][j]=='r') putchar('H');
             else if (i<boardsize-1 && w_mtx[i+1][j]=='r') putchar('H');
