@@ -358,7 +358,7 @@ char **alocate_memory(int boardsize)
     if(A == NULL) return NULL;  // error allocating memory, exit
     for (int i = 0; i < boardsize; i++)
     {
-        A[i] = calloc(boardsize, sizeof(char));
+        A[i] = calloc(boardsize, sizeof(char));  // error allocating memory, exit
         if (A[i] == NULL) return NULL;
     }
     return A;
@@ -368,7 +368,7 @@ void free_array(char **A, int boardsize)
 {
     for (int i = 0; i < boardsize; i++)
     {
-        free(A[i]);  // error allocating memory, exit
+        free(A[i]);
     }
     free(A);
 }
