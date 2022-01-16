@@ -188,7 +188,7 @@ int main(void)
             unsuccessful_response("unknown command");
         }
     }
-    free_array(wall_matrix, prev_boardsize);
+    free_array(wall_matrix, boardsize);
     return 0;
 }
 
