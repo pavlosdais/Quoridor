@@ -12,6 +12,9 @@ char isnumber(char *n);
 void known_command(char *command);
 struct position;
 void showboard(char **walls_matrix, int boardsize, int black_walls, int white_walls, struct position *black, struct position *white);
+void clear_board(int boardsize, struct position *white, struct position *black);
+char **alocate_memory(int boardsize);
+void free_array(char **A, int boardsize);
 
 /*
     Commands:
@@ -72,11 +75,7 @@ int main(void)
     wall_matrix[3][3] might be 0, it does NOT necessarily mean that no wall EXISTS below or on the right of D4, but simply a wall does not START
     there. If wall_matrix[3][2] is 'b' the wall starting at */
 
-    char **wall_matrix = malloc(boardsize*sizeof(char *));
-    for (i = 0; i < 9; i++)
-    {
-        wall_matrix[i] = calloc(boardsize, sizeof(char));
-    }
+    char **wall_matrix = alocate_memory(boardsize);
 
     while (1)
     {
@@ -127,22 +126,11 @@ int main(void)
                 else
                 {
                     // free previous matrix
-                    for (i = 0; i < prev_boardsize; i++)
-                    {
-                        free(wall_matrix[i]);
-                    }
-                    free(wall_matrix);
+                    free_array(wall_matrix, prev_boardsize);
 
-                    wall_matrix = malloc(boardsize*sizeof(char *));
-                    for (i = 0; i < boardsize; i++)
-                    {
-                        wall_matrix[i] = calloc(boardsize, sizeof(char));
-                    }
-
-                    white.i = 0;
-                    white.j = boardsize / 2;
-                    black.j = boardsize / 2;
-                    black.i = boardsize-1;
+                    // allocate memory for the new matrix
+                    wall_matrix = alocate_memory(boardsize);
+                    clear_board(boardsize, &white, &black);
                 }
             }
             else
@@ -152,7 +140,7 @@ int main(void)
         }
         else if (m == 6)  // clear_board
         {
-            printf("Entered 6\n");
+            clear_board(boardsize, &white, &black);
         }
         else if (m == 7)  // walls
         {
@@ -183,15 +171,9 @@ int main(void)
         else if (m == 12)  // winner
         {
             printf("Entered 12\n");
-            if (white.i == boardsize-1) successful_command("true white");
-            else if (black.j == 0) successful_command("true black");
-            else successful_command("false");
-            fflush(stdout);
         }
         else if (m == 13)  // showboard
         {
-            printf("Entered 13\n");
-            printf("boardsize: %d\n", boardsize);
             showboard(wall_matrix, boardsize, black_walls, white_walls, &black, &white);
             fflush(stdout);      
         }
@@ -200,6 +182,7 @@ int main(void)
             unsuccessful_response("unknown command");
         }
     }
+    free_array(wall_matrix, prev_boardsize);
     return 0;
 }
 
@@ -219,7 +202,6 @@ char command_num(char *ans)
     else if (strcmp("winner", ans) == 0) return 12;
     else if (strcmp("showboard", ans) == 0) return 13;
     else return 14;
-
 }
 
 void unsuccessful_response(char *msg)
@@ -238,7 +220,7 @@ void list_commands()
 
 void successful_command(char *msg)
 {
-    printf("= %s\n\n", msg);
+    printf("=%s\n\n", msg);
     fflush(stdout);
 }
 
@@ -359,4 +341,33 @@ void showboard(char **w_mtx, int boardsize, int black_walls, int white_walls, st
     for (i=1; i<= mfw+1; i++) putchar(' ');
     for (i=1; i<=boardsize; i++) printf("  %c ", 'A'+i-1);
     printf("\n\n");
+}
+
+void clear_board(int boardsize, struct position *white, struct position *black)
+{
+    white->i = 0;
+    white->j = boardsize / 2;
+    black->j = boardsize / 2;
+    black->i = boardsize - 1;
+}
+
+char **alocate_memory(int boardsize)
+{
+    char **A = malloc(boardsize*sizeof(char *));
+    if(A == NULL) return NULL;
+    for (int i = 0; i < boardsize; i++)
+    {
+        A[i] = calloc(boardsize, sizeof(char));
+        if (A[i] == NULL) return NULL;
+    }
+    return A;
+}
+
+void free_array(char **A, int boardsize)
+{
+    for (int i = 0; i < boardsize; i++)
+    {
+        free(A[i]);
+    }
+    free(A);
 }
