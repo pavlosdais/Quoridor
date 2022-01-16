@@ -96,7 +96,8 @@ int main(void)
         
         if (m == 1)  // name
         {
-            printf("Entered 1\n");
+            printf("IP Quoridor\n");
+            fflush(stdout);
         }
         else if (m == 2)  // known_command
         {
@@ -212,7 +213,7 @@ void unsuccessful_response(char *msg)
 
 void list_commands()
 {
-    printf("=\nprotocol_version\nname\nversion\nknown_command\nlist_commands\nquit\nboardsize\n");
+    printf("=\nname\nknown_command\nlist_commands\nquit\nboardsize\n");
     fflush(stdout);
     printf("clear_board\nwalls\nplaymove\nplaywall\ngenmove\nundo\nwinner\nshowboard\n\n");
     fflush(stdout);
@@ -299,14 +300,12 @@ void showboard(char **w_mtx, int boardsize, int black_walls, int white_walls, st
             else putchar(' ');
             putchar(' ');
             
-            if (j==boardsize-1) break;
-            
             //the vertical seperating line/wall
             if (w_mtx[i][j]=='r') putchar('H');
             else if (i<boardsize-1 && w_mtx[i+1][j]=='r') putchar('H');
             else putchar('|');
         }
-        printf("| %-*d  ", mfw, i+1);
+        printf(" %-*d  ", mfw, i+1);
         if (i==boardsize-1) printf("Black walls: %d", black_walls);
         else if (i==boardsize-2) printf("White walls: %d", white_walls);
         putchar('\n');
@@ -356,7 +355,7 @@ void clear_board(int boardsize, struct position *white, struct position *black)
 char **alocate_memory(int boardsize)
 {
     char **A = malloc(boardsize*sizeof(char *));
-    if(A == NULL) return NULL;
+    if(A == NULL) return NULL;  // error allocating memory, exit
     for (int i = 0; i < boardsize; i++)
     {
         A[i] = calloc(boardsize, sizeof(char));
@@ -369,7 +368,7 @@ void free_array(char **A, int boardsize)
 {
     for (int i = 0; i < boardsize; i++)
     {
-        free(A[i]);
+        free(A[i]);  // error allocating memory, exit
     }
     free(A);
 }
