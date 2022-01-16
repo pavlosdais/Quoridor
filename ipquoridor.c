@@ -133,11 +133,12 @@ int main(void)
                     }
                     free(wall_matrix);
 
-                    char **wall_matrix = malloc(boardsize*sizeof(char *));
+                    wall_matrix = malloc(boardsize*sizeof(char *));
                     for (i = 0; i < boardsize; i++)
                     {
                         wall_matrix[i] = calloc(boardsize, sizeof(char));
                     }
+
                     white.i = 0;
                     white.j = boardsize / 2;
                     black.j = boardsize / 2;
@@ -167,12 +168,8 @@ int main(void)
                 unsuccessful_response("invalid syntax");
             }
         }
-        else if (m == 8)  // playmove
-        {
-            printf("Entered 8\n");
-        }
-        else if (m == 9)  // playwall
-        {
+        else if (m == 8) // playmove
+        {  
             printf("Entered 9\n");
         }
         else if (m == 10)  // genmove
@@ -283,12 +280,12 @@ void showboard(char **w_mtx, int boardsize, int black_walls, int white_walls, st
 {
     /*min field width is the greatest power of 10 in which when 10 is raised gives a result less than or equal to boardsize
     More simply, it is the number of digits of boardsize, eg. boardsize 9 -> mfw 1, boardsize 10 -> mfw 2*/
-    int pow = 1;
-    int mfw = 0;
-    while (boardsize%pow == 0)
+    int mfw = 1;
+    int tempb = boardsize;
+    while (tempb>9)
     {
         mfw++;
-        pow*= 10;
+        tempb/=10;
     }
     
     int i, j, ch;
