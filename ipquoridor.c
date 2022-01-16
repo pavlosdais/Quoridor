@@ -73,7 +73,10 @@ int main(void)
             horizontal wall between C6 and C5, which keeps going between D6 and D5.
     !It is important to notice that if a cell is 0 it does not mean that there might not be walls below or on its right. For example, even though
     wall_matrix[3][3] might be 0, it does NOT necessarily mean that no wall EXISTS below or on the right of D4, but simply a wall does not START
-    there. If wall_matrix[3][2] is 'b' the wall starting at */
+    there. If wall_matrix[3][2] is 'b', the wall starting below C4 keeps going below D4, or if wall_matrix[4][3] is 'r', the walll starting on the
+    right of D5 keeps going on the right of D4. The same applies for cells with 'r'/'b'. Even though a wall does not start
+    beneath them / on their right, it is possiblr that a wall starts below their left cell / on the right of the cell above and keeps going adjacently
+    to the specific cell.*/
 
     char **wall_matrix = allocate_memory(9);
 
@@ -348,7 +351,7 @@ void showboard(char **w_mtx, int boardsize, int black_walls, int white_walls, st
     printf("\n\n");
 }
 
-void clear_board(int boardsize, struct position *white, struct position *black)
+void reset(int boardsize, struct position *white, struct position *black)
 {
     white->i = 0;
     white->j = boardsize / 2;
@@ -356,7 +359,7 @@ void clear_board(int boardsize, struct position *white, struct position *black)
     black->i = boardsize - 1;
 }
 
-char **alocate_memory(int boardsize)
+char **allocate_memory(int boardsize)
 {
     char **A = malloc(boardsize*sizeof(char *));
     if(A == NULL) return NULL;  // error allocating memory, exit
@@ -370,9 +373,6 @@ char **alocate_memory(int boardsize)
 
 void free_array(char **A, int boardsize)
 {
-    for (int i = 0; i < boardsize; i++)
-    {
-        free(A[i]);
-    }
+    for (int i = 0; i < boardsize; i++) free(A[i]);
     free(A);
 }
