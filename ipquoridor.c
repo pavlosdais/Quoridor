@@ -12,8 +12,8 @@ char isnumber(char *n);
 void known_command(char *command);
 struct position;
 void showboard(char **walls_matrix, int boardsize, int black_walls, int white_walls, struct position *black, struct position *white);
-void clear_board(int boardsize, struct position *white, struct position *black);
-char **alocate_memory(int boardsize);
+void reset(int boardsize, struct position *white, struct position *black);
+char **allocate_memory(int boardsize);
 void free_array(char **A, int boardsize);
 
 /*
@@ -49,10 +49,10 @@ struct position
 int main(void)
 {
     char winner, buff[80], *p, m;
-    int black_walls = 10, white_walls = 10, walls, i = 0, boardsize = 9, prev_boardsize;
+    int walls, i = 0, j, prev_boardsize;
     
     //default values
-    black_walls = 10, white_walls = 10;
+    int black_walls = 10, white_walls = 10, boardsize = 9;
     struct position black;
     struct position white;
     white.i = 0; //row with number 1
@@ -75,7 +75,7 @@ int main(void)
     wall_matrix[3][3] might be 0, it does NOT necessarily mean that no wall EXISTS below or on the right of D4, but simply a wall does not START
     there. If wall_matrix[3][2] is 'b' the wall starting at */
 
-    char **wall_matrix = alocate_memory(boardsize);
+    char **wall_matrix = allocate_memory(9);
 
     while (1)
     {
@@ -130,8 +130,8 @@ int main(void)
                     free_array(wall_matrix, prev_boardsize);
 
                     // allocate memory for the new matrix
-                    wall_matrix = alocate_memory(boardsize);
-                    clear_board(boardsize, &white, &black);
+                    wall_matrix = allocate_memory(boardsize);
+                    reset(boardsize, &white, &black);
                 }
             }
             else
@@ -141,7 +141,9 @@ int main(void)
         }
         else if (m == 6)  // clear_board
         {
-            clear_board(boardsize, &white, &black);
+            for (i = 0; i < boardsize; i++) for (j = 0; j < boardsize; j++) wall_matrix[i][j] = 0;
+            reset(boardsize, &white, &black);
+            successful_command("");
         }
         else if (m == 7)  // walls
         {
