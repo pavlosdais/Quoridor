@@ -3,23 +3,34 @@
 #include <string.h>
 #include <ctype.h>
 
-#define BUFFER_SIZE 80
+#define BUFFER_SIZE 60
+
+typedef struct position position;
 
 // Function Prototypes
-struct position;
 char command_num(char *ans);
 void unsuccessful_response(char *msg);
 void list_commands();
 void successful_command(char *msg);
 char isnumber(char *n);
 void known_command(char *command);
-void showboard(char **walls_matrix, int boardsize, int black_walls, int white_walls, struct position *black, struct position *white);
-void reset_pawns(int boardsize, struct position *white, struct position *black);
+void showboard(char **walls_matrix, int boardsize, int black_walls, int white_walls, position *black, position *white);
+void reset_pawns(int boardsize, position *white, position *black);
 char **allocate_memory(int boardsize);
 void free_array(char **A, int boardsize);
-void clear_board(int boardsize, char **wall_matrix, struct position *white, struct position *black);
+void clear_board(int boardsize, char **wall_matrix, position *white, position *black);
 void update_boardsize(char* p, int *boardsize, int *prev_boardsize);
 void update_walls(char *p, int *black_walls, int *white_walls, int* number_of_walls);
+
+struct position
+{
+    /*
+    i and j will follow the matrix numbering, from 0 to n-1, and will refer to the cell (i+1,j+1)
+    eg if black.i is 3 and black.j is 6, it means that the black pawn is on (4,7) or else H4
+    */
+    int i;
+    int j;
+};
 
 /*
     Commands:
@@ -43,15 +54,7 @@ void update_walls(char *p, int *black_walls, int *white_walls, int* number_of_wa
     13 - showboard
 */
 
-struct position
-{
-    /*
-    i and j will follow the matrix numbering, from 0 to n-1, and will refer to the cell (i+1,j+1)
-    eg if black.i is 3 and black.j is 6, it means that the black pawn is on (4,7) or else H4
-    */
-    int i;
-    int j;
-};
+
 
 int main(void)
 {
@@ -60,8 +63,8 @@ int main(void)
     
     //default values
     int black_walls = 10, white_walls = 10, boardsize = 9;
-    struct position black;
-    struct position white;
+    position black;
+    position white;
     white.i = 0;  // row with number 1
     white.j = 4;  // column with number 5 (letter 'E')
     black.i = 8;  // row with number 9
@@ -267,7 +270,7 @@ void known_command(char *command)
     }
 }
 
-void showboard(char **w_mtx, int boardsize, int black_walls, int white_walls, struct position *black, struct position *white)
+void showboard(char **w_mtx, int boardsize, int black_walls, int white_walls, position *black, position *white)
 {
     /*min field width is the greatest power of 10 in which when 10 is raised gives a result less than or equal to boardsize
     More simply, it is the number of digits of boardsize, eg. boardsize 9 -> mfw 1, boardsize 10 -> mfw 2*/
@@ -368,7 +371,7 @@ void free_array(char **A, int boardsize)
     free(A);
 }
 
-void reset_pawns(int boardsize, struct position *white, struct position *black)
+void reset_pawns(int boardsize, position *white, position *black)
 {
     white->i = 0;
     white->j = boardsize / 2;
@@ -376,7 +379,7 @@ void reset_pawns(int boardsize, struct position *white, struct position *black)
     black->i = boardsize - 1;
 }
 
-void clear_board(int boardsize, char **wall_matrix, struct position *white, struct position *black)
+void clear_board(int boardsize, char **wall_matrix, position *white, position *black)
 {
     for (int i = 0; i < boardsize; i++) 
         for (int j = 0; j < boardsize; j++) 
