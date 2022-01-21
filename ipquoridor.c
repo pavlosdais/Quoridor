@@ -113,7 +113,7 @@ int main(void)
                     reset_pawns(boardsize, &white, &black);
 
                     printf("\n\n");
-                    fflush(stdin);
+                    fflush(stdout);
                 }
             }
             else
