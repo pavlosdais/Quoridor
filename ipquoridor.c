@@ -64,7 +64,7 @@ int main(void)
         fgets(buff, BUFFER_SIZE, stdin);
 
         // command
-        char *p = strtok(buff, " \t");
+        p = strtok(buff, " \t");
         allocate_command(p);
 
         char m = command_num(p);  // number of the command
