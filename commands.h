@@ -1,6 +1,6 @@
 typedef struct position position;
 
-#define BUFFER_SIZE 50
+#define BUFFER_SIZE 81
 
 // Function Prototypes
 char command_num(char *ans);
@@ -17,10 +17,11 @@ void free_array(char **A, int boardsize);
 void clear_board(int boardsize, char **wall_matrix, position *white, position *black);
 void update_boardsize(char* p, int *boardsize, int *prev_boardsize);
 void update_walls(char *p, int *black_walls, int *white_walls, int* number_of_walls);
-void allocate_command(char *command, char* p);
-void playwall(char* buff);
+void allocate_command(char *command);
+void playwall(char color, char vertex_x, char vertex_y, char* orientation);
 char is_x_available(char hor, position white);
 char is_y_availabe(char hor, position black);
+char check_color(char *p);
 
 struct position
 {
