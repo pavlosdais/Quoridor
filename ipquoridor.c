@@ -27,13 +27,12 @@
 
 int main(void)
 {
-    char winner, *p, m;
+    char winner, *p, m, col, orientation, vertex_x, vertex_y;
     int i = 0, j, prev_boardsize, number_of_walls;
 
     char* buff = malloc(sizeof(char) * BUFFER_SIZE);
-    char* command = malloc(sizeof(char) * BUFFER_SIZE);
     
-    //default values
+    // default values
     int black_walls = 10, white_walls = 10, boardsize = 9;
     position black;
     position white;
@@ -69,40 +68,36 @@ int main(void)
         fgets(buff, BUFFER_SIZE, stdin);
 
         // command
-        char *p = strtok(buff, " ,.");
-        allocate_command(command, p);
+        char *p = strtok(buff, " \t");
+        allocate_command(p);
 
-        char m = command_num(command);  // number of the command
+        char m = command_num(p);  // number of the command
         
-        if (m == 1)  // name
+        if (m == 1)  // name - done
         {
             print_name(" SP Quoridor");
         }
-        else if (m == 2)  // known_command
+        else if (m == 2)  // known_command - done
         {
             p = strtok(NULL, " ");
             known_command(p);
         }
-        else if (m == 3)  // list_commands
+        else if (m == 3)  // list_commands - done
         {
             list_commands();
         }
-        else if (m == 4)  // quit
+        else if (m == 4)  // quit - done
         {
             successful_response("");
             break;
         }
-        else if (m == 5)  // boardsize
+        else if (m == 5)  // boardsize - done
         {
             p = strtok(NULL, " ");
             if (isnumber(p))
             {
                 update_boardsize(p, &boardsize, &prev_boardsize);
-                if (boardsize <= 0)
-                {
-                    boardsize = -1;
-                    unsuccessful_response("unacceptable size");
-                }
+                if (boardsize <= 0) unsuccessful_response("unacceptable size");
                 else
                 {
                     // free previous matrix
@@ -121,36 +116,52 @@ int main(void)
                 unsuccessful_response("invalid syntax");
             }
         }
-        else if (m == 6)  // clear_board
+        else if (m == 6)  // clear_board - done
         {
             clear_board(boardsize, wall_matrix, &white, &black);
         }
-        else if (m == 7)  // walls
+        else if (m == 7)  // walls - done
         {
             p = strtok(NULL, " ");
             update_walls(p, &black_walls, &white_walls, &number_of_walls);
         }
-        else if (m == 8) // playmove
-        {  
-            printf("Entered 8\n");
-        }
-        else if (m == 9)  // playwall
+        else if (m == 8) // playmove - STAVROS
         {
-            char col, orientation_x, orientation_y;
-
             // Color
-            p = strtok(NULL, " ");
-            allocate_command(command, p);
+            char *p = strtok(NULL, " ");
+            allocate_command(p);
+            col = check_color(p);  // 0 for black, 1 for white, -1 for unknown
 
-            if (strcmp(command, "white") == 0) col = 1;
-            else if (strcmp(command, "black") == 0) col = 0;
-            else unsuccessful_response("invalid syntax");
+            // Vertex
+            p = strtok(NULL, " ");
+            allocate_command(p);
+
+            vertex_x = p[0];
+            vertex_y = p[1];
+        }
+        else if (m == 9)  // playwall - PAVLOS
+        {
+            // Color
+            char *p = strtok(NULL, " ");
+            allocate_command(p);
+            col = check_color(p);
+
+            if (col == 1) printf("White\n");
+            else if (col == 0) printf("Black\n");
+            if (col == -1) unsuccessful_response("unknown command");
+            
+            // Vertex
+            p = strtok(NULL, " ");
+            allocate_command(p);
+
+            vertex_x = p[0];
+            vertex_y = p[1];
 
             // Orientation
             p = strtok(NULL, " ");
-            allocate_command(command, p);
-            
+            allocate_command(p);
 
+            playwall(col, vertex_x, vertex_y, p);
         }
         else if (m == 10)  // genmove
         {
@@ -164,7 +175,7 @@ int main(void)
         {
             printf("Entered 12\n");
         }
-        else if (m == 13)  // showboard
+        else if (m == 13)  // showboard - done
         {
             printf("=\n");
             showboard(wall_matrix, boardsize, black_walls, white_walls, &black, &white);    
@@ -177,6 +188,6 @@ int main(void)
     }
     free_array(wall_matrix, boardsize);
     free(buff);
-    free(command);
+
     return 0;
 }
