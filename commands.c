@@ -3,8 +3,8 @@
 #include <string.h>
 #include <ctype.h>
 
-#define BUFFER_SIZE 50
-void allocate_command(char *command, char* p);
+#define BUFFER_SIZE 81
+void allocate_command(char *command);
 
 struct position
 {
@@ -54,15 +54,28 @@ void print_name(char *p)
     fflush(stdout);
 }
 
-void allocate_command(char *command, char* p)
+void allocate_command(char *command)
 {
-    int i = 0;
-    while (p[i] != '\n' && p[i] != '\0')
+    int i = 0, j = 0;
+    char whsp = 0;
+    while (command[i] != '\n' && command[i] != '\0')
     {
-        command[i] = p[i];
+        if (whsp) 
+        {
+            i++;
+            continue;
+        }
+        else if (command[i] == ' ' || command[i] == '\t')
+        {
+            i++;
+            whsp = 1;
+            continue;
+        }
         i++;
+        j++;
+        whsp = 0;
     }
-    command[i] = '\0';
+    command[j] = '\0';
 }
 
 void list_commands()
@@ -91,11 +104,9 @@ char isnumber(char *n)
 
 void known_command(char *buff)
 {
-    char* command = malloc(sizeof(char) * BUFFER_SIZE);
-    allocate_command(command, buff);
+    allocate_command(buff);
 
-    char m = command_num(command);
-    free(command);
+    char m = command_num(buff);
 
     if (m >= 1 && m <= 13)
     {
@@ -279,8 +290,35 @@ char is_y_availabe(char hor, position black)
 }
 
 
-void playwall(char* buff)
+void playwall(char color, char vertex_x, char vertex_y, char* orientation)
 {
     
 }
 
+char check_color(char *p)
+{
+    // function returns 1 for white, 0 for black and -1 for unknown color
+
+    if (strcasecmp(p, "white") == 0) return 1;
+    else if (strcasecmp(p, "w") == 0) return 1;
+    else if (strcasecmp(p, "black") == 0) return 0;
+    else if (strcasecmp(p, "b") == 0) return 0;
+    else return -1;
+}
+
+char check_orientation(char *orientation)
+{
+    // function returns 1 for horizontal, 0 for vertical and -1 for uknown orientation
+
+}
+
+char arguments(char *buff)
+{
+    char arg = 0;
+    int i = 0;
+    while (buff[i] != '\n' && buff[i] != '\0')
+    {
+        if (buff[i] = ' ') arg ++;
+    }
+    return arg;
+}
