@@ -6,7 +6,7 @@
 #define BUFFER_SIZE 81
 void allocate_command(char *command);
 
-struct position
+struct player
 {
     /*
     i and j will follow the matrix numbering, from 0 to n-1, and will refer to the cell (i+1,j+1)
@@ -14,9 +14,10 @@ struct position
     */
     int i;
     int j;
-};
+    int walls;
+} player;
 
-typedef struct position position;
+typedef struct player player;
 
 char command_num(char *ans)
 {
@@ -118,7 +119,7 @@ void known_command(char *buff)
     }
 }
 
-void showboard(char **w_mtx, int boardsize, int black_walls, int white_walls, position *black, position *white)
+void showboard(char **w_mtx, int boardsize, player *black, player *white)
 {
     /*min field width is the greatest power of 10 in which when 10 is raised gives a result less than or equal to boardsize
     More simply, it is the number of digits of boardsize, eg. boardsize 9 -> mfw 1, boardsize 10 -> mfw 2*/
@@ -163,8 +164,8 @@ void showboard(char **w_mtx, int boardsize, int black_walls, int white_walls, po
             else putchar('|');
         }
         printf("| %-*d  ", mfw, i+1);
-        if (i==boardsize-1) printf("Black walls: %d", black_walls);
-        else if (i==boardsize-2) printf("White walls: %d", white_walls);
+        if (i==boardsize-1) printf("Black walls: %d", black->walls);
+        else if (i==boardsize-2) printf("White walls: %d", white->walls);
         putchar('\n');
         
         if (i==0) break;  // so that the bottom edge is printed without checking for walls
@@ -220,7 +221,7 @@ void free_array(char **A, int boardsize)
     free(A);
 }
 
-void reset_pawns(int boardsize, position *white, position *black)
+void reset_pawns(int boardsize, player *white, player *black)
 {
     white->i = 0;
     white->j = boardsize / 2;
@@ -228,7 +229,7 @@ void reset_pawns(int boardsize, position *white, position *black)
     black->i = boardsize - 1;
 }
 
-void clear_board(int boardsize, char **wall_matrix, position *white, position *black)
+void clear_board(int boardsize, char **wall_matrix, player *white, player *black)
 {
     for (int i = 0; i < boardsize; i++) 
         for (int j = 0; j < boardsize; j++) 
@@ -251,14 +252,14 @@ void update_boardsize(char* p, int *boardsize, int *prev_boardsize)
     *boardsize = atoi(p);
 }
 
-void update_walls(char *p, int *black_walls, int *white_walls, int* number_of_walls)
+void update_walls(char *p, player *black, player *white, int* number_of_walls)
 {
     if (isnumber(p))
     {
         *number_of_walls = atoi(p);
 
-        *black_walls = *number_of_walls;
-        *white_walls = *number_of_walls;
+        black->walls = *number_of_walls;
+        white->walls = *number_of_walls;
         successful_response("");
     }
     else
@@ -267,7 +268,7 @@ void update_walls(char *p, int *black_walls, int *white_walls, int* number_of_wa
     }
 }
 
-char is_x_available(char hor, position white)
+char is_x_available(char hor, player white)
 {
     if (hor >= 'A' && hor < (white.j + 'A'))
     {
@@ -280,7 +281,7 @@ char is_x_available(char hor, position white)
     return 0;
 }
 
-char is_y_availabe(char hor, position black)
+char is_y_availabe(char hor, player black)
 {
     if (hor >= 0 && hor < black.i)
     {
