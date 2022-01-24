@@ -5,7 +5,6 @@
 #include "helper_commands.h"
 
 #define BUFFER_SIZE 81
-void allocate_command(char *command);
 
 struct position
 {
