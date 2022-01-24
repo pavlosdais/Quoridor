@@ -11,13 +11,10 @@ int main(void)
     char* buff = malloc(sizeof(char) * BUFFER_SIZE);
     
     // default values
-    int black_walls = 10, white_walls = 10, boardsize = 9;
-    position black;
-    position white;
-    white.i = 0;  // row with number 1
-    white.j = 4;  // column with number 5 (letter 'E')
-    black.i = 8;  // row with number 9
-    black.j = 4;  // column with number 5 (letter 'E')
+    int boardsize = 9;
+    player black, white;
+    reset_pawns(9, &white, &black);  // default walues
+    black.walls = white.walls = 10;
     
     /* 
     Wall_matrix is used to represent if a wall begins next to a specific cell. for example wall_matrix[2][5] informs us
@@ -82,13 +79,13 @@ int main(void)
         }
         else if (m == 7)  // walls - done
         {
-            update_walls(&black_walls, &white_walls, &number_of_walls);
+            update_walls(&black, &white, &number_of_walls);
         }
         else if (m == 8) // playmove - STAVROS
         {
             // Color
             p = strtok(NULL, " ");
-            //col = check_color(p);  // 0 for black, 1 for white, -1 for unknown
+            col = check_color(p);  // 0 for black, 1 for white, -1 for unknown
 
             // Vertex
             p = strtok(NULL, " ");
@@ -103,7 +100,7 @@ int main(void)
         }
         else if (m == 9)  // playwall - PAVLOS
         {
-            playwall(buff, &white, &black);
+            playwall(buff, &white, &black, wall_matrix);
         }
         else if (m == 10)  // genmove
         {
