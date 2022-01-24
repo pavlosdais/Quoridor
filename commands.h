@@ -1,5 +1,3 @@
-typedef struct position position;
-
 #define BUFFER_SIZE 81
 
 // Function Prototypes
@@ -19,7 +17,7 @@ void playwall(char *buff, position *white, position *black);
 void command_preprocess(char *buff);
 char arguments(char *buff);
 
-struct position
+struct player
 {
     /*
     i and j will follow the matrix numbering, from 0 to n-1, and will refer to the cell (i+1,j+1)
@@ -27,4 +25,7 @@ struct position
     */
     int i;
     int j;
+    int walls;
 };
+
+typedef struct player player;
