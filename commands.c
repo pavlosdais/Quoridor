@@ -6,7 +6,7 @@
 
 #define BUFFER_SIZE 81
 
-typedef struct player
+struct player
 {
     /*
     i and j will follow the matrix numbering, from 0 to n-1, and will refer to the cell (i+1,j+1)
@@ -14,6 +14,7 @@ typedef struct player
     */
     int i;
     int j;
+    int walls;
 } player;
 
 typedef struct player player;
