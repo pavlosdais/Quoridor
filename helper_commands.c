@@ -20,7 +20,7 @@ char isnumber(char *n)
     return 1;
 }
 
-void reset_pawns(int boardsize, position *white, position *black)
+void reset_pawns(int boardsize, player *white, player *black)
 {
     white->i = 0;
     white->j = boardsize / 2;
@@ -40,7 +40,7 @@ void swap_boardsize(char* p, int *boardsize, int *prev_boardsize)
     *boardsize = atoi(p);
 }
 
-char is_x_available(char hor, position white)
+char is_x_available(char hor, player white)
 {
     if (hor >= 'A' && hor < (white.j + 'A'))
     {
@@ -53,7 +53,7 @@ char is_x_available(char hor, position white)
     return 0;
 }
 
-char is_y_availabe(char hor, position black)
+char is_y_availabe(char hor, player black)
 {
     if (hor >= 0 && hor < black.i)
     {
@@ -62,7 +62,7 @@ char is_y_availabe(char hor, position black)
     return 0;
 }
 
-position *check_color(char *p, position *black, position *white)
+position *check_color(char *p, player *black, player *white)
 {
     // function returns 1 for white, 0 for black and -1 for unknown color
 
