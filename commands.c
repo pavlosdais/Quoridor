@@ -109,7 +109,7 @@ void update_walls(player *black, player *white, int* number_of_walls)
     }
 }
 
-void playwall(char *buff, player *white, player *black)
+void playwall(char *buff, player *white, player *black, char** wall_matrix, int boardsizes)
 {
     // Color
     char *p = strtok(NULL, " ");   
