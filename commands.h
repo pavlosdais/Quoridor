@@ -1,22 +1,5 @@
 #define BUFFER_SIZE 81
 
-// Function Prototypes
-char command_num(char *ans);
-void print_name(char *p);
-void unsuccessful_response(char *msg);
-void successful_response(char *msg);
-void list_commands();
-void known_command();
-void showboard(char **walls_matrix, int boardsize, int black_walls, int white_walls, position *black, position *white);
-char **allocate_memory(int boardsize);
-void free_array(char **A, int boardsize);
-void clear_board(int boardsize, char **wall_matrix, position *white, position *black);
-void update_boardsize(int *boardsize, int *prev_boardsize, char ***wall_matrix, position *white, position *black);
-void update_walls(int *black_walls, int *white_walls, int* number_of_walls);
-void playwall(char *buff, position *white, position *black);
-void command_preprocess(char *buff);
-char arguments(char *buff);
-
 struct player
 {
     /*
@@ -29,3 +12,20 @@ struct player
 };
 
 typedef struct player player;
+
+// Function Prototypes
+char command_num(char *ans);
+void print_name(char *p);
+void unsuccessful_response(char *msg);
+void successful_response(char *msg);
+void list_commands();
+void known_command();
+void showboard(char **walls_matrix, int boardsize, player *black, player *white);
+char **allocate_memory(int boardsize);
+void free_array(char **A, int boardsize);
+void clear_board(int boardsize, char **wall_matrix, player *white, player *black);
+void update_boardsize(int *boardsize, int *prev_boardsize, char ***wall_matrix, player *white, player *black);
+void update_walls(player *black, int *white, int* number_of_walls);
+void playwall(char *buff, player *white, player *black);
+void command_preprocess(char *buff);
+char arguments(char *buff);
