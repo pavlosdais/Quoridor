@@ -62,7 +62,7 @@ char is_y_availabe(char hor, player black)
     return 0;
 }
 
-position *check_color(char *p, player *black, player *white)
+player *check_color(char *p, player *black, player *white)
 {
     // function returns 1 for white, 0 for black and -1 for unknown color
 
