@@ -6,7 +6,7 @@
 
 #define BUFFER_SIZE 81
 
-struct position
+typedef struct player
 {
     /*
     i and j will follow the matrix numbering, from 0 to n-1, and will refer to the cell (i+1,j+1)
@@ -14,9 +14,9 @@ struct position
     */
     int i;
     int j;
-};
+} player;
 
-typedef struct position position;
+typedef struct player player;
 
 // Function Prototypes
 void unsuccessful_response(char *msg);
@@ -54,7 +54,7 @@ void list_commands()
     fflush(stdout);
 }
 
-void update_boardsize(int *boardsize, int *prev_boardsize, char ***wall_matrix, position *white, position *black)
+void update_boardsize(int *boardsize, int *prev_boardsize, char ***wall_matrix, player *white, player *black)
 {
     char *p = strtok(NULL, " ");
     if (isnumber(p))
@@ -80,7 +80,7 @@ void update_boardsize(int *boardsize, int *prev_boardsize, char ***wall_matrix, 
     }
 }
 
-void clear_board(int boardsize, char **wall_matrix, position *white, position *black)
+void clear_board(int boardsize, char **wall_matrix, player *white, player *black)
 {
     for (int i = 0; i < boardsize; i++) 
         for (int j = 0; j < boardsize; j++) 
@@ -91,15 +91,15 @@ void clear_board(int boardsize, char **wall_matrix, position *white, position *b
     successful_response("");
 }
 
-void update_walls(int *black_walls, int *white_walls, int* number_of_walls)
+void update_walls(player *black, player *white, int* number_of_walls)
 {
     char *p = strtok(NULL, " ");
     if (isnumber(p))
     {
         *number_of_walls = atoi(p);
 
-        *black_walls = *number_of_walls;
-        *white_walls = *number_of_walls;
+        black->walls = *number_of_walls;
+        white->walls = *number_of_walls;
         successful_response("");
     }
     else
@@ -108,7 +108,7 @@ void update_walls(int *black_walls, int *white_walls, int* number_of_walls)
     }
 }
 
-void playwall(char *buff, position *white, position *black)
+void playwall(char *buff, player *white, player *black)
 {
     // Color
     char *p = strtok(NULL, " ");   
@@ -130,7 +130,7 @@ void playwall(char *buff, position *white, position *black)
     p = strtok(NULL, " ");
 }
 
-void showboard(char **w_mtx, int boardsize, int black_walls, int white_walls, position *black, position *white)
+void showboard(char **w_mtx, int boardsize, player *black, player *white)
 {
     printf("=\n");
     /*min field width is the greatest power of 10 in which when 10 is raised gives a result less than or equal to boardsize
@@ -176,8 +176,8 @@ void showboard(char **w_mtx, int boardsize, int black_walls, int white_walls, po
             else putchar('|');
         }
         printf("| %-*d  ", mfw, i+1);
-        if (i==boardsize-1) printf("Black walls: %d", black_walls);
-        else if (i==boardsize-2) printf("White walls: %d", white_walls);
+        if (i==boardsize-1) printf("Black walls: %d", black->walls);
+        else if (i==boardsize-2) printf("White walls: %d", white->walls);
         putchar('\n');
         
         if (i==0) break;  // so that the bottom edge is printed without checking for walls
