@@ -5,7 +5,7 @@
 
 int main(void)
 {
-    char *p, m, col, orientation, vertex_x, vertex_y, num_of_arguments;
+    char *p, m, orientation, vertex_x, vertex_y, num_of_arguments;
     int i = 0, j, prev_boardsize, number_of_walls;
 
     char* buff = malloc(sizeof(char) * BUFFER_SIZE);
@@ -13,6 +13,7 @@ int main(void)
     // default values
     int boardsize = 9;
     player black, white;
+    player *col;
     reset_pawns(9, &white, &black);  // default walues
     black.walls = white.walls = 10;
     
