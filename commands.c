@@ -92,6 +92,8 @@ void clear_board(int boardsize, char **wall_matrix, player *white, player *black
     successful_response("");
 }
 
+// functions needed in main
+
 void update_walls(player *black, player *white, int* number_of_walls)
 {
     char *p = strtok(NULL, " ");
@@ -215,10 +217,6 @@ void showboard(char **w_mtx, int boardsize, player *black, player *white)
     printf("\n\n");
     fflush(stdout);
 }
-
-
-// functions needed in main
-
 
 char command_num(char *ans)
 {
