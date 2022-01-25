@@ -106,7 +106,7 @@ char wallAbove(int i, int j, char **w_mtx, int boardsize) {
 }
 
 char wallOnTheRight(int i, int j, char **w_mtx, int boardsize) {
-    if (j==bd_sz-1) return 0;
+    if (j==boardsize-1) return 0;
     return (w_mtx[i][j]=='r' || (i<boardsize-1 && w_mtx[i+1][j]=='r'));
 }
 
