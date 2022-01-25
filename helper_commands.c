@@ -3,6 +3,8 @@
 #include <string.h>
 #include <ctype.h>
 
+typedef struct player player;
+
 char isnumber(char *n)
 {
     int i = 0;
