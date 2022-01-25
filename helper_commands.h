@@ -8,3 +8,7 @@ char is_y_availabe(char hor, player black);
 player *check_color(char *p, player *black, player *white);
 char check_orientation(char *orientation);
 char arguments(char *buff);
+char wallBelow(int i, int j, char **w_mtx, int bd_sz);
+char wallAbove(int i, int j, char **w_mtx, int bd_sz);
+char wallOnTheRight(int i, int j, char **w_mtx, int bd_sz);
+char wallOnTheLeft(int i, int j, char **w_mtx, int bd_sz);
