@@ -252,7 +252,7 @@ void successful_response(char *msg)
 
 void winner(player *white, player *black, int boardsize) {
     if (white->i==boardsize-1) successful_response("true white");
-    else if (black->i==0) succesful_response("true black");
+    else if (black->i==0) successful_response("true black");
     else successful_response("false");
 }
 
