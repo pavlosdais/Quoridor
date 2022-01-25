@@ -3,7 +3,11 @@
 #include <string.h>
 #include <ctype.h>
 
-typedef struct player player;
+typedef struct player {
+    int i;
+    int j;
+    int walls;
+} player;
 
 char isnumber(char *n)
 {
