@@ -11,7 +11,7 @@ struct player
     int walls;
 };
 
-typedef struct player player;
+#include "helper_commands.h"
 
 // Function Prototypes
 char command_num(char *ans);
