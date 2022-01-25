@@ -27,6 +27,6 @@ void free_array(char **A, int boardsize);
 void clear_board(int boardsize, char **wall_matrix, player *white, player *black);
 void update_boardsize(int *boardsize, int *prev_boardsize, char ***wall_matrix, player *white, player *black);
 void update_walls(player *black, player *white, int* number_of_walls);
-void playwall(char *buff, player *white, player *black);
+void playwall(char *buff, player *white, player *black, char **wall_matrix);
 void command_preprocess(char *buff);
 char arguments(char *buff);
