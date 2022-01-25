@@ -85,7 +85,7 @@ int main(void)
         {
             // Color
             p = strtok(NULL, " ");
-            col = check_color(p);
+            col = check_color(p, &black, &white);
 
             // Vertex
             p = strtok(NULL, " ");
