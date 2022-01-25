@@ -21,6 +21,7 @@ void successful_response(char *msg);
 void list_commands();
 void known_command();
 void showboard(char **walls_matrix, int boardsize, player *black, player *white);
+void winner(player *white, player *black, int boardsize);
 char **allocate_memory(int boardsize);
 void free_array(char **A, int boardsize);
 void clear_board(int boardsize, char **wall_matrix, player *white, player *black);
