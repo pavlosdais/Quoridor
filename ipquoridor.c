@@ -112,11 +112,11 @@ int main(void)
         }
         else if (m == 12)  // winner
         {
-            printf("Entered 12\n");
+            winner(white, black, boardsize);
         }
         else if (m == 13)  // showboard - done
         {
-            showboard(wall_matrix, boardsize, black_walls, white_walls, &black, &white);    
+            showboard(wall_matrix, boardsize, &black, &white);    
         }
         else  // command not recognized
         {
