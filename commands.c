@@ -15,7 +15,7 @@ struct player
     int i;
     int j;
     int walls;
-} player;
+};
 
 typedef struct player player;
 
