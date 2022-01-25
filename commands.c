@@ -246,7 +246,7 @@ void unsuccessful_response(char *msg)
 
 void successful_response(char *msg)
 {
-    printf("=%s\n\n", msg);
+    printf("= %s\n\n", msg);
     fflush(stdout);
 }
 
