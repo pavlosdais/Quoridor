@@ -250,6 +250,12 @@ void successful_response(char *msg)
     fflush(stdout);
 }
 
+void winner(player *white, player *black, int boardsize) {
+    if (white->i==boardsize-1) successful_response("true white");
+    else if (black->i==0) succesful_response("true black");
+    else successful_response("false");
+}
+
 char **allocate_memory(int boardsize)
 {
     char **A = malloc(boardsize*sizeof(char *));
