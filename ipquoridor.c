@@ -5,7 +5,7 @@
 
 int main(void)
 {
-    char winner, *p, m, col, orientation, vertex_x, vertex_y, num_of_arguments;
+    char *p, m, col, orientation, vertex_x, vertex_y, num_of_arguments;
     int i = 0, j, prev_boardsize, number_of_walls;
 
     char* buff = malloc(sizeof(char) * BUFFER_SIZE);
