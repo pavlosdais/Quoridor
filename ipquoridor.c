@@ -112,7 +112,7 @@ int main(void)
         }
         else if (m == 12)  // winner
         {
-            winner(white, black, boardsize);
+            winner(&white, &black, boardsize);
         }
         else if (m == 13)  // showboard - done
         {
