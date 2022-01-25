@@ -92,3 +92,24 @@ char arguments(char *buff)
     if (y = 0) return -1;
     return arg;
 }
+
+char wallBelow(int i, int j, char **w_mtx, int bdsz) {
+    if (i==0) return 0;
+    return (w_mtx[i][j]=='b' || (j>0 && w_mtx[i][j-1]=='b'));
+}
+
+char wallAbove(int i, int j, char **w_mtx, int bd_sz) {
+    if (i==bd_sz-1) return 0;
+    return wallBelow(i+1, j, w_mtx, bd_sz);
+}
+
+char wallOnTheRight(int i, int j, char **w_mtx, int bdsz) {
+    if (j==bd_sz-1) return 0;
+    return (w_mtx[i][j]=='r' || (i<bd_sz-1 && w_mtx[i+1][j]=='r'));
+}
+
+char wallOnTheLeft(int i, int j, char **w_mtx, int bd_sz) {
+    if (j==0) return 0;
+    return wallOnTheRight(i, j-1, w_mtx, bd_sz);
+}
+
