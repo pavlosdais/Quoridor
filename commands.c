@@ -38,13 +38,9 @@ void known_command()
     char m = command_num(p);
 
     if (m >= 1 && m <= 13)
-    {
         successful_response(" true");
-    }
     else
-    {
         unsuccessful_response("false");
-    }
 }
 
 void list_commands()
@@ -58,6 +54,7 @@ void list_commands()
 void update_boardsize(int *boardsize, int *prev_boardsize, char ***wall_matrix, player *white, player *black)
 {
     char *p = strtok(NULL, " ");
+    if (!enough_arguments(p)) return;
     if (isnumber(p))
     {
         swap_boardsize(p, boardsize, prev_boardsize);
@@ -92,11 +89,10 @@ void clear_board(int boardsize, char **wall_matrix, player *white, player *black
     successful_response("");
 }
 
-// functions needed in main
-
 void update_walls(player *black, player *white, int* number_of_walls)
 {
     char *p = strtok(NULL, " ");
+    if (!enough_arguments(p)) return;
     if (isnumber(p))
     {
         *number_of_walls = atoi(p);
@@ -111,15 +107,36 @@ void update_walls(player *black, player *white, int* number_of_walls)
     }
 }
 
-void playwall(char *buff, player *white, player *black, char** wall_matrix, int boardsizes)
+void playmove(char *buff, player *white, player *black, char** wall_matrix)
 {
     // Color
-    char *p = strtok(NULL, " ");   
+    char *p = strtok(NULL, " ");
+    if (!enough_arguments(p)) return;
+    if (check_color(p, black, white) == NULL) unsuccessful_response("unknown command");
+
+    // Vertex
+    if (!enough_arguments(p)) return;
+    p = strtok(NULL, " ");
+    if (strlen(p) != 2)
+    {
+        unsuccessful_response("illegal move");
+        return;
+    }
+
+    char vertex_x = p[0];
+    char vertex_y = p[1];
+}
+
+void playwall(char *buff, player *white, player *black, char** wall_matrix)
+{
+    // Color
+    char *p = strtok(NULL, " ");
+    if (!enough_arguments(p)) return;
     if (check_color(p, black, white) == NULL) unsuccessful_response("unknown command");
             
     // Vertex
-            
     p = strtok(NULL, " ");
+    if (!enough_arguments(p)) return;
     if (strlen(p) != 2)
     {
         unsuccessful_response("illegal move");
@@ -130,7 +147,14 @@ void playwall(char *buff, player *white, player *black, char** wall_matrix, int 
     char vertex_y = p[1];
 
     // Orientation
+    if (!enough_arguments(p)) return;
     p = strtok(NULL, " ");
+}
+
+void winner(player *white, player *black, int boardsize) {
+    if (white->i==boardsize-1) successful_response("true white");
+    else if (black->i==0) successful_response("true black");
+    else successful_response("false");
 }
 
 void showboard(char **w_mtx, int boardsize, player *black, player *white)
@@ -248,12 +272,6 @@ void successful_response(char *msg)
     fflush(stdout);
 }
 
-void winner(player *white, player *black, int boardsize) {
-    if (white->i==boardsize-1) successful_response("true white");
-    else if (black->i==0) successful_response("true black");
-    else successful_response("false");
-}
-
 char **allocate_memory(int boardsize)
 {
     char **A = malloc(boardsize*sizeof(char *));
@@ -300,4 +318,3 @@ void command_preprocess(char *buff)
     }
     buff[j] = '\0';
 }
-
