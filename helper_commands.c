@@ -25,6 +25,7 @@ char isnumber(char *n)
     return 1;
 }
 
+
 void reset_pawns(int boardsize, player *white, player *black)
 {
     white->i = 0;
@@ -81,22 +82,9 @@ player *check_color(char *p, player *black, player *white)
 char check_orientation(char *orientation)
 {
     // function returns 1 for horizontal, 0 for vertical and -1 for uknown orientation
-
-}
-
-char arguments(char *buff)
-{
-    char arg = 1;
-    char y = 0;
-    int i = 0;
-    while (buff[i] != '\0')
-    {
-        if (buff[i] == ' ') arg ++;
-        else if (buff[i] != ' ' && buff[i] != '\t') y = 1;
-        i++;
-    }
-    if (y = 0) return -1;
-    return arg;
+    if (strcmp(orientation, "horizontal")) return 1;
+    else if (strcmp(orientation, "vertical")) return 0;
+    else return -1;
 }
 
 char wallBelow(int i, int j, char **w_mtx, int boardsize) {
@@ -119,3 +107,14 @@ char wallOnTheLeft(int i, int j, char **w_mtx, int boardsize) {
     return wallOnTheRight(i, j-1, w_mtx, boardsize);
 }
 
+char enough_arguments(char *argument)
+{
+    if (argument == NULL)   // not a valid argument 
+    {
+        printf("? %s\n\n", "invalid syntax");
+        fflush(stdout);
+        return 0;
+    }
+    // in any other case, a valid argument
+    return 1;
+}
