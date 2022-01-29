@@ -30,3 +30,4 @@ void update_walls(player *black, player *white, int* number_of_walls);
 void playwall(char *buff, player *white, player *black, char **wall_matrix);
 void command_preprocess(char *buff);
 char arguments(char *buff);
+void playmove(char *buff, player *white, player *black, char** wall_matrix);
