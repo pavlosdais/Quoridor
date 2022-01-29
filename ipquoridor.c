@@ -5,7 +5,7 @@
 
 int main(void)
 {
-    char *p, m, orientation, vertex_x, vertex_y, num_of_arguments;
+    char *p, m;
     int i = 0, j, prev_boardsize, number_of_walls;
 
     char* buff = malloc(sizeof(char) * BUFFER_SIZE);
@@ -36,86 +36,74 @@ int main(void)
     beneath them / on their right, it is possiblr that a wall starts below their left cell / on the right of the cell above and keeps going adjacently
     to the specific cell.
     */
-
     char **wall_matrix = allocate_memory(boardsize);
+
 
     while (1)
     {
         fgets(buff, BUFFER_SIZE, stdin);
         command_preprocess(buff);
 
-        num_of_arguments = arguments(buff);
-
         if (buff[0] == '#') continue;
+        else if (buff[0] == '\0') 
+        {
+            unsuccessful_response("unknown command");
+            continue;
+        }
 
         // command
         p = strtok(buff, " ");
-
-        char m = command_num(p);  // number of the command
         
-        if (m == 1)  // name - done
+        if ((m = command_num(p)) == 1)  // name
         {
             print_name(" SP Quoridor");
         }
-        else if (m == 2)  // known_command - done
+        else if (m == 2)  // known_command
         {
             known_command();
         }
-        else if (m == 3)  // list_commands - done
+        else if (m == 3)  // list_commands
         {
             list_commands();
         }
-        else if (m == 4)  // quit - done
+        else if (m == 4)  // quit
         {
             successful_response("");
             break;
         }
-        else if (m == 5)  // boardsize - done
+        else if (m == 5)  // boardsize
         {
             update_boardsize(&boardsize, &prev_boardsize, &wall_matrix, &white, &black);
         }
-        else if (m == 6)  // clear_board - done
+        else if (m == 6)  // clear_board
         {
             clear_board(boardsize, wall_matrix, &white, &black);
         }
-        else if (m == 7)  // walls - done
+        else if (m == 7)  // walls
         {
             update_walls(&black, &white, &number_of_walls);
         }
-        else if (m == 8) // playmove - STAVROS
+        else if (m == 8) // playmove
         {
-            // Color
-            p = strtok(NULL, " ");
-            col = check_color(p, &black, &white);
-
-            // Vertex
-            p = strtok(NULL, " ");
-            if (strlen(p) != 2)
-            {
-                unsuccessful_response("illegal move");
-                continue;
-            }
-
-            vertex_x = p[0];
-            vertex_y = p[1];
+            playmove(buff, &white, &black, wall_matrix);
         }
-        else if (m == 9)  // playwall - PAVLOS
+        else if (m == 9)  // playwall
         {
             playwall(buff, &white, &black, wall_matrix);
         }
         else if (m == 10)  // genmove
         {
-            printf("Entered 10\n");
+            
         }
         else if (m == 11)  // undo
         {
-            printf("Entered 11\n");
+            
         }
         else if (m == 12)  // winner
         {
             winner(&white, &black, boardsize);
         }
-        else if (m == 13)  // showboard - done
+        else if (m == 13)  // showboard
         {
             showboard(wall_matrix, boardsize, &black, &white);    
         }
@@ -123,7 +111,6 @@ int main(void)
         {
             unsuccessful_response("unknown command");
         }
-        
     }
     free_array(wall_matrix, boardsize);
     free(buff);
