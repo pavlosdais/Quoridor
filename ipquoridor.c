@@ -6,7 +6,7 @@
 int main(void)
 {
     char *p, m;
-    int i = 0, j, prev_boardsize, number_of_walls;
+    int prev_boardsize, number_of_walls;
 
     char* buff = malloc(sizeof(char) * BUFFER_SIZE);
     
@@ -14,7 +14,7 @@ int main(void)
     int boardsize = 9;
     player black, white;
     player *col;
-    reset_pawns(9, &white, &black);  // default walues
+    reset_pawns(boardsize, &white, &black);  // default walues
     black.walls = white.walls = 10;
     
     /* 
@@ -54,7 +54,7 @@ int main(void)
         // command
         p = strtok(buff, " ");
         
-        if ((m = command_num(p)) == 1)  // name
+        if ( (m = command_num(p)) == 1)  // name
         {
             print_name(" SP Quoridor");
         }
