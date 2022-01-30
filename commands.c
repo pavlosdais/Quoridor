@@ -2,320 +2,280 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "helper_commands.h"
 
-#define BUFFER_SIZE 81
+#define ABS(a, b) (a-b > 0) ? a-b:b-a
 
-struct player
-{
-    /*
-    i and j will follow the matrix numbering, from 0 to n-1, and will refer to the cell (i+1,j+1)
-    eg if black.i is 3 and black.j is 6, it means that the black pawn is on (4,7) or else H4
-    */
+typedef struct player {
     int i;
     int j;
     int walls;
-};
+} player;
 
-typedef struct player player;
-
-// Function Prototypes
-void unsuccessful_response(char *msg);
-void successful_response(char *msg);
-char **allocate_memory(int boardsize);
-void free_array(char **A, int boardsize);
-char command_num(char *ans);
-
-void print_name(char *p)
+char isnumber(char *n)
 {
-    successful_response( p);
-    fflush(stdout);
-}
-
-void known_command()
-{
-    char *p = strtok(NULL, " ");
-    char m = command_num(p);
-
-    if (m >= 1 && m <= 13)
-        successful_response(" true");
-    else
-        unsuccessful_response("false");
-}
-
-void list_commands()
-{
-    printf("=\nname\nknown_command\nlist_commands\nquit\nboardsize\n");
-    fflush(stdout);
-    printf("clear_board\nwalls\nplaymove\nplaywall\ngenmove\nundo\nwinner\nshowboard\n\n");
-    fflush(stdout);
-}
-
-void update_boardsize(int *boardsize, int *prev_boardsize, char ***wall_matrix, player *white, player *black)
-{
-    char *p = strtok(NULL, " ");
-    if (!enough_arguments(p)) return;
-    if (isnumber(p))
+    int i = 0;
+    if (n[0] == '-') i = 1;
+    while(n[i] != '\n' && n[i] != '\0')
     {
-        swap_boardsize(p, boardsize, prev_boardsize);
-        if (boardsize <= 0) unsuccessful_response("unacceptable size");
-        else
+        if (!isdigit(n[i]))
         {
-            // free previous matrix
-            free_array(*wall_matrix, *prev_boardsize);
-
-            // allocate memory for the new matrix
-            *wall_matrix = allocate_memory(*boardsize);
-            reset_pawns(*boardsize, white, black);
-
-            printf("\n\n");
-            fflush(stdout);
+            return 0;
         }
-    }
-    else
-    {
-        unsuccessful_response("invalid syntax");
-    }
-}
-
-void clear_board(int boardsize, char **wall_matrix, player *white, player *black)
-{
-    for (int i = 0; i < boardsize; i++) 
-        for (int j = 0; j < boardsize; j++) 
-            wall_matrix[i][j] = 0;
-    
-    // white's and black's pawns return to their starting position
-    reset_pawns(boardsize, white, black);
-    successful_response("");
-}
-
-void update_walls(player *black, player *white, int* number_of_walls)
-{
-    char *p = strtok(NULL, " ");
-    if (!enough_arguments(p)) return;
-    if (isnumber(p))
-    {
-        *number_of_walls = atoi(p);
-
-        black->walls = *number_of_walls;
-        white->walls = *number_of_walls;
-        successful_response("");
-    }
-    else
-    {
-        unsuccessful_response("invalid syntax");
-    }
-}
-
-void playmove(char *buff, player *white, player *black, char** wall_matrix)
-{
-    // Color
-    char *p = strtok(NULL, " ");
-    if (!enough_arguments(p)) return;
-    if (check_color(p, black, white) == NULL) unsuccessful_response("unknown command");
-
-    // Vertex
-    if (!enough_arguments(p)) return;
-    p = strtok(NULL, " ");
-    if (strlen(p) != 2)
-    {
-        unsuccessful_response("illegal move");
-        return;
-    }
-
-    char vertex_x = p[0];
-    char vertex_y = p[1];
-}
-
-void playwall(char *buff, player *white, player *black, char** wall_matrix)
-{
-    // Color
-    char *p = strtok(NULL, " ");
-    if (!enough_arguments(p)) return;
-    
-    if (check_color(p, black, white) == NULL) unsuccessful_response("unknown command");
-            
-    // Vertex
-    p = strtok(NULL, " ");
-    if (!enough_arguments(p)) return;
-    if (strlen(p) != 2)
-    {
-        unsuccessful_response("illegal move");
-        return;
-    }
-
-    char vertex_x = p[0];
-    char vertex_y = p[1];
-
-    // Orientation
-    if (!enough_arguments(p)) return;
-    p = strtok(NULL, " ");
-}
-
-void winner(player *white, player *black, int boardsize) {
-    if (white->i==boardsize-1) successful_response("true white");
-    else if (black->i==0) successful_response("true black");
-    else successful_response("false");
-}
-
-void showboard(char **w_mtx, int boardsize, player *black, player *white)
-{
-    printf("=\n");
-    /*min field width is the greatest power of 10 in which when 10 is raised gives a result less than or equal to boardsize
-    More simply, it is the number of digits of boardsize, eg. boardsize 9 -> mfw 1, boardsize 10 -> mfw 2*/
-    int mfw = 0;
-    int tempb = boardsize;
-    while (tempb>0)
-    {
-        mfw++;
-        tempb/=10;
-    }
-    
-    int i, j, ch;
-    // letters above
-    for (i = 1; i <= mfw+1; i++) putchar(' ');
-    for (i = 1; i <= boardsize; i++) printf("  %c ", 'A'+i-1);
-    putchar('\n');
-    
-    // top edge
-    for (i=1; i<= mfw+1; i++) putchar(' ');
-    for (i=1; i<=boardsize; i++) printf("+---");
-    printf("+\n");
-    
-    // main board
-    for (i = boardsize-1; i >= 0; i--)
-    {
-        // printing the cell contents and the seperating lines/walls
-        printf("%*d |", mfw, i+1);
-        for (j = 0; j <= boardsize-1; j++)
-        {
-            // the cell content
-            putchar(' ');
-            if (black->i == i && black->j == j) putchar('B');
-            else if (white->i == i && white->j == j) putchar('W');
-            else putchar(' ');
-            putchar(' ');
-            
-            if (j==boardsize-1) break;
-            
-            // the vertical seperating line/wall
-            if (w_mtx[i][j]=='r') putchar('H');
-            else if (i<boardsize-1 && w_mtx[i+1][j]=='r') putchar('H');
-            else putchar('|');
-        }
-        printf("| %-*d  ", mfw, i+1);
-        if (i==boardsize-1) printf("Black walls: %d", black->walls);
-        else if (i==boardsize-2) printf("White walls: %d", white->walls);
-        putchar('\n');
-        
-        if (i==0) break;  // so that the bottom edge is printed without checking for walls
-        
-        // printing grid lines 
-        for (j = 1; j <= mfw+1; j++) putchar(' ');
-        putchar('+');
-        for (j = 0; j <= boardsize-1; j++)
-        {
-            //the horizontal seperating lines/walls
-            if (w_mtx[i][j]=='b') ch = '=';
-            else if (j>0 && w_mtx[i][j-1]=='b') ch = '=';
-            else ch = '-';
-            printf("%c%c%c", ch, ch, ch);
-            
-            if (j==boardsize-1) break;
-            
-            // the intersection of grid lines
-            if(w_mtx[i][j]=='b') putchar('=');
-            else if (w_mtx[i][j]=='r') putchar('H');
-            else putchar('+');
-        }
-        printf("+\n");
-    }
-    
-    // bottom edge
-    for (i=1; i<= mfw+1; i++) putchar(' ');
-    for (i=1; i<=boardsize; i++) printf("+---");
-    printf("+\n");
-    
-    // letters below
-    for (i=1; i<= mfw+1; i++) putchar(' ');
-    for (i=1; i<=boardsize; i++) printf("  %c ", 'A'+i-1);
-    printf("\n\n");
-    fflush(stdout);
-}
-
-char command_num(char *ans)
-{
-    if (strcmp("name", ans) == 0) return 1;
-    else if (strcmp("known_command", ans) == 0) return 2;
-    else if (strcmp("list_commands", ans) == 0) return 3;
-    else if (strcmp("quit", ans) == 0) return 4;
-    else if (strcmp("boardsize", ans) == 0) return 5;
-    else if (strcmp("clear_board", ans) == 0) return 6;
-    else if (strcmp("walls", ans) == 0) return 7;
-    else if (strcmp("playmove", ans) == 0) return 8;
-    else if (strcmp("playwall", ans) == 0) return 9;
-    else if (strcmp("genmove", ans) == 0) return 10;
-    else if (strcmp("undo", ans) == 0) return 11;
-    else if (strcmp("winner", ans) == 0) return 12;
-    else if (strcmp("showboard", ans) == 0) return 13;
-    else return 14;
-}
-
-void unsuccessful_response(char *msg)
-{
-    printf("? %s\n\n", msg);
-    fflush(stdout);
-}
-
-void successful_response(char *msg)
-{
-    printf("= %s\n\n", msg);
-    fflush(stdout);
-}
-
-char **allocate_memory(int boardsize)
-{
-    char **A = malloc(boardsize*sizeof(char *));
-    if(A == NULL) return NULL;  // error allocating memory, exit
-    for (int i = 0; i < boardsize; i++)
-    {
-        A[i] = calloc(boardsize, sizeof(char));  // error allocating memory, exit
-        if (A[i] == NULL) return NULL;
-    }
-    return A;
-}
-
-void free_array(char **A, int boardsize)
-{
-    for (int i = 0; i < boardsize; i++) free(A[i]);
-    free(A);
-}
-
-void command_preprocess(char *buff)
-{
-    int i = 0, j = 0;
-    char whsp = 0;
-    while (buff[i] != '\n' && buff[i] != '\0')
-    {
-        if (buff[i] == ' ' || buff[i] == '\t')
-        {
-            whsp = 1;
-            i++;
-            continue;
-        }
-        if (whsp)
-        {
-            i--;
-            buff[i] = ' ';
-        }
-
-        // convert command into lower case
-        if (isupper(buff[i])) buff[j] = tolower(buff[i]);
-        else buff[j] = buff[i];
-        
         i++;
-        j++;
-        whsp = 0;
     }
-    buff[j] = '\0';
+    if (n[0] == '-' && i == 1) return 0;
+    return 1;
+}
+
+
+void reset_pawns(int boardsize, player *white, player *black)
+{
+    white->i = 0;
+    white->j = boardsize / 2;
+
+    black->i = boardsize - 1;
+    black->j = boardsize / 2;
+}
+
+void swap_boardsize(char* p, int *boardsize, int *prev_boardsize)
+{
+    if (*boardsize > 0) 
+    {
+        *prev_boardsize = *boardsize;
+        printf("=");
+        fflush(stdout);
+    }
+    
+    *boardsize = atoi(p);
+}
+
+char is_x_available(char hor, int boardsize)
+{
+    if (hor >= 0 && hor < boardsize)
+    {
+        return 1;
+    }
+    return 0;
+
+}
+
+char is_y_availabe(char hor, int boardsize)
+{
+    if (hor >= 0 && hor < boardsize)
+    {
+        return 1;
+    }
+    return 0;
+}
+
+player *check_color(char *p, player *black, player *white)
+{
+    // function returns the player with the corresponding color 
+
+    if (strcmp(p, "white") == 0) return white;
+    else if (strcmp(p, "w") == 0) return white;
+    else if (strcmp(p, "black") == 0) return black;
+    else if (strcmp(p, "b") == 0) return white;
+    else return NULL;
+}
+
+char check_orientation(char *orientation)
+{
+    // function returns 1 for horizontal, 0 for vertical and -1 for uknown orientation
+    if (strcmp(orientation, "horizontal")) return 1;
+    else if (strcmp(orientation, "vertical")) return 0;
+    else return -1;
+}
+
+char wallBelow(int i, int j, char **w_mtx, int boardsize) {
+    if (i==0) return 0;
+    return (w_mtx[i][j]=='b' || (j>0 && w_mtx[i][j-1]=='b'));
+}
+
+char wallAbove(int i, int j, char **w_mtx, int boardsize) {
+    if (i==boardsize-1) return 0;
+    return wallBelow(i+1, j, w_mtx, boardsize);
+}
+
+char wallOnTheRight(int i, int j, char **w_mtx, int boardsize) {
+    if (j==boardsize-1) return 0;
+    return (w_mtx[i][j]=='r' || (i<boardsize-1 && w_mtx[i+1][j]=='r'));
+}
+
+char wallOnTheLeft(int i, int j, char **w_mtx, int boardsize) {
+    if (j==0) return 0;
+    return wallOnTheRight(i, j-1, w_mtx, boardsize);
+}
+
+char there_is_a_wall(int i, int j, char **wall_matrix, int boardsize)
+{
+    if (wallOnTheLeft(i, j, wall_matrix, boardsize) ) return 1;
+    else if (wallOnTheLeft(i, j, wall_matrix, boardsize) ) return 1;
+    else if (wallAbove(i, j, wall_matrix, boardsize) ) return 1;
+    else if (wallBelow(i, j, wall_matrix, boardsize) ) return 1;
+    else return 0;
+}
+
+char enough_arguments(char *argument)
+{
+    if (argument == NULL)   // not a valid argument 
+    {
+        printf("? %s\n\n", "invalid syntax");
+        fflush(stdout);
+        return 0;
+    }
+    // in any other case, a valid argument
+    return 1;
+}
+char recursiveSolveBlack(int x, int y, char **have_visited, char **maze, char **correct_path, int size);
+char recursiveSolveWhite(int x, int y, char **have_visited, char **maze, char **correct_path, int size);
+int steps(char **correct_path, int x, int y);
+void free_grids(char **A, char **B, int size);
+
+int path_steps(char **wall_matrix, int boardsize, player *pl, char color)
+{
+    int i, j;
+    char **have_visited = malloc(boardsize*sizeof(boardsize));
+    char **correct_path = malloc(boardsize*sizeof(boardsize));
+
+    for (i = 0; i < boardsize; i++)
+    {
+        have_visited[i] = malloc(sizeof(char) * boardsize);
+        correct_path[i] = malloc(sizeof(char) * boardsize);
+        for (j = 0; j < boardsize; j++)
+        {
+            have_visited[i][j] = 0;
+            correct_path[i][j] = 0;
+        }
+    }
+    
+
+    char f;
+    if (color == 1) // white
+    {
+        f = recursiveSolveWhite(pl->i, pl->j, have_visited, wall_matrix, correct_path, boardsize);
+    }
+    else // black
+    {
+        f = recursiveSolveBlack(pl->i, pl->j, have_visited, wall_matrix, correct_path, boardsize);
+    }
+    if (f)
+    {   
+        return steps(correct_path, boardsize-1, boardsize-1);
+    }
+    return 0;
+    free_grids(have_visited, correct_path, boardsize);
+}
+
+char recursiveSolveBlack(int x, int y, char **have_visited, char **maze, char **correct_path, int size)
+{
+    // black wins when the pawn gets to the first row
+
+    if (x == 0 && !there_is_a_wall(x, y, maze, size)) return 1;  // black has reached the end
+    if (there_is_a_wall(x, y, maze, size) || have_visited[x][y]) return 0;
+
+    have_visited[x][y] = 1;
+
+    // search up
+    if (y != 0)
+    {
+        if (recursiveSolveBlack(x, y-1, have_visited, maze, correct_path, size))
+        {
+            correct_path[x][y] = 1;
+            return 1;
+        }
+    }
+    // search left
+    if (recursiveSolveBlack(x-1, y, have_visited, maze, correct_path, size))
+    {
+        correct_path[x][y] = 1;
+        return 1;
+    }
+    // search right
+    if (x != size - 1)
+    {
+        if (recursiveSolveBlack(x+1, y, have_visited, maze, correct_path, size))
+        {
+            correct_path[x][y] = 1;
+            return 1;
+        }
+    }
+    // search down
+    if (y != size - 1)
+    {
+        if (recursiveSolveBlack(x, y+1, have_visited, maze, correct_path, size))
+        {
+            correct_path[x][y] = 1;
+            return 1;
+        }
+    }
+    
+    return 0;
+}
+
+char recursiveSolveWhite(int x, int y, char **have_visited, char **maze, char **correct_path, int size)
+{
+    // white wins when the pawn gets to the last row
+
+    if (x == size - 1 && !there_is_a_wall(x, y, maze, size)) return 1;  // white has reached the end
+    if (there_is_a_wall(x, y, maze, size) || have_visited[x][y]) return 0;
+
+    have_visited[x][y] = 1;
+
+    // search down
+    if (y != size - 1)
+    {
+        if (recursiveSolveWhite(x, y+1, have_visited, maze, correct_path, size))
+        {
+            correct_path[x][y] = 1;
+            return 1;
+        }
+    }
+    // search left
+    if (x != 0)
+    {
+        if (recursiveSolveWhite(x-1, y, have_visited, maze, correct_path, size))
+        {
+            correct_path[x][y] = 1;
+            return 1;
+        }
+    }
+    // search right
+    if (recursiveSolveWhite(x+1, y, have_visited, maze, correct_path, size))
+    {
+        correct_path[x][y] = 1;
+        return 1;
+    }
+    // search down
+    if (y != size - 1)
+    {
+        if (recursiveSolveBlack(x, y+1, have_visited, maze, correct_path, size))
+        {
+            correct_path[x][y] = 1;
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+int steps(char **correct_path, int x, int y)
+{
+    
+}
+
+char is_legal_wall(char **wall_matrix, int boardsize, player *cur_player, player *opponent, int x, int y)
+{
+    if (cur_player->walls == 0) return 0;  // no available walls to be placed
+}
+
+void free_grids(char **A, char **B, int size)
+{
+    for (int i = 0; i < size; i++)
+    {
+        free(A[i]);
+        free(B[i]);
+    }
+    free(A);
+    free(B);
 }
