@@ -132,6 +132,7 @@ void playwall(char *buff, player *white, player *black, char** wall_matrix)
     // Color
     char *p = strtok(NULL, " ");
     if (!enough_arguments(p)) return;
+    
     if (check_color(p, black, white) == NULL) unsuccessful_response("unknown command");
             
     // Vertex
