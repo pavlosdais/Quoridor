@@ -142,7 +142,13 @@ int path_steps(char **wall_matrix, int boardsize, player *pl, char color)
     {
         have_visited[i] = malloc(sizeof(char) * boardsize);
         correct_path[i] = malloc(sizeof(char) * boardsize);
+        for (j = 0; j < boardsize; j++)
+        {
+            have_visited[i][j] = 0;
+            correct_path[i][j] = 0;
+        }
     }
+    
 
     char f;
     if (color == 1) // white
@@ -165,7 +171,7 @@ char recursiveSolveBlack(int x, int y, char **have_visited, char **maze, char **
 {
     // black wins when the pawn gets to the first row
 
-    if (x == 0) return 1;  // black has reached the end
+    if (x == 0 && !there_is_a_wall(x, y, maze, size)) return 1;  // black has reached the end
     if (there_is_a_wall(x, y, maze, size) || have_visited[x][y]) return 0;
 
     have_visited[x][y] = 1;
@@ -194,6 +200,15 @@ char recursiveSolveBlack(int x, int y, char **have_visited, char **maze, char **
             return 1;
         }
     }
+    // search down
+    if (y != size - 1)
+    {
+        if (recursiveSolveBlack(x, y+1, have_visited, maze, correct_path, size))
+        {
+            correct_path[x][y] = 1;
+            return 1;
+        }
+    }
     
     return 0;
 }
@@ -202,7 +217,7 @@ char recursiveSolveWhite(int x, int y, char **have_visited, char **maze, char **
 {
     // white wins when the pawn gets to the last row
 
-    if (x == size - 1) return 1;  // white has reached the end
+    if (x == size - 1 && !there_is_a_wall(x, y, maze, size)) return 1;  // white has reached the end
     if (there_is_a_wall(x, y, maze, size) || have_visited[x][y]) return 0;
 
     have_visited[x][y] = 1;
@@ -231,21 +246,22 @@ char recursiveSolveWhite(int x, int y, char **have_visited, char **maze, char **
         correct_path[x][y] = 1;
         return 1;
     }
+    // search down
+    if (y != size - 1)
+    {
+        if (recursiveSolveBlack(x, y+1, have_visited, maze, correct_path, size))
+        {
+            correct_path[x][y] = 1;
+            return 1;
+        }
+    }
 
     return 0;
 }
 
 int steps(char **correct_path, int x, int y)
 {
-    int total = 0;
-    for (int i = 0; i < x; i ++)
-    {
-        for (int j = 0; j < y; j++)
-        {
-            total += correct_path[i][j];
-        }
-    }
-    return total;
+    
 }
 
 char is_legal_wall(char **wall_matrix, int boardsize, player *cur_player, player *opponent, int x, int y)
