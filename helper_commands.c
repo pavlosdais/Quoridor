@@ -3,7 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#define ABS(a, b) (a-b > 0) ? a-b:b-a
+//#define ABS(a, b) (a-b > 0) ? a-b:b-a
 
 typedef struct player {
     int i;
@@ -49,17 +49,7 @@ void swap_boardsize(char* p, int *boardsize, int *prev_boardsize)
     *boardsize = atoi(p);
 }
 
-char is_x_available(char hor, int boardsize)
-{
-    if (hor >= 0 && hor < boardsize)
-    {
-        return 1;
-    }
-    return 0;
-
-}
-
-char is_y_availabe(char hor, int boardsize)
+char is_vertex_available(char hor, int boardsize)
 {
     if (hor >= 0 && hor < boardsize)
     {
@@ -81,10 +71,10 @@ player *check_color(char *p, player *black, player *white)
 
 char check_orientation(char *orientation)
 {
-    // function returns 1 for horizontal, 0 for vertical and -1 for uknown orientation
-    if (strcmp(orientation, "horizontal")) return 1;
-    else if (strcmp(orientation, "vertical")) return 0;
-    else return -1;
+    // function returns b for horizontal, r for vertical and -1 for uknown orientation
+    if (strcmp(orientation, "horizontal")) return 'r';
+    else if (strcmp(orientation, "vertical")) return 'b';
+    return -1;
 }
 
 char wallBelow(int i, int j, char **w_mtx, int boardsize) {
@@ -127,47 +117,37 @@ char enough_arguments(char *argument)
     // in any other case, a valid argument
     return 1;
 }
-char recursiveSolveBlack(int x, int y, char **have_visited, char **maze, char **correct_path, int size);
-char recursiveSolveWhite(int x, int y, char **have_visited, char **maze, char **correct_path, int size);
-int steps(char **correct_path, int x, int y);
-void free_grids(char **A, char **B, int size);
+char recursiveSolveBlack(int x, int y, char **have_visited, char **maze, int size);
+char recursiveSolveWhite(int x, int y, char **have_visited, char **maze, int size);
+void free_grid(char **A, int size);
 
-int path_steps(char **wall_matrix, int boardsize, player *pl, char color)
+char there_is_a_path(char **wall_matrix, int boardsize, player *white, player *black)
 {
     int i, j;
-    char **have_visited = malloc(boardsize*sizeof(boardsize));
-    char **correct_path = malloc(boardsize*sizeof(boardsize));
+    char **have_visited = malloc(boardsize*sizeof(char*));
 
     for (i = 0; i < boardsize; i++)
     {
-        have_visited[i] = malloc(sizeof(char) * boardsize);
-        correct_path[i] = malloc(sizeof(char) * boardsize);
-        for (j = 0; j < boardsize; j++)
-        {
-            have_visited[i][j] = 0;
-            correct_path[i][j] = 0;
-        }
+        have_visited[i] = calloc(boardsize, sizeof(char));
     }
     
-
     char f;
-    if (color == 1) // white
+    
+    if (boardsize - white->i - 1 <= black->i)
     {
-        f = recursiveSolveWhite(pl->i, pl->j, have_visited, wall_matrix, correct_path, boardsize);
+        f = recursiveSolveWhite(white->i, white->j, have_visited, wall_matrix, boardsize);
     }
     else // black
     {
-        f = recursiveSolveBlack(pl->i, pl->j, have_visited, wall_matrix, correct_path, boardsize);
+        f = recursiveSolveBlack(black->i, black->j, have_visited, wall_matrix,  boardsize);
     }
-    if (f)
-    {   
-        return steps(correct_path, boardsize-1, boardsize-1);
-    }
-    return 0;
-    free_grids(have_visited, correct_path, boardsize);
+
+    free_grid(have_visited, boardsize);
+    return f;
 }
 
-char recursiveSolveBlack(int x, int y, char **have_visited, char **maze, char **correct_path, int size)
+// depth-first search
+char recursiveSolveBlack(int x, int y, char **have_visited, char **maze, int size)
 {
     // black wins when the pawn gets to the first row
 
@@ -179,33 +159,29 @@ char recursiveSolveBlack(int x, int y, char **have_visited, char **maze, char **
     // search up
     if (y != 0)
     {
-        if (recursiveSolveBlack(x, y-1, have_visited, maze, correct_path, size))
+        if (recursiveSolveBlack(x, y-1, have_visited, maze, size))
         {
-            correct_path[x][y] = 1;
             return 1;
         }
     }
     // search left
-    if (recursiveSolveBlack(x-1, y, have_visited, maze, correct_path, size))
+    if (recursiveSolveBlack(x-1, y, have_visited, maze, size))
     {
-        correct_path[x][y] = 1;
         return 1;
     }
     // search right
     if (x != size - 1)
     {
-        if (recursiveSolveBlack(x+1, y, have_visited, maze, correct_path, size))
+        if (recursiveSolveBlack(x+1, y, have_visited, maze, size))
         {
-            correct_path[x][y] = 1;
             return 1;
         }
     }
     // search down
     if (y != size - 1)
     {
-        if (recursiveSolveBlack(x, y+1, have_visited, maze, correct_path, size))
+        if (recursiveSolveBlack(x, y+1, have_visited, maze, size))
         {
-            correct_path[x][y] = 1;
             return 1;
         }
     }
@@ -213,7 +189,8 @@ char recursiveSolveBlack(int x, int y, char **have_visited, char **maze, char **
     return 0;
 }
 
-char recursiveSolveWhite(int x, int y, char **have_visited, char **maze, char **correct_path, int size)
+// depth-first search
+char recursiveSolveWhite(int x, int y, char **have_visited, char **maze, int size)
 {
     // white wins when the pawn gets to the last row
 
@@ -225,33 +202,29 @@ char recursiveSolveWhite(int x, int y, char **have_visited, char **maze, char **
     // search down
     if (y != size - 1)
     {
-        if (recursiveSolveWhite(x, y+1, have_visited, maze, correct_path, size))
+        if (recursiveSolveWhite(x, y+1, have_visited, maze, size))
         {
-            correct_path[x][y] = 1;
             return 1;
         }
     }
     // search left
     if (x != 0)
     {
-        if (recursiveSolveWhite(x-1, y, have_visited, maze, correct_path, size))
+        if (recursiveSolveWhite(x-1, y, have_visited, maze, size))
         {
-            correct_path[x][y] = 1;
             return 1;
         }
     }
     // search right
-    if (recursiveSolveWhite(x+1, y, have_visited, maze, correct_path, size))
+    if (recursiveSolveWhite(x+1, y, have_visited, maze, size))
     {
-        correct_path[x][y] = 1;
         return 1;
     }
     // search down
     if (y != size - 1)
     {
-        if (recursiveSolveBlack(x, y+1, have_visited, maze, correct_path, size))
+        if (recursiveSolveBlack(x, y+1, have_visited, maze, size))
         {
-            correct_path[x][y] = 1;
             return 1;
         }
     }
@@ -259,23 +232,11 @@ char recursiveSolveWhite(int x, int y, char **have_visited, char **maze, char **
     return 0;
 }
 
-int steps(char **correct_path, int x, int y)
-{
-    
-}
-
-char is_legal_wall(char **wall_matrix, int boardsize, player *cur_player, player *opponent, int x, int y)
-{
-    if (cur_player->walls == 0) return 0;  // no available walls to be placed
-}
-
-void free_grids(char **A, char **B, int size)
+void free_grid(char **A, int size)
 {
     for (int i = 0; i < size; i++)
     {
         free(A[i]);
-        free(B[i]);
     }
     free(A);
-    free(B);
 }
