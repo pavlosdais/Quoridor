@@ -107,12 +107,14 @@ void update_walls(player *black, player *white, int* number_of_walls)
     }
 }
 
-void playmove(char *buff, player *white, player *black, char** wall_matrix)
+void playmove(char *buff, player *white, player *black, char** wall_matrix, int boardsize)
 {
     // Color
     char *p = strtok(NULL, " ");
     if (!enough_arguments(p)) return;
-    if (check_color(p, black, white) == NULL) unsuccessful_response("unknown command");
+
+    player *pl = check_color(p, black, white);
+    if (pl == NULL) unsuccessful_response("unknown command");
 
     // Vertex
     if (!enough_arguments(p)) return;
@@ -125,15 +127,21 @@ void playmove(char *buff, player *white, player *black, char** wall_matrix)
 
     char vertex_x = p[0];
     char vertex_y = p[1];
+    
 }
 
-void playwall(char *buff, player *white, player *black, char** wall_matrix)
+void playwall(char *buff, player *white, player *black, char** wall_matrix, int boardsize)
 {
     // Color
     char *p = strtok(NULL, " ");
     if (!enough_arguments(p)) return;
     
-    if (check_color(p, black, white) == NULL) unsuccessful_response("unknown command");
+    player *pl = check_color(p, black, white);
+    if (pl == NULL)
+    {
+        unsuccessful_response("unknown command");
+        return;
+    } 
             
     // Vertex
     p = strtok(NULL, " ");
@@ -144,12 +152,41 @@ void playwall(char *buff, player *white, player *black, char** wall_matrix)
         return;
     }
 
-    char vertex_x = p[0];
-    char vertex_y = p[1];
+    char vertex_y = p[0] - 'a';
+    char vertex_x = p[1] - '0' - 1;
 
     // Orientation
-    if (!enough_arguments(p)) return;
     p = strtok(NULL, " ");
+    if (!enough_arguments(p)) return;
+
+    if (there_is_a_wall(vertex_x, vertex_y, wall_matrix, boardsize))
+    {
+        unsuccessful_response("illegal move");
+        return;
+    } 
+    else if (!is_vertex_available(vertex_x, boardsize) || !is_vertex_available(vertex_y, boardsize)) 
+    {
+        unsuccessful_response("illegal move");
+        return;
+    }
+
+    char orientation = check_orientation(p);
+    printf("%c\n", orientation);
+    if (orientation == -1)
+    {
+        unsuccessful_response("invalid syntax");
+        return;
+    } 
+
+    wall_matrix[vertex_x][vertex_y] = orientation;
+    if (!there_is_a_path(wall_matrix, boardsize, white, black)) 
+    {
+        wall_matrix[vertex_x][vertex_y] = 0;
+        unsuccessful_response("illegal move");
+        return;
+    }
+    --pl->walls;
+    successful_response("");
 }
 
 void winner(player *white, player *black, int boardsize) {
