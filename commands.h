@@ -1,33 +1,11 @@
-#define BUFFER_SIZE 81
+typedef struct player player;
 
-struct player
-{
-    /*
-    i and j will follow the matrix numbering, from 0 to n-1, and will refer to the cell (i+1,j+1)
-    eg if black.i is 3 and black.j is 6, it means that the black pawn is on (4,7) or else H4
-    */
-    int i;
-    int j;
-    int walls;
-};
-
-#include "helper_commands.h"
-
-// Function Prototypes
-char command_num(char *ans);
-void print_name(char *p);
-void unsuccessful_response(char *msg);
-void successful_response(char *msg);
-void list_commands();
-void known_command();
-void showboard(char **walls_matrix, int boardsize, player *black, player *white);
-void winner(player *white, player *black, int boardsize);
-char **allocate_memory(int boardsize);
-void free_array(char **A, int boardsize);
-void clear_board(int boardsize, char **wall_matrix, player *white, player *black);
-void update_boardsize(int *boardsize, int *prev_boardsize, char ***wall_matrix, player *white, player *black);
-void update_walls(player *black, player *white, int* number_of_walls);
-void playwall(char *buff, player *white, player *black, char** wall_matrix, int boardsize);
-void command_preprocess(char *buff);
-char arguments(char *buff);
-void playmove(char *buff, player *white, player *black, char** wall_matrix, int boardsize);
+char isnumber(char *n);
+void reset_pawns(int boardsize, player *white, player *black);
+void swap_boardsize(char* p, int *boardsize, int *prev_boardsize);
+char is_vertex_available(char hor, int boardsize);
+player *check_color(char *p, player *black, player *white);
+char check_orientation(char *orientation);
+char there_is_a_wall(int i, int j, char **wall_matrix, int boardsize);
+char enough_arguments(char *argument);
+char there_is_a_path(char **wall_matrix, int boardsize, player *white, player *black);
