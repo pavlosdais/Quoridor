@@ -19,7 +19,7 @@ int main(void)
     
     /* 
     Wall_matrix is used to represent if a wall begins next to a specific cell. for example wall_matrix[2][5] informs us
-    about whether or not a wall starts next to the cell (3,6) or else F6. For that purpose we use a character.
+    about whether or not a wall starts next to the cell (3,6) or else F3. For that purpose we use a character.
     If the character is 'b' it means that a horizontal wall of length 2 has been placed below the specific cell and the cell on its right.
     If the character is 'r' it means that a vertical wall of length 2 has been placed on the right of the specific cell and the cell below.
     If not the character is the one with ascii code 0, as initialized by the following calloc. Since no walls cannot stack on top of another 
@@ -37,7 +37,6 @@ int main(void)
     to the specific cell.
     */
     char **wall_matrix = allocate_memory(boardsize);
-
 
     while (1)
     {
@@ -85,11 +84,11 @@ int main(void)
         }
         else if (m == 8) // playmove
         {
-            playmove(buff, &white, &black, wall_matrix);
+            playmove(buff, &white, &black, wall_matrix, boardsize);
         }
         else if (m == 9)  // playwall
         {
-            playwall(buff, &white, &black, wall_matrix);
+            playwall(buff, &white, &black, wall_matrix, boardsize);
         }
         else if (m == 10)  // genmove
         {
