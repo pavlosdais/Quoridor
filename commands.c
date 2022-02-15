@@ -6,14 +6,22 @@
 
 #define BUFFER_SIZE 81
 
-struct player
+typedef struct player
 {
     int i;
     int j;
     int walls;
-};
+} player;
 
 typedef struct player player;
+
+typedef struct stacknode *stackptr;
+struct stacknode
+{
+    int i,j;
+    char type; // 'b': black player left (i,j), 'w': white player left (i,j), 'n': new wall placed at (i,j)
+    stackptr next;
+};
 
 // Function Prototypes
 void unsuccessful_response(char *msg);
