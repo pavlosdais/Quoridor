@@ -46,7 +46,7 @@ int main(void)
     wall_matrix[3][3] might be 0, it does NOT necessarily mean that no wall EXISTS below or on the right of D4, but simply a wall does not START
     there. If wall_matrix[3][2] is 'b', the wall starting below C4 keeps going below D4, or if wall_matrix[4][3] is 'r', the wall starting on the
     right of D5 keeps going on the right of D4. The same applies for cells with 'r'/'b'. Even though a wall does not start
-    beneath them / on their right, it is possiblr that a wall starts below their left cell / on the right of the cell above and keeps going adjacently
+    beneath them / on their right, it is possible that a wall starts below their left cell / on the right of the cell above and keeps going adjacently
     to the specific cell.
     */
     char **wall_matrix = allocate_memory(boardsize);
