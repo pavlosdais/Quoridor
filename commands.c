@@ -13,8 +13,6 @@ typedef struct player
     int walls;
 } player;
 
-typedef struct player player;
-
 typedef struct stacknode *stackptr;
 struct stacknode
 {
@@ -286,19 +284,19 @@ void showboard(char **w_mtx, int boardsize, player *black, player *white)
 
 char command_num(char *ans)
 {
-    if (strcmp("name", ans) == 0) return 1;
-    else if (strcmp("known_command", ans) == 0) return 2;
-    else if (strcmp("list_commands", ans) == 0) return 3;
-    else if (strcmp("quit", ans) == 0) return 4;
-    else if (strcmp("boardsize", ans) == 0) return 5;
-    else if (strcmp("clear_board", ans) == 0) return 6;
-    else if (strcmp("walls", ans) == 0) return 7;
-    else if (strcmp("playmove", ans) == 0) return 8;
-    else if (strcmp("playwall", ans) == 0) return 9;
-    else if (strcmp("genmove", ans) == 0) return 10;
-    else if (strcmp("undo", ans) == 0) return 11;
-    else if (strcmp("winner", ans) == 0) return 12;
-    else if (strcmp("showboard", ans) == 0) return 13;
+    if (!strcmp("name", ans)) return 1;
+    else if (!strcmp("known_command", ans)) return 2;
+    else if (!strcmp("list_commands", ans)) return 3;
+    else if (!strcmp("quit", ans)) return 4;
+    else if (!strcmp("boardsize", ans)) return 5;
+    else if (!strcmp("clear_board", ans)) return 6;
+    else if (!strcmp("walls", ans) == 0) return 7;
+    else if (!strcmp("playmove", ans)) return 8;
+    else if (!strcmp("playwall", ans)) return 9;
+    else if (!strcmp("genmove", ans)) return 10;
+    else if (!strcmp("undo", ans)) return 11;
+    else if (!strcmp("winner", ans)) return 12;
+    else if (!strcmp("showboard", ans)) return 13;
     else return 14;
 }
 
