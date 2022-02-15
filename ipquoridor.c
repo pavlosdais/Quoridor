@@ -58,7 +58,7 @@ int main(void)
     */
     char **wall_matrix = allocate_memory(boardsize);
     stackptr history = NULL;
-    totalmoves = 0;
+    int totalmoves = 0;
 
     while (1)
     {
