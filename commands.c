@@ -362,3 +362,40 @@ void reset_pawns(int boardsize, player *white, player *black)
     black->j = boardsize / 2;
 }
 
+void undo(char **wall_matrix, player *black, player *white, stackptr *last, int *total_moves)
+{    
+    int times;
+    char *p = strtok(NULL, " ");
+    if (p == NULL) times = 1;
+    else times = atoi(p);
+    
+    if (*totalmoves < times)
+    {
+        unsuccessful_response("cannot undo");
+        return;
+    }
+
+    for (int i = 1; i <= times; i++)
+    {
+        if ((*last)->type == 'b')
+        {
+            black->i = (*last)->i;
+            black->j = (*last)->j;
+        }
+        else if ((*last)->type == 'w')
+        {
+            white->i = (*last)->i;
+            white->j = (*last)->j;
+        }
+        else //(*last)->type == 'n'
+        {
+            wall_matrix[(*last)->i][(*last)->j] = 0;
+        }
+
+        stackptr temp = *last;
+        *last = (*last)->next;
+        free(temp);
+    }
+    *totalmoves -= times;
+    successful_response("");
+}
