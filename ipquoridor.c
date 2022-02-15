@@ -16,6 +16,13 @@ struct player
     int walls;
 };
 
+typedef struct stacknode *stackptr;
+struct stacknode {
+    int i,j;
+    char type; // 'b': black player left (i,j), 'w': white player left (i,j), 'n': new wall placed at (i,j)
+    stackptr next;
+};
+
 int main(void)
 {
     char *p, m;
