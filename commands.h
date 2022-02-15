@@ -17,3 +17,4 @@ void winner(player *white, player *black, int boardsize);
 void showboard(char **w_mtx, int boardsize, player *black, player *white);
 void command_preprocess(char *buff);
 void reset_pawns(int boardsize, player *white, player *black);
+void undo(char **wall_matrix, player *black, player *white, stackptr *last, int *totalmoves);
