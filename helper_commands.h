@@ -1,4 +1,5 @@
 typedef struct player player;
+typedef struct stacknode *stackptr;
 
 char isnumber(char *n);
 void swap_boardsize(char* p, int *boardsize, int *prev_boardsize);
@@ -15,3 +16,4 @@ char enough_arguments(char *argument);
 int path_steps(char **wall_matrix, int boardsize, player *pl, char color);
 char there_is_a_wall(int i, int j, char **wall_matrix, int boardsize);
 char there_is_a_path(char **wall_matrix, int boardsize, player *white, player *black);
+void addMove(stackptr *last, int i, int j, int type);
