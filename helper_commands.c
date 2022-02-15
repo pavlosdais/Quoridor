@@ -52,10 +52,10 @@ player *check_color(char *p, player *black, player *white)
 {
     // function returns the player with the corresponding color 
 
-    if (strcmp(p, "white") == 0) return white;
-    else if (strcmp(p, "w") == 0) return white;
-    else if (strcmp(p, "black") == 0) return black;
-    else if (strcmp(p, "b") == 0) return white;
+    if (!strcmp(p, "white")) return white;
+    else if (!strcmp(p, "w")) return white;
+    else if (!strcmp(p, "black")) return black;
+    else if (!strcmp(p, "b")) return white;
     else return NULL;
 }
 
