@@ -370,14 +370,14 @@ void reset_pawns(int boardsize, player *white, player *black)
     black->j = boardsize / 2;
 }
 
-void undo(char **wall_matrix, player *black, player *white, stackptr *last, int *total_moves)
+void undo(char **wall_matrix, player *black, player *white, stackptr *last, int *totalmoves)
 {    
     int times;
     char *p = strtok(NULL, " ");
     if (p == NULL) times = 1;
     else times = atoi(p);
     
-    if (*totalmoves < times)
+    if ((*totalmoves) < times)
     {
         unsuccessful_response("cannot undo");
         return;
