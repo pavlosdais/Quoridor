@@ -162,12 +162,12 @@ void playwall(char *buff, player *white, player *black, char** wall_matrix, int 
     p = strtok(NULL, " ");
     if (!enough_arguments(p)) return;
 
-    if (there_is_a_wall(vertex_x, vertex_y, wall_matrix, boardsize))
+    if (!is_vertex_valid(vertex_x, boardsize) || !is_vertex_valid(vertex_y, boardsize))
     {
         unsuccessful_response("illegal move");
         return;
     } 
-    else if (!is_vertex_available(vertex_x, boardsize) || !is_vertex_available(vertex_y, boardsize)) 
+    else if (there_is_a_wall(vertex_x, vertex_y, wall_matrix, boardsize)) 
     {
         unsuccessful_response("illegal move");
         return;
@@ -187,7 +187,7 @@ void playwall(char *buff, player *white, player *black, char** wall_matrix, int 
         unsuccessful_response("illegal move");
         return;
     }
-    --pl->walls;
+    (pl->walls)--;
     addMove(lastaddr, vertex_x, vertex_y, 'n');
     (*totalmoves)++;
     successful_response("");
