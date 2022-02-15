@@ -3,6 +3,19 @@
 #include <string.h>
 #include "commands.h"
 
+#define BUFFER_SIZE 81
+
+struct player
+{
+    /*
+    i and j will follow the matrix numbering, from 0 to n-1, and will refer to the cell (i+1,j+1)
+    eg if black.i is 3 and black.j is 6, it means that the black pawn is on (4,7) or else H4
+    */
+    int i;
+    int j;
+    int walls;
+};
+
 int main(void)
 {
     char *p, m;
