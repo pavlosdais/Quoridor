@@ -27,16 +27,6 @@ char isnumber(char *n)
     return 1;
 }
 
-
-void reset_pawns(int boardsize, player *white, player *black)
-{
-    white->i = 0;
-    white->j = boardsize / 2;
-
-    black->i = boardsize - 1;
-    black->j = boardsize / 2;
-}
-
 void swap_boardsize(char* p, int *boardsize, int *prev_boardsize)
 {
     if (*boardsize > 0) 
