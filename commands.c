@@ -8,10 +8,6 @@
 
 struct player
 {
-    /*
-    i and j will follow the matrix numbering, from 0 to n-1, and will refer to the cell (i+1,j+1)
-    eg if black.i is 3 and black.j is 6, it means that the black pawn is on (4,7) or else H4
-    */
     int i;
     int j;
     int walls;
@@ -25,6 +21,7 @@ void successful_response(char *msg);
 char **allocate_memory(int boardsize);
 void free_array(char **A, int boardsize);
 char command_num(char *ans);
+void reset_pawns(int boardsize, player *white, player *black);
 
 void print_name(char *p)
 {
@@ -356,3 +353,13 @@ void command_preprocess(char *buff)
     }
     buff[j] = '\0';
 }
+
+void reset_pawns(int boardsize, player *white, player *black)
+{
+    white->i = 0;
+    white->j = boardsize / 2;
+
+    black->i = boardsize - 1;
+    black->j = boardsize / 2;
+}
+
