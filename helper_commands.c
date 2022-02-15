@@ -46,7 +46,7 @@ void swap_boardsize(char* p, int *boardsize, int *prev_boardsize)
     *boardsize = atoi(p);
 }
 
-char is_vertex_available(char hor, int boardsize)
+char is_vertex_valid(char hor, int boardsize)
 {
     if (hor >= 0 && hor < boardsize)
     {
