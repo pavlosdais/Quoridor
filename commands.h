@@ -1,4 +1,5 @@
 typedef struct player player;
+typedef struct stacknode *stackptr;
 
 void unsuccessful_response(char *msg);
 void successful_response(char *msg);
