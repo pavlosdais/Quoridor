@@ -106,11 +106,11 @@ int main(void)
         }
         else if (m == 8) // playmove
         {
-            playmove(buff, &white, &black, wall_matrix, boardsize);
+            playmove(buff, &white, &black, wall_matrix, boardsize, &history, &totalmoves);
         }
         else if (m == 9)  // playwall
         {
-            playwall(buff, &white, &black, wall_matrix, boardsize);
+            playwall(buff, &white, &black, wall_matrix, boardsize, &history, &totalmoves);
         }
         else if (m == 10)  // genmove
         {
