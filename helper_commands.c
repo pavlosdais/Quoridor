@@ -11,6 +11,13 @@ typedef struct player {
     int walls;
 } player;
 
+typedef struct stacknode *stackptr;
+struct stacknode {
+    int i,j;
+    char type; // 'b': black player left (i,j), 'w': white player left (i,j), 'n': new wall placed at (i,j)
+    stackptr next;
+};
+
 char isnumber(char *n)
 {
     int i = 0;
@@ -231,4 +238,14 @@ void free_grid(char **A, int size)
         free(A[i]);
     }
     free(A);
+}
+
+void addMove(stackptr *last, int i, int j, char type)
+{
+    stackptr temp = *last;
+    *last = malloc(sizeof(struct stacknode));
+    (*last)->i = i;
+    (*last)->j = j;
+    (*last)->type = type;
+    (*last)->next = temp;
 }
