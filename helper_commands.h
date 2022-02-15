@@ -15,5 +15,3 @@ char enough_arguments(char *argument);
 int path_steps(char **wall_matrix, int boardsize, player *pl, char color);
 char there_is_a_wall(int i, int j, char **wall_matrix, int boardsize);
 char there_is_a_path(char **wall_matrix, int boardsize, player *white, player *black);
-char recursiveSolveBlack(int x, int y, char **have_visited, char **maze, int size);
-char recursiveSolveWhite(int x, int y, char **have_visited, char **maze, int size);
