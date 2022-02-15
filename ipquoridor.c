@@ -57,6 +57,8 @@ int main(void)
     to the specific cell.
     */
     char **wall_matrix = allocate_memory(boardsize);
+    stackptr history = NULL;
+    totalmoves = 0;
 
     while (1)
     {
@@ -116,7 +118,7 @@ int main(void)
         }
         else if (m == 11)  // undo
         {
-            
+            undo(wall_matrix, &black, &white, &history, &totalmoves);
         }
         else if (m == 12)  // winner
         {
