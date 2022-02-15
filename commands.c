@@ -110,7 +110,7 @@ void update_walls(player *black, player *white, int* number_of_walls)
     }
 }
 
-void playmove(char *buff, player *white, player *black, char** wall_matrix, int boardsize)
+void playmove(char *buff, player *white, player *black, char** wall_matrix, int boardsize, stackptr *lastaddr, int *totalmoves)
 {
     // Color
     char *p = strtok(NULL, " ");
@@ -133,7 +133,7 @@ void playmove(char *buff, player *white, player *black, char** wall_matrix, int 
     
 }
 
-void playwall(char *buff, player *white, player *black, char** wall_matrix, int boardsize)
+void playwall(char *buff, player *white, player *black, char** wall_matrix, int boardsize, stackptr *lastaddr, int *totalmoves)
 {
     // Color
     char *p = strtok(NULL, " ");
@@ -188,6 +188,8 @@ void playwall(char *buff, player *white, player *black, char** wall_matrix, int 
         return;
     }
     --pl->walls;
+    addMove(lastaddr, vertex_x, vertex_y, 'n');
+    (*totalmoves)++;
     successful_response("");
 }
 
