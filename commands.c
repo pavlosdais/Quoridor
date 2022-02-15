@@ -168,7 +168,6 @@ void playwall(char *buff, player *white, player *black, char** wall_matrix, int 
     }
 
     char orientation = check_orientation(p);
-    printf("%c\n", orientation);
     if (orientation == -1)
     {
         unsuccessful_response("invalid syntax");
