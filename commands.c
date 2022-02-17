@@ -377,7 +377,7 @@ void undo(char **wall_matrix, player *black, player *white, stackptr *last, int 
     if (p == NULL) times = 1;
     else times = atoi(p);
     
-    if ((*totalmoves) < times)
+    if (*totalmoves < times)
     {
         unsuccessful_response("cannot undo");
         return;
@@ -406,4 +406,13 @@ void undo(char **wall_matrix, player *black, player *white, stackptr *last, int 
     }
     *totalmoves -= times;
     successful_response("");
+}
+
+void free_stack(stackptr top)
+{
+    for (stackptr temp = top->next; temp != NULL; temp = top -> next)
+    {
+        free(temp);
+    }
+    free(top);
 }
