@@ -132,6 +132,7 @@ char there_is_a_path(char **wall_matrix, int boardsize, player *white, player *b
     
     char f;
     
+    /*
     if (boardsize - white->i - 1 <= black->i)
     {
         f = recursiveSolveWhite(white->i, white->j, have_visited, wall_matrix, boardsize);
@@ -140,46 +141,54 @@ char there_is_a_path(char **wall_matrix, int boardsize, player *white, player *b
     {
         f = recursiveSolveBlack(black->i, black->j, have_visited, wall_matrix,  boardsize);
     }
-
+    */
     free_grid(have_visited, boardsize);
     return f;
 }
+
+// a3 c3 e3 g3
+// playwall white h4 vertical
+// playwall white h5 horizontal
 
 // depth-first search
 char recursiveSolveBlack(int x, int y, char **have_visited, char **maze, int size)
 {
     // black wins when the pawn gets to the first row
 
-    if (x == 0 && !there_is_a_wall(x, y, maze, size)) return 1;  // black has reached the end
-    if (there_is_a_wall(x, y, maze, size) || have_visited[x][y]) return 0;
+    if (x == 0) return 1;  // black has reached the end
+    if (have_visited[x][y] || there_is_a_wall(x, y, maze, size)) return 0;
 
     have_visited[x][y] = 1;
 
     // search up
-    if (y != 0)
+    if (y != 0 && !wallAbove(x, y, maze, size))
     {
-        if (recursiveSolveBlack(x, y-1, have_visited, maze, size))
+        if (recursiveSolveBlack(x, y, have_visited, maze, size))
         {
             return 1;
         }
     }
     // search left
-    if (recursiveSolveBlack(x-1, y, have_visited, maze, size))
+    if (!wallOnTheLeft(x, y, maze, size))
     {
-        return 1;
+        if (recursiveSolveBlack(x, y, have_visited, maze, size))
+        {
+            return 1;
+        }
     }
+    
     // search right
-    if (x != size - 1)
+    if (x != size - 1 && !wallOnTheRight(x, y, maze, size))
     {
-        if (recursiveSolveBlack(x+1, y, have_visited, maze, size))
+        if (recursiveSolveBlack(y, x, have_visited, maze, size))
         {
             return 1;
         }
     }
     // search down
-    if (y != size - 1)
+    if (y != size - 1 && !wallBelow(x, y, maze, size))
     {
-        if (recursiveSolveBlack(x, y+1, have_visited, maze, size))
+        if (recursiveSolveBlack(x, y, have_visited, maze, size))
         {
             return 1;
         }
