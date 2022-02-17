@@ -3,7 +3,7 @@ typedef struct stacknode *stackptr;
 
 char isnumber(char *n);
 void swap_boardsize(char* p, int *boardsize, int *prev_boardsize);
-char is_vertex_valid(char hor, int boardsize)
+char is_vertex_valid(char hor, int boardsize);
 player *check_color(char *p, player *black, player *white);
 char check_orientation(char *orientation);
 char wallBelow(int i, int j, char **w_mtx, int boardsize);
