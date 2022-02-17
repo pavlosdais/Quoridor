@@ -94,11 +94,11 @@ int main(void)
         }
         else if (m == 5)  // boardsize
         {
-            update_boardsize(&boardsize, &prev_boardsize, &wall_matrix, &white, &black);
+            update_boardsize(&boardsize, &prev_boardsize, &wall_matrix, &white, &black, &history, &totalmoves);
         }
         else if (m == 6)  // clear_board
         {
-            clear_board(boardsize, wall_matrix, &white, &black);
+            clear_board(boardsize, wall_matrix, &white, &black, &history, &totalmoves);
         }
         else if (m == 7)  // walls
         {
@@ -135,7 +135,8 @@ int main(void)
     }
     free_array(wall_matrix, boardsize);
     free(buff);
-    free_stack(history);
+    free_stack(&history);
+    free(history);
 
     return 0;
 }
