@@ -133,6 +133,99 @@ void playmove(char *buff, player *white, player *black, char** wall_matrix, int 
     
 }
 
+void playmove(char *buff, player *white, player *black, char** wall_mtx, int boardsize, stackptr *lastaddr, int *totalmoves)
+{
+    // Color
+    char *p = strtok(NULL, " ");
+    if (!enough_arguments(p)) return;
+
+    player *pl = check_color(p, black, white);  //player
+    player *op = (pl == white) ? black : white; //opponent
+    if (pl == NULL) unsuccessful_response("unknown command");
+
+    // Vertex
+    if (!enough_arguments(p)) return;
+    p = strtok(NULL, " ");
+    if (strlen(p) != 2)
+    {
+        unsuccessful_response("illegal move");
+        return;
+    }
+
+    char vertex_y = p[0] - 'a';
+    char vertex_x = p[1] - '0' - 1;
+
+    if (!is_vertex_valid(vertex_x, boardsize) || !is_vertex_valid(vertex_y, boardsize))
+    {
+        unsuccessful_response("illegal move");
+        return;
+    }
+    if (vertex_x == op->i && vertex_y == op->j)
+    {
+        unsuccessful_response("illegal move");
+        return;
+    }
+    
+    char ok;
+    unsigned int dist = abs(pl->i - vertex_x) + abs(pl->j - vertex_y);
+
+    if (dist > 2 || dist == 0)
+    {
+        unsuccessful_response("illegal move");
+        return;
+    }
+    else if (dist == 1)
+    {
+        if (vertex_x == pl->i)
+        {
+            ok = ((vertex_y > pl->j && !wallOnTheRight(pl->i, pl->j, wall_mtx, boardsize)) || (vertex_y < pl->j && !wallOnTheLeft(pl->i, pl->j, wall_mtx, boardsize)));
+        }
+        else //vertex_y == pl->j
+        {
+            ok = ((vertex_x > pl->i && !wallAbove(pl->i, pl->j, wall_mtx, boardsize)) || (vertex_x < pl->i && !wallBelow(pl->i, pl->j, wall_mtx, boardsize)));
+        }
+    }
+    else //dist == 2
+    {
+        if (vertex_x == pl->i && op->i == pl->i && pl->j+vertex_y == 2*op->j) //in the same row, with opponent in the middle
+        {
+            ok = !wallOnTheRight(op->i, op->j, wall_mtx, boardsize) && !!wallOnTheLeft(op->i, op->j, wall_mtx, boardsize);
+        }
+        else if (vertex_y == pl->j && op->j == pl->j && pl->i+vertex_x == 2*op->i) //in the same column, with opponent in the middle
+        {
+            ok = !wallAbove(op->i, op->j, wall_mtx, boardsize) && !!wallBelow(op->i, op->j, wall_mtx, boardsize);
+        }
+        else if (vertex_x != pl->i && vertex_y != pl->j)  //diagonally by 1 vertex
+        {
+            if (vertex_x == op->i && pl->j == op->j)
+            {
+                ok = (op->i > pl->i && (wallAbove(op->i, op->j, wall_mtx, boardsize) || op->i == boardsize-1)) || (op->i < pl->i && (wallBelow(op->i, op->j, wall_mtx, boardsize) || op->i == 0));
+                if (vertex_y < op->j && wallOnTheLeft(op->i, op->j, wall_mtx, boardsize) || vertex_y > op->j && wallOnTheRight(op->i, op->j, wall_mtx, boardsize)) ok = 0;
+            }
+            else if (vertex_y == op->j && pl->i == op->i)
+            {
+                ok = (op->j > pl->j && (wallOnTheRight(op->i, op->j, wall_mtx, boardsize) || op->j == boardsize-1)) || (op->j < pl->j && (wallOnTheLeft(op->i, op->j, wall_mtx, boardsize) || op->j == 0));
+                if (vertex_x < op->i && wallBelow(op->i, op->j, wall_mtx, boardsize) || vertex_x > op->i && wallAbove(op->i, op->j, wall_mtx, boardsize)) ok = 0;
+            }
+            else ok = 0;
+        }
+        else ok = 0;
+    }
+
+    if(!ok)
+    {
+        unsuccessful_response("illegal move");
+        return;
+    }
+    
+    char type = (pl == white) ? 'w' : 'b';
+    addMove(lastaddr, pl->i, pl->j, type); //adding pawn's position to history before moving the pawn
+    (*totalmoves)++;
+    pl->i = vertex_x;
+    pl->j = vertex_y;
+    successful_response("");    
+}
+
 void playwall(char *buff, player *white, player *black, char** wall_matrix, int boardsize, stackptr *lastaddr, int *totalmoves)
 {
     // Color
