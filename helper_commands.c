@@ -68,7 +68,7 @@ player *check_color(char *p, player *black, player *white)
 
 char check_orientation(char *orientation)
 {
-    // function returns b for horizontal, r for vertical and -1 for uknown orientation
+    // function returns b for horizontal, r for vertical and -1 for unknown orientation
     if (!strcmp(orientation, "horizontal")) return 'b';
     else if (!strcmp(orientation, "h")) return 'b';
     else if (!strcmp(orientation, "vertical")) return 'r';
