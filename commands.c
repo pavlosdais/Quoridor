@@ -28,6 +28,7 @@ char **allocate_memory(int boardsize);
 void free_array(char **A, int boardsize);
 char command_num(char *ans);
 void reset_pawns(int boardsize, player *white, player *black);
+void free_stack(stackptr *top);
 
 void print_name(char *p)
 {
@@ -54,7 +55,7 @@ void list_commands()
     fflush(stdout);
 }
 
-void update_boardsize(int *boardsize, int *prev_boardsize, char ***wall_matrix, player *white, player *black)
+void update_boardsize(int *boardsize, int *prev_boardsize, char ***wall_matrix, player *white, player *black, stackptr* history, int *totalmoves)
 {
     char *p = strtok(NULL, " ");
     if (!enough_arguments(p)) return;
@@ -70,7 +71,7 @@ void update_boardsize(int *boardsize, int *prev_boardsize, char ***wall_matrix, 
             // allocate memory for the new matrix
             *wall_matrix = allocate_memory(*boardsize);
             reset_pawns(*boardsize, white, black);
-
+            
             printf("\n\n");
             fflush(stdout);
         }
@@ -79,9 +80,11 @@ void update_boardsize(int *boardsize, int *prev_boardsize, char ***wall_matrix, 
     {
         unsuccessful_response("invalid syntax");
     }
+    *totalmoves = 0;
+    free_stack(history);
 }
 
-void clear_board(int boardsize, char **wall_matrix, player *white, player *black)
+void clear_board(int boardsize, char **wall_matrix, player *white, player *black, stackptr* history, int *totalmoves)
 {
     for (int i = 0; i < boardsize; i++) 
         for (int j = 0; j < boardsize; j++) 
@@ -90,6 +93,8 @@ void clear_board(int boardsize, char **wall_matrix, player *white, player *black
     // white's and black's pawns return to their starting position
     reset_pawns(boardsize, white, black);
     successful_response("");
+    *totalmoves = 0;
+    free_stack(history);
 }
 
 void update_walls(player *black, player *white, int* number_of_walls)
@@ -108,29 +113,6 @@ void update_walls(player *black, player *white, int* number_of_walls)
     {
         unsuccessful_response("invalid syntax");
     }
-}
-
-void playmove(char *buff, player *white, player *black, char** wall_matrix, int boardsize, stackptr *lastaddr, int *totalmoves)
-{
-    // Color
-    char *p = strtok(NULL, " ");
-    if (!enough_arguments(p)) return;
-
-    player *pl = check_color(p, black, white);
-    if (pl == NULL) unsuccessful_response("unknown command");
-
-    // Vertex
-    if (!enough_arguments(p)) return;
-    p = strtok(NULL, " ");
-    if (strlen(p) != 2)
-    {
-        unsuccessful_response("illegal move");
-        return;
-    }
-
-    char vertex_x = p[0];
-    char vertex_y = p[1];
-    
 }
 
 void playmove(char *buff, player *white, player *black, char** wall_mtx, int boardsize, stackptr *lastaddr, int *totalmoves)
@@ -165,7 +147,7 @@ void playmove(char *buff, player *white, player *black, char** wall_mtx, int boa
         unsuccessful_response("illegal move");
         return;
     }
-    
+
     char ok;
     unsigned int dist = abs(pl->i - vertex_x) + abs(pl->j - vertex_y);
 
@@ -217,7 +199,7 @@ void playmove(char *buff, player *white, player *black, char** wall_mtx, int boa
         unsuccessful_response("illegal move");
         return;
     }
-    
+
     char type = (pl == white) ? 'w' : 'b';
     addMove(lastaddr, pl->i, pl->j, type); //adding pawn's position to history before moving the pawn
     (*totalmoves)++;
@@ -274,15 +256,18 @@ void playwall(char *buff, player *white, player *black, char** wall_matrix, int 
     } 
 
     wall_matrix[vertex_x][vertex_y] = orientation;
-    if (!there_is_a_path(wall_matrix, boardsize, white, black)) 
+
+    if (!there_is_a_path(wall_matrix, boardsize, white, black))
     {
         wall_matrix[vertex_x][vertex_y] = 0;
-        unsuccessful_response("illegal move");
+        unsuccessful_response("illegal move - no path");
         return;
     }
     (pl->walls)--;
     addMove(lastaddr, vertex_x, vertex_y, 'n');
     (*totalmoves)++;
+
+    
     successful_response("");
 }
 
@@ -501,11 +486,13 @@ void undo(char **wall_matrix, player *black, player *white, stackptr *last, int 
     successful_response("");
 }
 
-void free_stack(stackptr top)
+void free_stack(stackptr *top)
 {
-    for (stackptr temp = top->next; temp != NULL; temp = top -> next)
+    stackptr temp = *top;
+    while (temp != NULL)
     {
         free(temp);
+        (*top) = (*top) -> next;
+        temp = *top;
     }
-    free(top);
 }
