@@ -135,6 +135,7 @@ int main(void)
     }
     free_array(wall_matrix, boardsize);
     free(buff);
+    free_stack(history);
 
     return 0;
 }
