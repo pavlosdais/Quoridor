@@ -17,7 +17,7 @@ typedef struct stacknode *stackptr;
 struct stacknode
 {
     int i,j;
-    char type; // 'b': black player left (i,j), 'w': white player left (i,j), 'n': new wall placed at (i,j)
+    char *type; // 'b': black player left (i,j), 'w': white player left (i,j), 'n': new wall placed at (i,j)
     stackptr next;
 };
 
@@ -123,19 +123,19 @@ void playmove(char *buff, player *white, player *black, char** wall_mtx, int boa
 
     player *pl = check_color(p, black, white);  //player
     player *op = (pl == white) ? black : white; //opponent
-    if (pl == NULL) unsuccessful_response("unknown command");
+    if (pl == NULL)
+    {
+        unsuccessful_response("invalid syntax");
+        return;
+    }
 
     // Vertex
     if (!enough_arguments(p)) return;
     p = strtok(NULL, " ");
-    if (strlen(p) != 2)
-    {
-        unsuccessful_response("illegal move");
-        return;
-    }
+
 
     char vertex_y = p[0] - 'a';
-    char vertex_x = p[1] - '0' - 1;
+    char vertex_x = atoi(p+1) - 1;
 
     if (!is_vertex_valid(vertex_x, boardsize) || !is_vertex_valid(vertex_y, boardsize))
     {
@@ -200,7 +200,8 @@ void playmove(char *buff, player *white, player *black, char** wall_mtx, int boa
         return;
     }
 
-    char type = (pl == white) ? 'w' : 'b';
+    
+    char *type = (pl == white) ? "wm" : "bm";
     addMove(lastaddr, pl->i, pl->j, type); //adding pawn's position to history before moving the pawn
     (*totalmoves)++;
     pl->i = vertex_x;
@@ -217,21 +218,17 @@ void playwall(char *buff, player *white, player *black, char** wall_matrix, int 
     player *pl = check_color(p, black, white);
     if (pl == NULL)
     {
-        unsuccessful_response("unknown command");
+        unsuccessful_response("invalid syntax");
         return;
     } 
             
     // Vertex
     p = strtok(NULL, " ");
     if (!enough_arguments(p)) return;
-    if (strlen(p) != 2)
-    {
-        unsuccessful_response("illegal move");
-        return;
-    }
+
 
     char vertex_y = p[0] - 'a';
-    char vertex_x = p[1] - '0' - 1;
+    char vertex_x = atoi(p+1) - 1;
 
     // Orientation
     p = strtok(NULL, " ");
@@ -264,10 +261,9 @@ void playwall(char *buff, player *white, player *black, char** wall_matrix, int 
         return;
     }
     (pl->walls)--;
-    addMove(lastaddr, vertex_x, vertex_y, 'n');
+    char *type = (pl == white) ? "ww" : "bw";
+    addMove(lastaddr, vertex_x, vertex_y, type);
     (*totalmoves)++;
-
-    
     successful_response("");
 }
 
@@ -463,19 +459,25 @@ void undo(char **wall_matrix, player *black, player *white, stackptr *last, int 
 
     for (int i = 1; i <= times; i++)
     {
-        if ((*last)->type == 'b')
+        if (strcmp((*last)->type,"bm") == 0)
         {
             black->i = (*last)->i;
             black->j = (*last)->j;
         }
-        else if ((*last)->type == 'w')
+        else if (strcmp((*last)->type,"wm") == 0)
         {
             white->i = (*last)->i;
             white->j = (*last)->j;
         }
-        else //(*last)->type == 'n'
+        else if (strcmp((*last)->type,"bw") == 0)
         {
             wall_matrix[(*last)->i][(*last)->j] = 0;
+            (black->walls)++;
+        }
+        else //strcmp((*last)->type,"bw") == 0
+        {
+            wall_matrix[(*last)->i][(*last)->j] = 0;
+            (white->walls)++;
         }
 
         stackptr temp = *last;
