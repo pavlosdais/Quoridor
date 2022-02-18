@@ -19,7 +19,7 @@ struct player
 typedef struct stacknode *stackptr;
 struct stacknode {
     int i,j;
-    char type; // 'b': black player left (i,j), 'w': white player left (i,j), 'n': new wall placed at (i,j)
+    char *type; // "bm": black player left (i,j), "wm": white player left (i,j), "bw": black placed wall at (i,j), "ww": black placed wall at (i,j)
     stackptr next;
 };
 
