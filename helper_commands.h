@@ -15,3 +15,4 @@ int path_steps(char **wall_matrix, int boardsize, player *pl, char color);
 char there_is_a_wall(int i, int j, char **wall_matrix, int boardsize);
 char there_is_a_path(char **wall_matrix, int boardsize, player *white, player *black);
 void addMove(stackptr *last, int i, int j, char *type);
+float positionEvaluation(player* black, player* white, int boardsize, char** wall_matrix);
