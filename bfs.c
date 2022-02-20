@@ -3,7 +3,7 @@
 
 typedef struct QueueNode
 {
-    // coordinates
+    // player's coordinates
     int i;
     int j;
 
@@ -11,18 +11,24 @@ typedef struct QueueNode
 }
 QueueNode;
 
+typedef struct 
+{
+    QueueNode *head;
+    QueueNode *tail;
+}
+queue;
+
 // Function Prototypes
-void explore_neighbours(QueueNode** q, int cur_r, int cur_c, int boardsize, char**m, char**have_visited, int* nodes_next_in_layer);
-void Enqueue(QueueNode** q, int i, int j);
-void Dequeue(QueueNode** q, int *ri, int *rj);
-void freeQueue(QueueNode** q);
-char isQueueEmpty(QueueNode** q);
-void CreateQueueNode(int i, int j, QueueNode** nn);
+void explore_neighbours(queue *q, int cur_r, int cur_c, int boardsize, char**m, char**have_visited, int* nodes_next_in_layer);
+void init_queue(queue *q);
+void enqueue(queue *q, int i, int j);
+void dequeue(queue *q, int *i, int *j);
+void freeQueue(queue *q);
+char isQueueEmpty(queue *q);
 char wallBelow(int i, int j, char **w_mtx, int boardsize);
 char wallAbove(int i, int j, char **w_mtx, int boardsize);
 char wallOnTheRight(int i, int j, char **w_mtx, int boardsize);
 char wallOnTheLeft(int i, int j, char **w_mtx, int boardsize);
-
 
 /*
 Breadth-first search
@@ -35,14 +41,14 @@ int bfs(int boardsize, char**m, int startx, int starty, int goalx)
 
     int move_count = 0, nodes_left_in_layer = 1, nodes_next_in_layer = 0, nr, nc;
     char reached_the_end = 0;
+    queue q;
+    init_queue(&q);
 
-    QueueNode* q = NULL;  // create queue
-
-    Enqueue(&q, startx, starty);
+    enqueue(&q, startx, starty);
 
     while (!isQueueEmpty(&q))
     {
-        Dequeue(&q, &nr, &nc);
+        dequeue(&q, &nr, &nc);
         
         if (nr == goalx)
         {
@@ -63,22 +69,21 @@ int bfs(int boardsize, char**m, int startx, int starty, int goalx)
     for (int i = 0; i < boardsize; i++) free(have_visited[i]);
     free(have_visited);
 
-    // free Queue
+    // free queue
     freeQueue(&q);
     
     if (reached_the_end) return move_count;
     return -1;
 }
 
-void explore_neighbours(QueueNode** q, int cur_r, int cur_c, int boardsize, char**m, char**have_visited, int* nodes_next_in_layer)
+void explore_neighbours(queue *q, int cur_r, int cur_c, int boardsize, char**m, char**have_visited, int* nodes_next_in_layer)
 {
-    /* 
-    matrices with the coordinates of adjacent cells of (c,r) 
+    /*  matrices with the coordinates of adjacent cells of (c,r) 
     -south (c-1,r)
     -north (c+1,r)
     -east (c,r+1)
-    -west (c,r-1)
-    */
+    -west (c,r-1)  */
+    
     int dr[] = {-1, 1, 0, 0}, dc[] = {0, 0, 1, -1}, rr, cc;
 
     for (int i = 0; i < 4; i++)
@@ -86,76 +91,75 @@ void explore_neighbours(QueueNode** q, int cur_r, int cur_c, int boardsize, char
         // new adjacent cell (rr, cc)
         rr = cur_r + dr[i];
         cc = cur_c + dc[i];
-
         if (rr < 0 || cc < 0 || rr >= boardsize || cc >= boardsize) continue;  // cell out of bounds
         if (have_visited[rr][cc]) continue;  // already have visited that cell
-
+        
         // There's a wall on the way
         if (i == 0 && wallBelow(cur_r, cur_c, m, boardsize)) continue;  // south
         else if (i == 1 && wallAbove(cur_r, cur_c, m, boardsize)) continue;  // north
         else if (i == 2 && wallOnTheRight(cur_r, cur_c, m, boardsize)) continue;  // east
         else if (i == 3 && wallOnTheLeft(cur_r, cur_c, m, boardsize)) continue;  // west
 
-        Enqueue(q, rr, cc);
+        enqueue(q, rr, cc);
         have_visited[rr][cc] = 1;
         (*nodes_next_in_layer)++;
     }
 }
 
-void Enqueue(QueueNode** q, int i, int j) 
+void init_queue(queue *q)
 {
-    if (q == NULL) return;  // empty queue
-    QueueNode* nn;
-    CreateQueueNode(i, j, &nn);
-
-    nn->next = (*q);
-    (*q) = nn;
+    // Initialize Queue
+    q->head = NULL;
+    q->tail = NULL;
 }
 
-void Dequeue(QueueNode** q, int *ri, int *rj)
-{ 
-    while (*q != NULL)
+char isQueueEmpty(queue *q)
+{
+    if (q->head != NULL) return 0;
+    return 1;
+}
+
+void enqueue(queue *q, int i, int j)
+{
+    QueueNode* newnode = malloc(sizeof(QueueNode));
+    newnode->i = i;
+    newnode->j = j;
+
+    newnode->next = NULL;
+
+    if (q->tail != NULL)  // queue was not empty previously
+        q->tail->next = newnode;
+
+    q->tail = newnode;
+
+    // empty queue
+    if (q->head == NULL) 
+        q->head = newnode;
+}
+
+void dequeue(queue *q, int *i, int*j)
+{
+    if (q->head == NULL) return;
+    QueueNode* tmp = q->head;
+    *i = tmp->i;
+    *j = tmp->j;
+
+    q->head = q->head->next;
+    free(tmp);
+
+    // empty queue
+    if (q->head == NULL) q->tail = NULL;
+}
+
+void freeQueue(queue *q)
+{
+    QueueNode *tmp = NULL;
+    while(q->head != NULL)
     {
-        if ((*q)->next == NULL)
-        {
-            QueueNode *temp = *q;
-
-            *ri = (*q)->i;
-            *rj = (*q)->j;
-
-            *q = NULL;
-            free(temp);
-            break;
-        }
-        q = &((*q)->next);
+        tmp = q->head;
+        q->head = q->head->next;
+        free(tmp);
     }
-}
-
-void CreateQueueNode(int i, int j, QueueNode** nn)
-{
-    *nn = malloc(sizeof(QueueNode));
-
-    (*nn)->next = NULL;
-    (*nn)->i = i;
-    (*nn)->j = j;
-}
-
-char isQueueEmpty(QueueNode** q)
-{
-    if (*q != NULL) return 0;
-    else return 1;
-}
-
-void freeQueue(QueueNode** q)
-{
-    QueueNode *temp = NULL;
-    while (*q != NULL)
-    {
-        temp = *q;
-        *q = (*q)->next;
-        free(temp);
-    }
-    free(*q);
 }
 
 char wallBelow(int i, int j, char **w_mtx, int boardsize) {
