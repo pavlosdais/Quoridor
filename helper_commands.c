@@ -88,7 +88,7 @@ char enough_arguments(char *argument)
 
 char there_is_a_path(char **wall_matrix, int boardsize, player *white, player *black)
 {
-    char steps = bfs(boardsize, wall_matrix, black->i, black->j, 0);  // black wins if he gets to the first row
+    int steps = bfs(boardsize, wall_matrix, black->i, black->j, 0);  // black wins if he gets to the first row
     if (steps == -1) return 0;
 
     steps = bfs(boardsize, wall_matrix, white->i, white->j, boardsize-1);  // white wins if he gets to the last row
@@ -105,4 +105,12 @@ void addMove(stackptr *last, int i, int j, char *type)
     (*last)->j = j;
     (*last)->type = type;
     (*last)->next = temp;
+}
+
+float positionEvaluation(player* black, player* white, int boardsize, char** wall_matrix)
+{
+    int whiteDistance = bfs(boardsize, wall_matrix, white->i, white->j, boardsize-1);
+    int blackDistance = bfs(boardsize, wall_matrix, black->i, black->j, 0);
+   
+    return whiteDistance-blackDistance + 0.2*(white->walls - black->walls);
 }
