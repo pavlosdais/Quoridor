@@ -268,6 +268,14 @@ void playwall(char *buff, player *white, player *black, char** wall_matrix, int 
 
 void genmove(player *white, player *black, char** wall_matrix, int boardsize, stackptr *lastaddr, int *totalmoves)
 {
+    char *p = strtok(NULL, " ");
+    if (!enough_arguments(p)) return;
+    player *pl = check_color(p, black, white);
+    if (pl == NULL)
+    {
+        unsuccessful_response("invalid syntax");
+        return;
+    } 
     
 }
 
@@ -406,6 +414,7 @@ void showboard(char **w_mtx, int boardsize, player *black, player *white)
     fflush(stdout);
 }
 
+// Functions needed in main
 char command_num(char *ans)
 {
     if (strcmp("name", ans) == 0) return 1;
