@@ -18,7 +18,7 @@ typedef struct stacknode *stackptr;
 struct stacknode
 {
     int i,j;
-    char *type; // 'b': black player left (i,j), 'w': white player left (i,j), 'n': new wall placed at (i,j)
+    char *type; // "bm": black player left (i,j), "wm": white player left (i,j), "bw": black placed wall at (i,j), "ww": black placed wall at (i,j)
     stackptr next;
 };
 
@@ -60,7 +60,7 @@ void update_boardsize(int *boardsize, int *prev_boardsize, char ***wall_matrix, 
 {
     char *p = strtok(NULL, " ");
     if (!enough_arguments(p)) return;
-    if (isnumber(p))
+    if (isNumber(p))
     {
         swap_boardsize(p, boardsize, prev_boardsize);
         if (boardsize <= 0) unsuccessful_response("unacceptable size");
@@ -71,18 +71,19 @@ void update_boardsize(int *boardsize, int *prev_boardsize, char ***wall_matrix, 
 
             // allocate memory for the new matrix
             *wall_matrix = allocate_memory(*boardsize);
+            if (wall_matrix == NULL)
+                unsuccessful_response("Error! Can't allocate memory");
+
             reset_pawns(*boardsize, white, black);
             
             printf("\n\n");
             fflush(stdout);
         }
+        *totalmoves = 0;
+        free_stack(history);
     }
     else
-    {
         unsuccessful_response("invalid syntax");
-    }
-    *totalmoves = 0;
-    free_stack(history);
 }
 
 void clear_board(int boardsize, char **wall_matrix, player *white, player *black, stackptr* history, int *totalmoves)
@@ -93,32 +94,30 @@ void clear_board(int boardsize, char **wall_matrix, player *white, player *black
     
     // white's and black's pawns return to their starting position
     reset_pawns(boardsize, white, black);
-    successful_response("");
     *totalmoves = 0;
     free_stack(history);
+    successful_response("");
 }
 
 void update_walls(player *black, player *white, int* number_of_walls)
 {
-    char *p = strtok(NULL, " ");
+    char *p = strtok(NULL, " ");   // number of walls
     if (!enough_arguments(p)) return;
-    if (isnumber(p))
+
+    if (isNumber(p))
     {
         *number_of_walls = atoi(p);
-
         black->walls = *number_of_walls;
         white->walls = *number_of_walls;
         successful_response("");
     }
     else
-    {
         unsuccessful_response("invalid syntax");
-    }
 }
 
 void playmove(char *buff, player *white, player *black, char** wall_mtx, int boardsize, stackptr *lastaddr, int *totalmoves)
 {
-    // Color
+    // Get color
     char *p = strtok(NULL, " ");
     if (!enough_arguments(p)) return;
 
@@ -130,10 +129,9 @@ void playmove(char *buff, player *white, player *black, char** wall_mtx, int boa
         return;
     }
 
-    // Vertex
+    // Get vertex
     if (!enough_arguments(p)) return;
     p = strtok(NULL, " ");
-
 
     char vertex_y = p[0] - 'a';
     char vertex_x = atoi(p+1) - 1;
@@ -160,15 +158,11 @@ void playmove(char *buff, player *white, player *black, char** wall_mtx, int boa
     else if (dist == 1)
     {
         if (vertex_x == pl->i)
-        {
             ok = ((vertex_y > pl->j && !wallOnTheRight(pl->i, pl->j, wall_mtx, boardsize)) || (vertex_y < pl->j && !wallOnTheLeft(pl->i, pl->j, wall_mtx, boardsize)));
-        }
-        else //vertex_y == pl->j
-        {
+        else  // vertex_y == pl->j
             ok = ((vertex_x > pl->i && !wallAbove(pl->i, pl->j, wall_mtx, boardsize)) || (vertex_x < pl->i && !wallBelow(pl->i, pl->j, wall_mtx, boardsize)));
-        }
     }
-    else //dist == 2
+    else  // dist == 2
     {
         if (vertex_x == pl->i && op->i == pl->i && pl->j+vertex_y == 2*op->j) //in the same row, with opponent in the middle
         {
@@ -195,14 +189,14 @@ void playmove(char *buff, player *white, player *black, char** wall_mtx, int boa
         else ok = 0;
     }
 
-    if(!ok)
+    if (!ok)
     {
         unsuccessful_response("illegal move");
         return;
     }
     
     char *type = (pl == white) ? "wm" : "bm";
-    addMove(lastaddr, pl->i, pl->j, type); //adding pawn's position to history before moving the pawn
+    addMove(lastaddr, pl->i, pl->j, type);  // adding pawn's position to history before moving the pawn
     (*totalmoves)++;
     pl->i = vertex_x;
     pl->j = vertex_y;
@@ -211,7 +205,7 @@ void playmove(char *buff, player *white, player *black, char** wall_mtx, int boa
 
 void playwall(char *buff, player *white, player *black, char** wall_matrix, int boardsize, stackptr *lastaddr, int *totalmoves)
 {
-    // Color
+    // Get color
     char *p = strtok(NULL, " ");
     if (!enough_arguments(p)) return;
     
@@ -220,32 +214,32 @@ void playwall(char *buff, player *white, player *black, char** wall_matrix, int 
     {
         unsuccessful_response("invalid syntax");
         return;
-    } 
-            
-    // Vertex
+    }
+    
+    // Get vertex
     p = strtok(NULL, " ");
     if (!enough_arguments(p)) return;
 
     char vertex_y = p[0] - 'a';
     char vertex_x = atoi(p+1) - 1;
 
-    // Orientation
+    // Get orientation
     p = strtok(NULL, " ");
     if (!enough_arguments(p)) return;
 
-    if (!is_vertex_valid(vertex_x, boardsize) || !is_vertex_valid(vertex_y, boardsize))
+    if (!is_vertex_valid(vertex_x, boardsize) || !is_vertex_valid(vertex_y, boardsize))  // orientation out of bounds
     {
         unsuccessful_response("illegal move");
         return;
     } 
-    else if (there_is_a_wall(vertex_x, vertex_y, wall_matrix, boardsize)) 
+    else if (there_is_a_wall(vertex_x, vertex_y, wall_matrix, boardsize))  // there's already a wall there
     {
         unsuccessful_response("illegal move");
         return;
     }
 
     char orientation = check_orientation(p);
-    if (orientation == -1)
+    if (orientation == -1)  // invalid orientation
     {
         unsuccessful_response("invalid syntax");
         return;
@@ -253,7 +247,7 @@ void playwall(char *buff, player *white, player *black, char** wall_matrix, int 
 
     wall_matrix[vertex_x][vertex_y] = orientation;
 
-    if (!there_is_a_path(wall_matrix, boardsize, white, black))
+    if (!there_is_a_path(wall_matrix, boardsize, white, black))  // by placing the wall the path is blocked
     {
         wall_matrix[vertex_x][vertex_y] = 0;
         unsuccessful_response("illegal move");
@@ -275,7 +269,7 @@ void genmove(player *white, player *black, char** wall_matrix, int boardsize, st
     {
         unsuccessful_response("invalid syntax");
         return;
-    } 
+    }
     
 }
 
@@ -323,7 +317,8 @@ void undo(char **wall_matrix, player *black, player *white, stackptr *last, int 
     successful_response("");
 }
 
-void winner(player *white, player *black, int boardsize) {
+void winner(player *white, player *black, int boardsize)
+{
     if (white->i==boardsize-1) successful_response("true white");
     else if (black->i==0) successful_response("true black");
     else successful_response("false");
@@ -415,6 +410,7 @@ void showboard(char **w_mtx, int boardsize, player *black, player *white)
 }
 
 // Functions needed in main
+
 char command_num(char *ans)
 {
     if (strcmp("name", ans) == 0) return 1;
@@ -430,7 +426,7 @@ char command_num(char *ans)
     else if (strcmp("undo", ans) == 0) return 11;
     else if (strcmp("winner", ans) == 0) return 12;
     else if (strcmp("showboard", ans) == 0) return 13;
-    else return 14;
+    else return 14;  // command was not found
 }
 
 void unsuccessful_response(char *msg)
@@ -454,17 +450,21 @@ char **allocate_memory(int boardsize)
         A[i] = calloc(boardsize, sizeof(char));  // error allocating memory, exit
         if (A[i] == NULL) return NULL;
     }
+
+    // no error in allocationg, return array
     return A;
 }
 
 void free_array(char **A, int boardsize)
 {
-    for (int i = 0; i < boardsize; i++) free(A[i]);
+    for (int i = 0; i < boardsize; i++)
+        free(A[i]);
     free(A);
 }
 
 void command_preprocess(char *buff)
 {
+    // Get rid of whitespace characters and convert the command into lower case characters
     int i = 0, j = 0;
     char whsp = 0;
     while (buff[i] != '\n' && buff[i] != '\0')
@@ -481,9 +481,10 @@ void command_preprocess(char *buff)
             buff[i] = ' ';
         }
 
-        // convert command into lower case
-        if (isupper(buff[i])) buff[j] = tolower(buff[i]);
-        else buff[j] = buff[i];
+        if (isupper(buff[i]))
+            buff[j] = tolower(buff[i]);
+        else
+            buff[j] = buff[i];
         
         i++;
         j++;
@@ -494,9 +495,11 @@ void command_preprocess(char *buff)
 
 void reset_pawns(int boardsize, player *white, player *black)
 {
+    // White's position
     white->i = 0;
     white->j = boardsize / 2;
 
+    // Black's position
     black->i = boardsize - 1;
     black->j = boardsize / 2;
 }
