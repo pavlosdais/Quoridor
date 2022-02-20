@@ -23,7 +23,7 @@ struct stacknode {
     stackptr next;
 };
 
-int main(void)
+int main(int argc, char* argv[])
 {
     char *p, m;
     int prev_boardsize, number_of_walls;
@@ -57,6 +57,9 @@ int main(void)
     to the specific cell.
     */
     char **wall_matrix = allocate_memory(boardsize);
+    if (wall_matrix == NULL)
+        unsuccessful_response("Error! Can't allocate memory");
+
     stackptr history = NULL;
     int totalmoves = 0;
 
