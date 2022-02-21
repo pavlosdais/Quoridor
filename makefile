@@ -16,7 +16,7 @@ bfs.o: bfs.c
 	gcc -c bfs.c
 
 ai.o: ai.c
-	gcc -c ai.clear
+	gcc -c ai.c
 
 # delete junk object  files
 clear:
