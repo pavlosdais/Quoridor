@@ -1,4 +1,4 @@
-# ipQuoridor
+# Quoridor
 Problem set 4, Semester 1, Department of Informatics and Telecommunications - UoA 
 
 **Board**:
