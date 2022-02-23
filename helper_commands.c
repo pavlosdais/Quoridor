@@ -45,7 +45,7 @@ void swap_boardsize(char* p, int *boardsize, int *prev_boardsize)
 
 char is_vertex_valid(char hor, int boardsize)
 {
-    if (hor >= 0 && hor < boardsize)
+    if (hor > 0 && hor < boardsize)
         return 1;
     return 0;
 }
@@ -124,8 +124,7 @@ float positionEvaluation(player* black, player* white, int boardsize, char** wal
 
 float max(float a, float b)
 {
-    if (a >= b) return a;
-    return b;
+    return a > b ? a: b;
 }
 
 char wallBelow(int i, int j, char **w_mtx, int boardsize) {
@@ -150,9 +149,9 @@ char wallOnTheLeft(int i, int j, char **w_mtx, int boardsize) {
 
 char there_is_a_wall(int i, int j, char **wall_matrix, int boardsize)
 {
-    if (wallOnTheLeft(i, j, wall_matrix, boardsize) ) return 1;
-    else if (wallOnTheLeft(i, j, wall_matrix, boardsize) ) return 1;
-    else if (wallAbove(i, j, wall_matrix, boardsize) ) return 1;
-    else if (wallBelow(i, j, wall_matrix, boardsize) ) return 1;
+    if (wallOnTheLeft(i, j, wall_matrix, boardsize)) return 1;
+    else if (wallOnTheLeft(i, j, wall_matrix, boardsize)) return 1;
+    else if (wallAbove(i, j, wall_matrix, boardsize)) return 1;
+    else if (wallBelow(i, j, wall_matrix, boardsize)) return 1;
     else return 0;
 }
