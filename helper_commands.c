@@ -122,11 +122,6 @@ float positionEvaluation(player* black, player* white, int boardsize, char** wal
     return whiteDistance-blackDistance + 0.2*(white->walls - black->walls);
 }
 
-float max(float a, float b)
-{
-    return a > b ? a: b;
-}
-
 char wallBelow(int i, int j, char **w_mtx, int boardsize) {
     if (i==0) return 0;
     return (w_mtx[i][j]=='b' || (j>0 && w_mtx[i][j-1]=='b'));
