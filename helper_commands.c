@@ -96,11 +96,15 @@ char there_is_a_path(char **wall_matrix, int boardsize, player *white, player *b
     int steps = bfs(boardsize, wall_matrix, black->i, black->j, 0);  // black wins if he gets to the first row
     if (steps == -1)
         return 0;  // path is blocked for black
-
+    else if (steps == -2)
+        return -1;  //allocation failed
+    
     steps = bfs(boardsize, wall_matrix, white->i, white->j, boardsize-1);  // white wins if he gets to the last row
     if (steps == -1)
         return 0;  // path is blocked for white
-
+    else if (steps == -2)
+        return -1;  //allocation failed
+    
     return 1;  // the path is not being blocked
 }
 
@@ -108,6 +112,11 @@ void addMove(stackptr *last, int i, int j, char *type)
 {
     stackptr temp = *last;
     *last = malloc(sizeof(struct stacknode));
+    if (*last == NULL)
+    {
+        unsuccessful_response("allocation failure");
+        return;
+    }
     (*last)->i = i;
     (*last)->j = j;
     (*last)->type = type;
@@ -118,7 +127,11 @@ float positionEvaluation(player* black, player* white, int boardsize, char** wal
 {
     int whiteDistance = bfs(boardsize, wall_matrix, white->i, white->j, boardsize-1);
     int blackDistance = bfs(boardsize, wall_matrix, black->i, black->j, 0);
-   
+    if (whiteDistance == -2 || blackDistance == -2)
+    {
+        unsuccessful_response("allocation failure");
+        return;
+    }
     return whiteDistance-blackDistance + 0.2*(white->walls - black->walls);
 }
 
