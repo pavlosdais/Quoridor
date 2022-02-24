@@ -45,7 +45,7 @@ void swap_boardsize(char* p, int *boardsize, int *prev_boardsize)
 
 char is_vertex_valid(char hor, int boardsize)
 {
-    if (hor > 0 && hor < boardsize)
+    if (hor >= 0 && hor < boardsize)
         return 1;
     return 0;
 }
@@ -114,7 +114,8 @@ char addMove(stackptr *last, int i, int j, char *type)
     *last = malloc(sizeof(struct stacknode));
     if (*last == NULL)
     {
-        unsuccessful_response("allocation failure");
+        printf("? allocation failure\n\n");
+        fflush(stdout);
         return 0;
     }
     (*last)->i = i;
@@ -164,3 +165,4 @@ char there_is_a_wall(int i, int j, char **wall_matrix, int boardsize)
     else if (wallBelow(i, j, wall_matrix, boardsize)) return 1;
     else return 0;
 }
+
