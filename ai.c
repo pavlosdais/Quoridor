@@ -73,13 +73,13 @@ float minimax(char**wall_matrix, int boardsize, char depth, float alpha, float b
         }
 
         // check wall placement
-        for (int i = 1; i < boardsize - 1; i++)
+        for (int i = 0; i < boardsize; i++)
         {
-            for (int j = 1; j < boardsize - 1; j++)
+            for (int j = 0; j < boardsize; j++)
             {
-                if (!there_is_a_wall(i, j, wall_matrix, boardsize))
+                if (is_vertex_valid(i, boardsize) && is_vertex_valid(j, boardsize) && (i != 0 || j != 0))
                 {
-                    wall_matrix[i][j] = 'b';  // place wall below
+                    if (!there_is_a_wall(i, j, wall_matrix, boardsize)) wall_matrix[i][j] = 'b';  // place wall below
                     if (!there_is_a_path(wall_matrix, boardsize, white, black)) wall_matrix[i][j] = 0;
                     else
                     {
@@ -102,7 +102,6 @@ float minimax(char**wall_matrix, int boardsize, char depth, float alpha, float b
                         {
                             alpha = eval;
                         }
-                        
                         if (beta <= alpha) break;
                     }
                 }
@@ -166,31 +165,34 @@ float minimax(char**wall_matrix, int boardsize, char depth, float alpha, float b
         {
             for (int j = 1; j < boardsize-1; j++)
             {
-                wall_matrix[i][j] = 'b';  // place wall below
-                if (!there_is_a_wall(i, j, wall_matrix, boardsize)) wall_matrix[i][j] = 0;
-                else
+                if (is_vertex_valid(i, boardsize) && is_vertex_valid(j, boardsize) && (i != 0 || j != 0))
                 {
-                    eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, 1, black, white);
-                    wall_matrix[i][j] = 0;  // reset placement
-                    if (eval <= beta)
+                    wall_matrix[i][j] = 'b';  // place wall below
+                    if (!there_is_a_wall(i, j, wall_matrix, boardsize)) wall_matrix[i][j] = 0;
+                    else
                     {
-                        beta = eval;
+                        eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, 1, black, white);
+                        wall_matrix[i][j] = 0;  // reset placement
+                        if (eval <= beta)
+                        {
+                            beta = eval;
+                        }
+                        if (beta <= alpha) break;
                     }
-                    if (beta <= alpha) break;
-                }
 
-                wall_matrix[i][j] = 'r';  // place wall on the right
-                if (!there_is_a_path(wall_matrix, boardsize, white, black)) wall_matrix[i][j] = 0;
-                else
-                {
-                    eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, 1, black, white);
-                    wall_matrix[i][j] = 0;  // reset placement
-
-                    if (eval <= beta)
+                    wall_matrix[i][j] = 'r';  // place wall on the right
+                    if (!there_is_a_path(wall_matrix, boardsize, white, black)) wall_matrix[i][j] = 0;
+                    else
                     {
-                        beta = eval;
+                        eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, 1, black, white);
+                        wall_matrix[i][j] = 0;  // reset placement
+
+                        if (eval <= beta)
+                        {
+                            beta = eval;
+                        }
+                        if (beta <= alpha) break;
                     }
-                    if (beta <= alpha) break;
                 }
             }
         }
