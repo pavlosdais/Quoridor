@@ -2,7 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <float.h>
 #include "helper_commands.h"
+#include "ai.h"
+
+#define INFINITY FLT_MAX
+#define NEG_INFINITY FLT_MIN
 
 #define BUFFER_SIZE 81
 
@@ -253,14 +258,8 @@ void playwall(char *buff, player *white, player *black, char** wall_matrix, int 
     wall_matrix[vertex_x][vertex_y] = orientation;  // place wall
     
     char path = there_is_a_path(wall_matrix, boardsize, white, black);
-    
-    if (path == -2)   // unable to allocate memory for searching
-    {
-        wall_matrix[vertex_x][vertex_y] = 0;    // reset placing the wall
-        unsuccessful_response("allocation failure");
-        return;
-    }
-    else if (path == -1)  // by placing the wall the path is blocked
+
+    if (path == -1)  // by placing the wall the path is blocked
     {
         wall_matrix[vertex_x][vertex_y] = 0;    // reset placing the wall
         unsuccessful_response("illegal move");
@@ -286,13 +285,36 @@ void genmove(player *white, player *black, char** wall_matrix, int boardsize, st
 {
     char *p = strtok(NULL, " ");
     if (!enough_arguments(p)) return;
-    player *pl = check_color(p, black, white);
-    if (pl == NULL)
+    
+    char pl;
+    if (strcmp(p, "white") == 0) 
+        pl  = 'w';
+    else if (strcmp(p, "w") == 0)
+        pl  = 'w';
+    else if (strcmp(p, "black") == 0)
+        pl  = 'b';
+    else if (strcmp(p, "b") == 0)
+        pl  = 'b';
+    else
     {
         unsuccessful_response("invalid syntax");
         return;
     }
+
+    float eval;
+    char move, or;
+    int x, y;
+    if (pl == 'w') eval = minimax(wall_matrix, boardsize, 2, NEG_INFINITY, INFINITY, 1, black, white, pl, &move, &x, &y, &or);
+    else eval = minimax(wall_matrix, boardsize, 2, NEG_INFINITY, INFINITY, 0, black, white, pl, &move, &x, &y, &or);
     
+    if (move == 'w')  // ai placed a wall
+    {
+        printf("\n=%c%d %c\n\n", y+1, x+1, or);
+    }
+    else  // ai made pawn advancement
+    {
+        printf("\n=%c%d\n\n", y+1, x);
+    }
 }
 
 void undo(char **wall_matrix, player *black, player *white, stackptr *last, int *totalmoves)
