@@ -195,8 +195,14 @@ void playmove(char *buff, player *white, player *black, char** wall_mtx, int boa
     }
     
     char *type = (pl == white) ? "wm" : "bm";
-    addMove(lastaddr, pl->i, pl->j, type);  // adding pawn's position to history before moving the pawn
-    (*totalmoves)++;
+    ok = addMove(lastaddr, pl->i, pl->j, type);  // adding pawn's position to history before moving the pawn
+    if (ok) 
+        (*totalmoves)++;
+    else
+    {
+        unsuccessful_response("allocation failure");
+        return;
+    }
     pl->i = vertex_x;
     pl->j = vertex_y;
     successful_response("");    
@@ -245,17 +251,34 @@ void playwall(char *buff, player *white, player *black, char** wall_matrix, int 
     } 
 
     wall_matrix[vertex_x][vertex_y] = orientation;
-
-    if (!there_is_a_path(wall_matrix, boardsize, white, black))  // by placing the wall the path is blocked
+    
+    char path = there_is_a_path(wall_matrix, boardsize, white, black);
+    
+    if (path = -1)   //unable to allocate memory for searching
+    {
+        wall_matrix[vertex_x][vertex_y] = 0;
+        unsuccessful_response("allocation failure");
+        return;
+    }
+    else if (!path)  // by placing the wall the path is blocked
     {
         wall_matrix[vertex_x][vertex_y] = 0;
         unsuccessful_response("illegal move");
         return;
     }
     (pl->walls)--;
+    
     char *type = (pl == white) ? "ww" : "bw";
-    addMove(lastaddr, vertex_x, vertex_y, type);
-    (*totalmoves)++;
+    char ok = addMove(lastaddr, vertex_x, vertex_y, type);
+    if (ok)
+        (*totalmoves)++;
+    else
+    {
+        wall_matrix[vertex_x][vertex_y] = 0;
+        unsuccessful_response("allocation failure");
+        (pl->walls)++;
+        return;
+    }    
     successful_response("");
 }
 
