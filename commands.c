@@ -259,10 +259,16 @@ void playwall(char *buff, player *white, player *black, char** wall_matrix, int 
     
     char path = there_is_a_path(wall_matrix, boardsize, white, black);
 
-    if (path == -1)  // by placing the wall the path is blocked
+    if (!path)  // by placing the wall the path is blocked
     {
         wall_matrix[vertex_x][vertex_y] = 0;    // reset placing the wall
         unsuccessful_response("illegal move");
+        return;
+    }
+    else if (path == -1)  // error in allocating memory to search if the path is being blocked
+    {
+        wall_matrix[vertex_x][vertex_y] = 0;    // reset placing the wall
+        unsuccessful_response("allocation failure");
         return;
     }
     (pl->walls)--;
@@ -304,14 +310,14 @@ void genmove(player *white, player *black, char** wall_matrix, int boardsize, st
     float eval;
     char move, or;
     int x, y;
-    if (pl == 'w') eval = minimax(wall_matrix, boardsize, 2, NEG_INFINITY, INFINITY, 1, black, white, pl, &move, &x, &y, &or);
-    else eval = minimax(wall_matrix, boardsize, 2, NEG_INFINITY, INFINITY, 0, black, white, pl, &move, &x, &y, &or);
+    // if (pl == 'w') eval = minimax(wall_matrix, boardsize, 2, NEG_INFINITY, INFINITY, 1, black, white, pl, &move, &x, &y, &or);
+    // else eval = minimax(wall_matrix, boardsize, 2, NEG_INFINITY, INFINITY, 0, black, white, pl, &move, &x, &y, &or);
     
     if (move == 'w')  // ai placed a wall
     {
         printf("\n=%c%d %c\n\n", y+1, x+1, or);
     }
-    else  // ai made pawn advancement
+    else if (move == 'm') // ai made pawn advancement
     {
         printf("\n=%c%d\n\n", y+1, x);
     }
