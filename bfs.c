@@ -116,8 +116,7 @@ void init_queue(queue *q)
 
 char isQueueEmpty(queue *q)
 {
-    if (q->head != NULL) return 0;
-    return 1;
+    return (q->head == NULL);
 }
 
 void enqueue(queue *q, int i, int j)
@@ -134,7 +133,7 @@ void enqueue(queue *q, int i, int j)
     q->tail = newnode;
 
     // empty queue
-    if (q->head == NULL) 
+    if (isQueueEmpty(q)) 
         q->head = newnode;
 }
 
@@ -149,7 +148,7 @@ void dequeue(queue *q, int *i, int*j)
     free(tmp);
 
     // empty queue
-    if (q->head == NULL) q->tail = NULL;
+    if (isQueueEmpty(q)) q->tail = NULL;
 }
 
 void freeQueue(queue *q)
