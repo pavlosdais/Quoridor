@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
     */
     char **wall_matrix = allocate_memory(boardsize);
     if (wall_matrix == NULL)
-        unsuccessful_response("Error! Can not allocate memory");
+        unsuccessful_response("allocation failure");
 
     stackptr history = NULL;
     int totalmoves = 0;
@@ -92,8 +92,7 @@ int main(int argc, char* argv[])
         }
         else if (m == 4)  // quit
         {
-            printf("= \n\n");
-            fflush(stdout);
+            successful_response("");
             break;
         }
         else if (m == 5)  // boardsize
