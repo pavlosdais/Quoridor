@@ -509,7 +509,6 @@ void free_array(char **A, int boardsize)
 {
     for (int i = 0; i < boardsize; i++)
         free(A[i]);
-    free(A);
 }
 
 void command_preprocess(char *buff)
