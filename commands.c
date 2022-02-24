@@ -239,7 +239,7 @@ void playwall(char *buff, player *white, player *black, char** wall_matrix, int 
     } 
     else if (there_is_a_wall(vertex_x, vertex_y, wall_matrix, boardsize))  // there's already a wall there
     {
-        unsuccessful_response("illegal move - wall already there");
+        unsuccessful_response("illegal move");
         return;
     }
 
@@ -250,20 +250,20 @@ void playwall(char *buff, player *white, player *black, char** wall_matrix, int 
         return;
     } 
 
-    wall_matrix[vertex_x][vertex_y] = orientation;
+    wall_matrix[vertex_x][vertex_y] = orientation;  // place wall
     
     char path = there_is_a_path(wall_matrix, boardsize, white, black);
     
-    if (path == -2)   //unable to allocate memory for searching
+    if (path == -2)   // unable to allocate memory for searching
     {
-        wall_matrix[vertex_x][vertex_y] = 0;
+        wall_matrix[vertex_x][vertex_y] = 0;    // reset placing the wall
         unsuccessful_response("allocation failure");
         return;
     }
     else if (path == -1)  // by placing the wall the path is blocked
     {
-        wall_matrix[vertex_x][vertex_y] = 0;
-        unsuccessful_response("illegal move - no path");
+        wall_matrix[vertex_x][vertex_y] = 0;    // reset placing the wall
+        unsuccessful_response("illegal move");
         return;
     }
     (pl->walls)--;
@@ -274,7 +274,7 @@ void playwall(char *buff, player *white, player *black, char** wall_matrix, int 
         (*totalmoves)++;
     else
     {
-        wall_matrix[vertex_x][vertex_y] = 0;
+        wall_matrix[vertex_x][vertex_y] = 0;    // reset placing the wall
         unsuccessful_response("allocation failure");
         (pl->walls)++;
         return;
@@ -325,7 +325,7 @@ void undo(char **wall_matrix, player *black, player *white, stackptr *last, int 
             wall_matrix[(*last)->i][(*last)->j] = 0;
             (black->walls)++;
         }
-        else //strcmp((*last)->type,"bw") == 0
+        else  // strcmp((*last)->type,"bw") == 0
         {
             wall_matrix[(*last)->i][(*last)->j] = 0;
             (white->walls)++;
@@ -457,6 +457,12 @@ void successful_response(char *msg)
     fflush(stdout);
 }
 
+void unsuccessful_response(char *msg)
+{
+    printf("? %s\n\n", msg);
+    fflush(stdout);
+}
+
 char **allocate_memory(int boardsize)
 {
     char **A = malloc(boardsize*sizeof(char *));
@@ -519,7 +525,6 @@ void reset_pawns(int boardsize, player *white, player *black)
     black->i = boardsize - 1;
     black->j = boardsize / 2;
 }
-
 
 void free_stack(stackptr *top)
 {
