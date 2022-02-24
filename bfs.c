@@ -38,7 +38,12 @@ wiki page: https://en.wikipedia.org/wiki/Breadth-first_search
 int bfs(int boardsize, char**m, int startx, int starty, int goalx)
 {
     char **have_visited = malloc(sizeof(char*) * boardsize);
-    for (int i = 0; i < boardsize; i++) have_visited[i] = calloc(sizeof(char), boardsize);
+    if (have_visited == NULL) return -2;
+    for (int i = 0; i < boardsize; i++)
+    {
+        have_visited[i] = calloc(sizeof(char), boardsize);
+        if (have_visited == NULL) return -2;
+    }
 
     int move_count = 0, nodes_left_in_layer = 1, nodes_next_in_layer = 0, nr, nc;
     char reached_the_end = 0;
