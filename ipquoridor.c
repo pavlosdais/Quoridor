@@ -92,7 +92,8 @@ int main(int argc, char* argv[])
         }
         else if (m == 4)  // quit
         {
-            successful_response("");
+            printf("= \n\n");
+            fflush(stdout);
             break;
         }
         else if (m == 5)  // boardsize
