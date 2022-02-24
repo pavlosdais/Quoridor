@@ -32,55 +32,79 @@ float minimax(char**wall_matrix, int boardsize, char depth, float alpha, float b
         {
             --white->i;  
             eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, 0, black, white);
-            alpha = max(alpha, eval);
-            ++white->i;  // reset
+            if (eval >= alpha)
+            {
+                alpha = eval;
+            }
+            ++white->i;  // reset movement
         }
 
         if (!wallOnTheRight(white->i, white->j, wall_matrix, boardsize))  // right
         {
             ++white->j;
             eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, 0, black, white);
-            alpha = max(alpha, eval);
-            --white->j;  // reset
+            if (eval >= alpha)
+            {
+                alpha = eval;
+            }
+            --white->j;  // reset movement
         }
 
         if (!wallOnTheLeft(white->i, white->j, wall_matrix, boardsize))  // left
         {
             --white->j;
             eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, 0, black, white);
-            alpha = max(alpha, eval);
-            ++white->j;  // reset
-        }
-        
-        if (wallOnTheLeft(white->i, white->j, wall_matrix, boardsize) && wallOnTheRight(white->i, white->j, wall_matrix, boardsize) && wallBelow(white->i, white->j, wall_matrix, boardsize))  // boxed in - go down
-        {
-            if (!wallAbove(white->i, white->j, wall_matrix, boardsize))
+            if (eval >= alpha)
             {
-                ++white ->i;
-                eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, 0, black, white);
-                alpha = max(alpha, eval);
-                --white->i;  // reset
+                alpha = eval;
             }
+            ++white->j;  // reset movement
+        }
+
+        if (!wallAbove(white->i, white->j, wall_matrix, boardsize))
+        {
+            ++white ->i;
+            eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, 0, black, white);
+            if (eval >= alpha)
+            {
+                alpha = eval;
+            }
+            --white->i;  // reset movement
         }
 
         // check wall placement
-        for (int i = 1; i < boardsize; i++)
+        for (int i = 1; i < boardsize - 1; i++)
         {
-            for (int j = 1; j < boardsize; j++)
+            for (int j = 1; j < boardsize - 1; j++)
             {
                 if (!there_is_a_wall(i, j, wall_matrix, boardsize))
                 {
                     wall_matrix[i][j] = 'b';  // place wall below
                     if (!there_is_a_path(wall_matrix, boardsize, white, black)) wall_matrix[i][j] = 0;
-                    else eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, 0, black, white);
+                    else
+                    {
+                        eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, 0, black, white);
+                        wall_matrix[i][j] = 0;  // reset placement
+                        if (eval >= alpha)
+                        {
+                            alpha = eval;
+                        }
+                        if (beta <= alpha) break;
+                    }
 
                     wall_matrix[i][j] = 'r';  // place wall on the right
                     if (!there_is_a_path(wall_matrix, boardsize, white, black)) wall_matrix[i][j] = 0;
-                    else eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, 0, black, white);
-
-                    wall_matrix[i][j] = 0;  // reset placement
-                    alpha = max(alpha, eval);
-                    if (beta <= alpha) break;
+                    else
+                    {
+                        eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, 0, black, white);
+                        wall_matrix[i][j] = 0;  // reset placement
+                        if (eval >= alpha)
+                        {
+                            alpha = eval;
+                        }
+                        
+                        if (beta <= alpha) break;
+                    }
                 }
             }
         }
@@ -97,54 +121,75 @@ float minimax(char**wall_matrix, int boardsize, char depth, float alpha, float b
         {
             ++black->i;  
             eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, 0, black, white);
-            alpha = max(alpha, eval);
-            --black->i;  // reset
+            if (eval <= beta)
+            {
+                beta = eval;
+            }
+            --black->i;  // reset movement
         }
         
         if (!wallOnTheRight(black->i, black->j, wall_matrix, boardsize))  // right
         {
             ++black->j;
             eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, 0, black, white);
-            alpha = max(alpha, eval);
-            --black->j;  // reset
+            if (eval <= beta)
+            {
+                beta = eval;
+            }
+            --black->j;  // reset movement
         }
 
         if (!wallOnTheLeft(black->i, black->j, wall_matrix, boardsize))  // left
         {
             --black->j;
             eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, 0, black, white);
-            alpha = max(alpha, eval);
-            ++black->j;  // reset
+            if (eval <= beta)
+            {
+                beta = eval;
+            }
+            ++black->j;  // reset movement
         }
         
-        if (wallOnTheLeft(black->i, black->j, wall_matrix, boardsize) && wallOnTheRight(white->i, white->j, wall_matrix, boardsize) && wallAbove(white->i, white->j, wall_matrix, boardsize))  // boxed in - go up
+        if (!wallBelow(black->i, black->j, wall_matrix, boardsize))  // up
         {
-            if (!wallBelow(black->i, black->j, wall_matrix, boardsize))
+            --black->i;
+            eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, 0, black, white);
+            if (eval <= beta)
             {
-                --black->i;
-                eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, 0, black, white);
-                alpha = max(alpha, eval);
-                ++black->i;  // reset
+                beta = eval;
             }
+            ++black->i;  // reset movement
         }
 
         // check wall placement
-        for (int i = 1; i <= boardsize-1; i++)
+        for (int i = 1; i < boardsize-1; i++)
         {
-            for (int j = 1; j <= boardsize-1; j++)
+            for (int j = 1; j < boardsize-1; j++)
             {
-                if (!there_is_a_wall(i, j, wall_matrix, boardsize))
+                wall_matrix[i][j] = 'b';  // place wall below
+                if (!there_is_a_wall(i, j, wall_matrix, boardsize)) wall_matrix[i][j] = 0;
+                else
                 {
-                    wall_matrix[i][j] = 'b';  // place wall below
-                    if (!there_is_a_path(wall_matrix, boardsize, white, black)) wall_matrix[i][j] = 0;
-                    else eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, 1, black, white);
-
-                    wall_matrix[i][j] = 'r';  // place wall on the right
-                    if (!there_is_a_path(wall_matrix, boardsize, white, black)) wall_matrix[i][j] = 0;
                     eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, 1, black, white);
-
                     wall_matrix[i][j] = 0;  // reset placement
-                    alpha = max(alpha, eval);
+                    if (eval <= beta)
+                    {
+                        beta = eval;
+                    }
+                    if (beta <= alpha) break;
+                }
+
+                wall_matrix[i][j] = 'r';  // place wall on the right
+                if (!there_is_a_path(wall_matrix, boardsize, white, black)) wall_matrix[i][j] = 0;
+                else
+                {
+                    eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, 1, black, white);
+                    wall_matrix[i][j] = 0;  // reset placement
+
+                    if (eval <= beta)
+                    {
+                        beta = eval;
+                    }
                     if (beta <= alpha) break;
                 }
             }
