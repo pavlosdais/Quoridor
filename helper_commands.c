@@ -53,13 +53,13 @@ char is_vertex_valid(char hor, int boardsize)
 player *check_color(char *p, player *black, player *white)
 {
     // function returns the player with the corresponding color
-    if (!strcmp(p, "white")) 
+    if (strcmp(p, "white") != 0) 
         return white;
-    else if (!strcmp(p, "w"))
+    else if (strcmp(p, "w") != 0)
         return white;
-    else if (!strcmp(p, "black"))
+    else if (strcmp(p, "black") != 0)
         return black;
-    else if (!strcmp(p, "b"))
+    else if (strcmp(p, "b") != 0)
         return white;
     else  // error
         return NULL;
@@ -68,13 +68,13 @@ player *check_color(char *p, player *black, player *white)
 char check_orientation(char *orientation)
 {
     // function returns b for horizontal, r for vertical and -1 for unknown orientation
-    if (!strcmp(orientation, "horizontal"))
+    if (strcmp(orientation, "horizontal") == 0)
         return 'b';
-    else if (!strcmp(orientation, "h"))
+    else if (strcmp(orientation, "h") == 0)
         return 'b';
-    else if (!strcmp(orientation, "vertical"))
+    else if (strcmp(orientation, "vertical") == 0)
         return 'r';
-    else if (!strcmp(orientation, "v"))
+    else if (strcmp(orientation, "v")  == 0)
         return 'r'; 
     return -1; // error
 }
