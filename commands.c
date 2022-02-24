@@ -232,14 +232,14 @@ void playwall(char *buff, player *white, player *black, char** wall_matrix, int 
     p = strtok(NULL, " ");
     if (!enough_arguments(p)) return;
 
-    if (!is_vertex_valid(vertex_x, boardsize) || !is_vertex_valid(vertex_y, boardsize))  // orientation out of bounds
+    if (!is_vertex_valid(vertex_x, boardsize) || !is_vertex_valid(vertex_y, boardsize) || vertex_x == 0)  // orientation out of bounds
     {
         unsuccessful_response("illegal move");
         return;
     } 
     else if (there_is_a_wall(vertex_x, vertex_y, wall_matrix, boardsize))  // there's already a wall there
     {
-        unsuccessful_response("illegal move");
+        unsuccessful_response("illegal move - wall already there");
         return;
     }
 
@@ -254,16 +254,16 @@ void playwall(char *buff, player *white, player *black, char** wall_matrix, int 
     
     char path = there_is_a_path(wall_matrix, boardsize, white, black);
     
-    if (path = -1)   //unable to allocate memory for searching
+    if (path == -2)   //unable to allocate memory for searching
     {
         wall_matrix[vertex_x][vertex_y] = 0;
         unsuccessful_response("allocation failure");
         return;
     }
-    else if (!path)  // by placing the wall the path is blocked
+    else if (path == -1)  // by placing the wall the path is blocked
     {
         wall_matrix[vertex_x][vertex_y] = 0;
-        unsuccessful_response("illegal move");
+        unsuccessful_response("illegal move - no path");
         return;
     }
     (pl->walls)--;
@@ -449,12 +449,6 @@ char command_num(char *ans)
     else if (strcmp("winner", ans) == 0) return 12;
     else if (strcmp("showboard", ans) == 0) return 13;
     else return 14;  // command was not found
-}
-
-void unsuccessful_response(char *msg)
-{
-    printf("? %s\n\n", msg);
-    fflush(stdout);
 }
 
 void successful_response(char *msg)
