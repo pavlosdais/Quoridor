@@ -137,9 +137,9 @@ int main(int argc, char* argv[])
         }
     }
     free_array(wall_matrix, boardsize);
-    free(buff);
+    free(wall_matrix);
     free_stack(&history);
     free(history);
-
+    free(buff);
     return 0;
 }
