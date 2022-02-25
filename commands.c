@@ -233,27 +233,28 @@ void playwall(char *buff, player *white, player *black, char** wall_matrix, int 
     char vertex_y = p[0] - 'a';
     char vertex_x = atoi(p+1) - 1;
 
-    if (!is_vertex_valid(vertex_x, boardsize) || !is_vertex_valid(vertex_y, boardsize) || vertex_x == 0)  // orientation out of bounds
+    // Get orientation
+    p = strtok(NULL, " ");
+    if (!enough_arguments(p)) return;
+
+    if (!is_vertex_valid(vertex_x, boardsize) || !is_vertex_valid(vertex_y, boardsize) || vertex_x == 0 || vertex_y == boardsize-1)  // orientation out of bounds
     {
         unsuccessful_response("illegal move");
         return;
     } 
-    else if (there_is_a_wall(vertex_x, vertex_y, wall_matrix, boardsize))  // there's already a wall there
+    else if (wall_matrix[vertex_x][vertex_y] != 0)  // there's already a wall there
     {
         unsuccessful_response("illegal move");
         return;
     }
 
-    // Get orientation
-    p = strtok(NULL, " ");
-    if (!enough_arguments(p)) return;
     char orientation = check_orientation(p);
     if (orientation == -1)  // invalid orientation
     {
         unsuccessful_response("invalid syntax");
         return;
     }
-    
+
     wall_matrix[vertex_x][vertex_y] = orientation;  // place wall
     
     char path = there_is_a_path(wall_matrix, boardsize, white, black);
@@ -309,12 +310,12 @@ void genmove(player *white, player *black, char** wall_matrix, int boardsize, st
     float eval;
     char move, or;
     int x, y;
-    // if (pl == 'w') eval = minimax(wall_matrix, boardsize, 2, NEG_INFINITY, INFINITY, 1, black, white, pl, &move, &x, &y, &or);
-    // else eval = minimax(wall_matrix, boardsize, 2, NEG_INFINITY, INFINITY, 0, black, white, pl, &move, &x, &y, &or);
+    if (pl == 'w') eval = minimax(wall_matrix, boardsize, 1, NEG_INFINITY, INFINITY, 1, black, white, pl, &move, &x, &y, &or);
+    else eval = minimax(wall_matrix, boardsize, 1, NEG_INFINITY, INFINITY, 0, black, white, pl, &move, &x, &y, &or);
     
     if (move == 'w')  // ai placed a wall
     {
-        printf("\n=%c%d %c\n\n", y+1, x+1, or);
+        printf("\n=%c %d %c\n\n", y+'A', x+1, or);
     }
     else if (move == 'm') // ai made pawn advancement
     {
