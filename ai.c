@@ -103,11 +103,11 @@ float minimax(char**wall_matrix, int boardsize, char depth, float alpha, float b
         }
 
         // check wall placement
-        for (int i = 1; i < boardsize; i++)
+        for (int i = 0; i < boardsize; i++)
         {
             for (int j = 0; j < boardsize; j++)
             {
-                if (!there_is_a_wall(i, j, wall_matrix, boardsize))  // a wall isn't already placed there
+                if (wall_matrix[i][j] != 0 && !is_vertex_valid(i, boardsize) || !is_vertex_valid(j, boardsize) || i == 0 || j == boardsize-1)  // a wall isn't already placed there
                 {
                     wall_matrix[i][j] = 'b';  // place horizontal wall
                     if (!there_is_a_path(wall_matrix, boardsize, white, black)) wall_matrix[i][j] = 0;
@@ -225,11 +225,11 @@ float minimax(char**wall_matrix, int boardsize, char depth, float alpha, float b
         }
 
         // check wall placement
-        for (int i = 1; i < boardsize-1; i++)
+        for (int i = 0; i < boardsize-1; i++)
         {
             for (int j = 0; j < boardsize-1; j++)
             {
-                if (!there_is_a_wall(i, j, wall_matrix, boardsize))  // a wall isn't already placed there
+                if (wall_matrix[i][j] != 0 && !is_vertex_valid(i, boardsize) || !is_vertex_valid(j, boardsize) || i == 0 || j == boardsize-1)  // a wall isn't already placed there
                 {
 
                     wall_matrix[i][j] = 'b';  // place horizontal wall
