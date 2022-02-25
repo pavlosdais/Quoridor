@@ -237,23 +237,24 @@ void playwall(char *buff, player *white, player *black, char** wall_matrix, int 
     p = strtok(NULL, " ");
     if (!enough_arguments(p)) return;
 
-    if (!is_vertex_valid(vertex_x, boardsize) || !is_vertex_valid(vertex_y, boardsize) || vertex_x == 0 || vertex_y == boardsize-1)  // orientation out of bounds
-    {
-        unsuccessful_response("illegal move");
-        return;
-    } 
-    else if (wall_matrix[vertex_x][vertex_y] != 0)  // there's already a wall there
-    {
-        unsuccessful_response("illegal move");
-        return;
-    }
-
     char orientation = check_orientation(p);
     if (orientation == -1)  // invalid orientation
     {
         unsuccessful_response("invalid syntax");
         return;
     }
+    else if (!is_vertex_valid(vertex_x, boardsize) || !is_vertex_valid(vertex_y, boardsize) || vertex_x == 0 || vertex_y == boardsize-1)  // orientation out of bounds
+    {
+        unsuccessful_response("illegal move");
+        return;
+    } 
+    else if (thereIsAWall(orientation, wall_matrix, boardsize, vertex_x, vertex_y))  // there's already a wall there
+    {
+        unsuccessful_response("illegal move");
+        return;
+    }
+
+    
 
     wall_matrix[vertex_x][vertex_y] = orientation;  // place wall
     
