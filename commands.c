@@ -233,10 +233,6 @@ void playwall(char *buff, player *white, player *black, char** wall_matrix, int 
     char vertex_y = p[0] - 'a';
     char vertex_x = atoi(p+1) - 1;
 
-    // Get orientation
-    p = strtok(NULL, " ");
-    if (!enough_arguments(p)) return;
-
     if (!is_vertex_valid(vertex_x, boardsize) || !is_vertex_valid(vertex_y, boardsize) || vertex_x == 0)  // orientation out of bounds
     {
         unsuccessful_response("illegal move");
@@ -248,13 +244,16 @@ void playwall(char *buff, player *white, player *black, char** wall_matrix, int 
         return;
     }
 
+    // Get orientation
+    p = strtok(NULL, " ");
+    if (!enough_arguments(p)) return;
     char orientation = check_orientation(p);
     if (orientation == -1)  // invalid orientation
     {
         unsuccessful_response("invalid syntax");
         return;
-    } 
-
+    }
+    
     wall_matrix[vertex_x][vertex_y] = orientation;  // place wall
     
     char path = there_is_a_path(wall_matrix, boardsize, white, black);
