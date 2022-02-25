@@ -178,8 +178,8 @@ char wallOnTheLeft(int i, int j, char **w_mtx, int boardsize) {
 char thereIsAWall(char or, char** wall_matrix, int boardsize, int vertex_x, int vertex_y)
 {
     if (or == 'h' && wall_matrix[vertex_x][vertex_y] != 0 && !wallBelow(vertex_x, vertex_y, wall_matrix, boardsize))
-        return 1;
+        return 0;
     else if (or == 'v' && wall_matrix[vertex_x][vertex_y] != 0 && !wallOnTheRight(vertex_x, vertex_y, wall_matrix, boardsize))
-        return 1;
-    return 0;
+        return 0;
+    return 1;
 }
