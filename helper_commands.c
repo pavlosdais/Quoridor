@@ -53,14 +53,14 @@ char is_vertex_valid(char hor, int boardsize)
 player *check_color(char *p, player *black, player *white)
 {
     // returns the player with the corresponding color
-    if (strcmp(p, "white") != 0) 
+    if (strcmp(p, "white") == 0) 
         return white;
-    else if (strcmp(p, "w") != 0)
+    else if (strcmp(p, "w") == 0)
         return white;
-    else if (strcmp(p, "black") != 0)
+    else if (strcmp(p, "black") == 0)
         return black;
-    else if (strcmp(p, "b") != 0)
-        return white;
+    else if (strcmp(p, "b") == 0)
+        return black;
     else  // error
         return NULL;
 }
