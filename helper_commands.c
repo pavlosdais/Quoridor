@@ -174,12 +174,3 @@ char wallOnTheLeft(int i, int j, char **w_mtx, int boardsize) {
     if (j==0) return 0;
     return wallOnTheRight(i, j-1, w_mtx, boardsize);
 }
-
-char there_is_a_wall(int i, int j, char **wall_matrix, int boardsize)
-{
-    if (wallOnTheLeft(i, j, wall_matrix, boardsize)) return 1;
-    else if (wallOnTheLeft(i, j, wall_matrix, boardsize)) return 1;
-    else if (wallAbove(i, j, wall_matrix, boardsize)) return 1;
-    else if (wallBelow(i, j, wall_matrix, boardsize)) return 1;
-    else return 0;
-}
