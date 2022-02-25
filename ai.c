@@ -20,10 +20,12 @@ float minimax(char**wall_matrix, int boardsize, char depth, float alpha, float b
 {
     if (depth == 0 || white->i==boardsize-1 || black->i==0)  // End of search - base case
     {
-        return positionEvaluation(black, white, boardsize, wall_matrix);
+        float positionEval;
+        if(!positionEvaluation(black, white, boardsize, wall_matrix, &positionEval)) printf("Allocation failure\n");
+        return positionEval;
     }
 
-    int eval;
+    float eval;
     if (maximizingPlayer)  // white
     {
         float max_eval = NEG_INFINITY;
