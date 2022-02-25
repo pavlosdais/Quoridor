@@ -254,8 +254,6 @@ void playwall(char *buff, player *white, player *black, char** wall_matrix, int 
         return;
     }
 
-    
-
     wall_matrix[vertex_x][vertex_y] = orientation;  // place wall
     
     char path = there_is_a_path(wall_matrix, boardsize, white, black);
