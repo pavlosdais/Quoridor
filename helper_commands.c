@@ -184,7 +184,6 @@ char thereIsAWall(char or, char** wall_matrix, int boardsize, int vertex_x, int 
         if (wall_matrix[vertex_x][vertex_y] != 0) return 1;
         else if (wall_matrix[vertex_x][vertex_y+1] == 'b') return 1;
         else if (vertex_y > 0 &&wall_matrix[vertex_x][vertex_y-1] == 'b') return 1;
-        return 0;
     }
     else // if (or == 'r')
     {
