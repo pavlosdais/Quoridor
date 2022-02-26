@@ -444,12 +444,11 @@ float minimax(char** wall_matrix, int boardsize, char depth, float alpha, float 
         for (int i = 1; i < boardsize-1; i++)
         {
             if (beta <= alpha) break;
-            if ((*black)->walls == 0) break;
             for (int j = 0; j < boardsize-1; j++)
             {
+                if ((*black)->walls == 0) break;
                 if (!thereIsAWall('b', wall_matrix, boardsize, i, j) && is_vertex_valid(i, boardsize) && is_vertex_valid(j, boardsize))
                 {
-                    if ((*black)->walls == 0) break;
                     (*black)->walls--;
                     wall_matrix[i][j] = 'b';  // place horizontal wall
                     en = 0;
