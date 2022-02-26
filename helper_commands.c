@@ -131,7 +131,7 @@ char addMove(stackptr *last, int i, int j, char *type)
 positionEvaluation is a heuristic function is used for the evaluation of the current situation of the game.
 It takes into account the distance each player from the end in order to win as well as the number of walls each player
 has in order to give an advantage (or lack of) for a certain player. When it's positive it calculates that the position
-in advantageous for white and when it's negative it calculates that black has an advantage. If it's 0 it means that
+iσ advantageous for white and when it's negative it calculates that black has an advantage. If it's 0 it means that
 the position is equal so neither player has an advantage.
 */
 
