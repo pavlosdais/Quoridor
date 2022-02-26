@@ -315,19 +315,13 @@ void genmove(player *white, player *black, char** wall_matrix, int boardsize, st
     if (m->move == 'w')  // ai placed a wall
     {
         if (m->orientation == 'b') 
-        {
             printf("= %c%d %c\n\n", 'A'+m->y, m->x+1, 'h');
-        }
-            
         else  // m->orientation == 'r'
-        {
             printf("= %c%d %c\n\n", 'A'+m->y, m->x+1, 'v');
-        }
     }
     else   // ai placed made a pawn advancement
-    {
         printf("= %c%d\n\n", 'A'+m->y, m->x+1);
-    }
+
     fflush(stdout);
 }
 
