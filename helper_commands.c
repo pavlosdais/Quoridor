@@ -138,7 +138,7 @@ the position is equal so neither player has an advantage.
 char positionEvaluation(player* black, player* white, int boardsize, char** wall_matrix, float *evaluation)
 {
     // calculate the distance white needs to get to the end
-    int whiteDistance = bfs(boardsize, wall_matrix, white->i, white->j, 0);
+    int whiteDistance = bfs(boardsize, wall_matrix, white->i, white->j, boardsize-1);
     if (whiteDistance == -2)
     {
         printf("? allocation failure\n\n");
@@ -146,7 +146,7 @@ char positionEvaluation(player* black, player* white, int boardsize, char** wall
         return 0;
     }
     // calculate the distance black needs to get to the end
-    int blackDistance = bfs(boardsize, wall_matrix, black->i, black->j, boardsize-1);
+    int blackDistance = bfs(boardsize, wall_matrix, black->i, black->j, 0);
     if (blackDistance == -2)
     {
         printf("? allocation failure\n\n");
