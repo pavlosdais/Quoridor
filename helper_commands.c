@@ -152,7 +152,7 @@ char positionEvaluation(player* black, player* white, int boardsize, char** wall
         fflush(stdout);
         return 0;
     }
-    *evaluation = blackDistance-whiteDistance + 0.5*(white->walls-black->walls);
+    *evaluation = blackDistance-whiteDistance + 0.2*(white->walls-black->walls);
     return 1;
 }
 
