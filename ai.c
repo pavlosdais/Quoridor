@@ -69,7 +69,7 @@ returningMove *bestMove(char** wall_matrix, int boardsize, char pl, player** bla
             --(*white)->j;  // reset movement
         }
 
-        if ((*white)->j > 0 &&!wallOnTheLeft((*white)->i, (*white)->j, wall_matrix, boardsize))  // left
+        if ((*white)->j > 0 && !wallOnTheLeft((*white)->i, (*white)->j, wall_matrix, boardsize))  // left
         {
             --(*white)->j;
             eval = minimax(wall_matrix, boardsize, depth-1, NEG_INFINITY, INFINITY, white, black, false);
@@ -325,7 +325,7 @@ float minimax(char** wall_matrix, int boardsize, char depth, float alpha, float 
             if (beta <= alpha) return max_eval;
         }
         
-        if ((*white)->j > 0 &&!wallOnTheLeft((*white)->i, (*white)->j, wall_matrix, boardsize))  // left
+        if ((*white)->j > 0 && !wallOnTheLeft((*white)->i, (*white)->j, wall_matrix, boardsize))  // left
         {
             --(*white)->j;
             eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, false);
