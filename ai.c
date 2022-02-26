@@ -1,4 +1,4 @@
-#include <float.h>
+ #include <float.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "helper_commands.h"
@@ -40,10 +40,9 @@ returningMove *bestMove(char** wall_matrix, int boardsize, char pl, player* blac
 
         // check pawn advancement
         float max_eval = NEG_INFINITY;
-
-        if (white->i > 0 && !wallBelow(white->i, white->j, wall_matrix, boardsize) && !(white->i - 1 == black->i && white->j == black->j))
+        if (white->i < boardsize - 1 && !wallAbove(white->i, white->j, wall_matrix, boardsize) && !(white->i + 1 == black->i && white->j == black->j))
         {
-            --white->i;
+            ++white->i;
             eval = minimax(wall_matrix, boardsize, depth-1, NEG_INFINITY, INFINITY, white, black, false);
             if (eval > max_eval)
             {
@@ -52,7 +51,7 @@ returningMove *bestMove(char** wall_matrix, int boardsize, char pl, player* blac
                 best->x = white->i;
                 best->y = white->j;
             }
-            ++white->i;  // reset movement
+            --white->i;  // reset movement
         }
 
         if (white->j < boardsize - 1 && !wallOnTheRight(white->i, white->j, wall_matrix, boardsize)  && !(white->i == black->i && white->j + 1 == black->j))
@@ -82,9 +81,10 @@ returningMove *bestMove(char** wall_matrix, int boardsize, char pl, player* blac
             }
             ++white->j;  // reset movement
         }
-        if (white->i < boardsize - 1 && !wallAbove(white->i, white->j, wall_matrix, boardsize) && !(white->i + 1 == black->i && white->j == black->j))
+        
+        if (white->i > 0 && !wallBelow(white->i, white->j, wall_matrix, boardsize) && !(white->i - 1 == black->i && white->j == black->j))
         {
-            ++white->i;
+            --white->i;
             eval = minimax(wall_matrix, boardsize, depth-1, NEG_INFINITY, INFINITY, white, black, false);
             if (eval > max_eval)
             {
@@ -93,7 +93,7 @@ returningMove *bestMove(char** wall_matrix, int boardsize, char pl, player* blac
                 best->x = white->i;
                 best->y = white->j;
             }
-            --white->i;  // reset movement
+            ++white->i;  // reset movement
         }
 
         // check wall placement
@@ -159,9 +159,9 @@ returningMove *bestMove(char** wall_matrix, int boardsize, char pl, player* blac
         // check each possible move
 
         // check pawn advancement
-        if (black->i < boardsize -1 && !wallAbove(black->i, black->j, wall_matrix, boardsize) && !(black->i + 1 == white->i && black->j == white->j))  // up
+        if (black->i > 0 && !wallBelow(black->i, black->j, wall_matrix, boardsize) && !(black->i - 1 == white->i && black->j -1 == white->j))  // down
         {
-            ++black->i;
+            --black->i;
             eval = minimax(wall_matrix, boardsize, depth-1, NEG_INFINITY, INFINITY, white, black, true);
             if (eval < min_eval)
             {
@@ -170,7 +170,7 @@ returningMove *bestMove(char** wall_matrix, int boardsize, char pl, player* blac
                 best->x = black->i;
                 best->y = black->j;
             }
-            --black->i;  // reset movement
+            ++black->i;  // reset movement
         }
         
         if (black->j < boardsize - 1 && !wallOnTheRight(black->i, black->j, wall_matrix, boardsize) && !(black->i == white->i && black->j + 1 == white->j))  // right
@@ -201,9 +201,9 @@ returningMove *bestMove(char** wall_matrix, int boardsize, char pl, player* blac
             ++black->j;  // reset movement
         }
         
-        if (black->i > 0 && !wallBelow(black->i, black->j, wall_matrix, boardsize) && !(black->i - 1 == white->i && black->j -1 == white->j))  // down
+        if (black->i < boardsize -1 && !wallAbove(black->i, black->j, wall_matrix, boardsize) && !(black->i + 1 == white->i && black->j == white->j))  // up
         {
-            --black->i;
+            ++black->i;
             eval = minimax(wall_matrix, boardsize, depth-1, NEG_INFINITY, INFINITY, white, black, true);
             if (eval < min_eval)
             {
@@ -212,7 +212,7 @@ returningMove *bestMove(char** wall_matrix, int boardsize, char pl, player* blac
                 best->x = black->i;
                 best->y = black->j;
             }
-            ++black->i;  // reset movement
+            --black->i;  // reset movement
         }
 
         // check wall placement
@@ -304,7 +304,16 @@ float minimax(char** wall_matrix, int boardsize, char depth, float alpha, float 
         
         // check pawn advancement
         float max_eval = NEG_INFINITY;
-        
+        if (white->i < boardsize - 1 && !wallAbove(white->i, white->j, wall_matrix, boardsize) && !(white->i + 1 == black->i && white->j == black->j)) // up
+        {
+            ++white->i;
+            eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, false);
+            max_eval = max(max_eval, eval);
+            alpha = max(alpha, eval);
+            --white->i;  // reset movement
+            if (beta <= alpha) return max_eval;
+        }
+
         if (white->i > 0 && !wallBelow(white->i, white->j, wall_matrix, boardsize) && !(white->i - 1 == black->i && white->j == black->j))  // down
         {
             --white->i;
@@ -335,15 +344,6 @@ float minimax(char** wall_matrix, int boardsize, char depth, float alpha, float 
             if (beta <= alpha) return max_eval;
         }
 
-        if (white->i < boardsize - 1 && !wallAbove(white->i, white->j, wall_matrix, boardsize) && !(white->i + 1 == black->i && white->j == black->j)) // up
-        {
-            ++white->i;
-            eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, false);
-            max_eval = max(max_eval, eval);
-            alpha = max(alpha, eval);
-            --white->i;  // reset movement
-            if (beta <= alpha) return max_eval;
-        }
 
         // check wall placement
         for (int i = 1; i < boardsize; i++)
@@ -400,13 +400,13 @@ float minimax(char** wall_matrix, int boardsize, char depth, float alpha, float 
 
         // check pawn advancement
         float min_eval = INFINITY;
-        if (black->i < boardsize -1 && !wallAbove(black->i, black->j, wall_matrix, boardsize) && !(black->i + 1 == white->i && black->j == white->j))  // up
+        if (black->j > 0 && !wallOnTheLeft(black->i, black->j, wall_matrix, boardsize) && !(black->i == white->i && black->j - 1 == white->j))  // left
         {
-            ++black->i;
+            --black->j;
             eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, true);
             min_eval = min(min_eval, eval);
             beta = min(beta, eval);
-            --black->i;  // reset movement
+            ++black->j;  // reset movement
             if (beta <= alpha) return min_eval;
         }
 
@@ -430,13 +430,13 @@ float minimax(char** wall_matrix, int boardsize, char depth, float alpha, float 
             if (beta <= alpha) return min_eval;
         }
         
-        if (black->j > 0 && !wallOnTheLeft(black->i, black->j, wall_matrix, boardsize) && !(black->i == white->i && black->j - 1 == white->j))  // left
+        if (black->i < boardsize -1 && !wallAbove(black->i, black->j, wall_matrix, boardsize) && !(black->i + 1 == white->i && black->j == white->j))  // up
         {
-            --black->j;
+            ++black->i;
             eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, true);
             min_eval = min(min_eval, eval);
             beta = min(beta, eval);
-            ++black->j;  // reset movement
+            --black->i;  // reset movement
             if (beta <= alpha) return min_eval;
         }
 
