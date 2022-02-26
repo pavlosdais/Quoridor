@@ -360,6 +360,7 @@ float minimax(char** wall_matrix, int boardsize, char depth, float alpha, float 
                         eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, false);
                         max_eval = max(max_eval, eval);
                         wall_matrix[i][j] = 0;
+                        (*white)->walls++;
                         alpha = max(alpha, eval);
                         if (beta <= alpha) return max_eval;
                     }
@@ -376,6 +377,7 @@ float minimax(char** wall_matrix, int boardsize, char depth, float alpha, float 
                         eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, false);
                         max_eval = max(max_eval, eval);
                         wall_matrix[i][j] = 0;
+                        (*white)->walls++;
                         alpha = max(alpha, eval);
                         if (beta <= alpha) return max_eval;
                     }
@@ -451,6 +453,7 @@ float minimax(char** wall_matrix, int boardsize, char depth, float alpha, float 
                         eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, true);
                         min_eval = max(min_eval, eval);
                         wall_matrix[i][j] = 0;
+                        (*black)->walls++;
                         beta = min(beta, eval);
                         if (beta <= alpha) return min_eval;
                     }
@@ -468,6 +471,7 @@ float minimax(char** wall_matrix, int boardsize, char depth, float alpha, float 
                         min_eval = min(min_eval, eval);
                         beta = min(beta, eval);
                         wall_matrix[i][j] = 0;
+                        (*black)->walls++;
                         if (beta <= alpha) return min_eval;
                     }
                     // reset placement
