@@ -313,22 +313,32 @@ void genmove(player *white, player *black, char** wall_matrix, int boardsize, st
     }
 
     // search with depth 3
-    returningMove *m = bestMove(wall_matrix, boardsize, pl, black, white, 3);
+    returningMove *m = bestMove(wall_matrix, boardsize, pl, black, white, 4);
 
     if (m->move == 'w')  // ai placed a wall
     {
+        wall_matrix[m->x][m->y] = m->orientation;
+        if (pl == 'w') --white->walls;
+        else --black->walls;
+
         if (m->orientation == 'b') 
-        {
             printf("= %c%d %c\n\n", 'A'+m->y, m->x+1, 'h');
-        }
             
         else  // m->orientation == 'r'
-        {
             printf("= %c%d %c\n\n", 'A'+m->y, m->x+1, 'v');
-        }
     }
     else   // ai placed made a pawn advancement
     {
+        if (pl == 'w')
+        {
+            white->i = m->x;
+            white->j = m->y;
+        }
+        else
+        {
+            black->i = m->x;
+            black->j = m->y;
+        }
         printf("= %c%d\n\n", 'A'+m->y, m->x+1);
     }
     fflush(stdout);
