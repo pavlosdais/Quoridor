@@ -1,4 +1,3 @@
- #include <float.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "helper_commands.h"
@@ -159,7 +158,7 @@ returningMove *bestMove(char** wall_matrix, int boardsize, char pl, player* blac
         // check each possible move
 
         // check pawn advancement
-        if (black->i > 0 && !wallBelow(black->i, black->j, wall_matrix, boardsize) && !(black->i - 1 == white->i && black->j -1 == white->j))  // down
+        if (black->i > 0 && !wallBelow(black->i, black->j, wall_matrix, boardsize) && !(black->i - 1 == white->i && black->j == white->j))  // down
         {
             --black->i;
             eval = minimax(wall_matrix, boardsize, depth-1, NEG_INFINITY, INFINITY, white, black, true);
@@ -218,10 +217,10 @@ returningMove *bestMove(char** wall_matrix, int boardsize, char pl, player* blac
         // check wall placement
         for (int i = 1; i < boardsize-1; i++)
         {
-            if (white->walls == 0) break;
+            if (black->walls == 0) break;
             for (int j = 0; j < boardsize-1; j++)
             {
-                if (white->walls == 0) break;
+                if (black->walls == 0) break;
                 if (!thereIsAWall('b', wall_matrix, boardsize, i, j) && is_vertex_valid(i, boardsize) && is_vertex_valid(j, boardsize))
                 {
                     wall_matrix[i][j] = 'b';  // place horizontal wall
@@ -443,6 +442,7 @@ float minimax(char** wall_matrix, int boardsize, char depth, float alpha, float 
         // check wall placement
         for (int i = 1; i < boardsize-1; i++)
         {
+            if (black->walls == 0) break;
             if (beta <= alpha) break;
             for (int j = 0; j < boardsize-1; j++)
             {
