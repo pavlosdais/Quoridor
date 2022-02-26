@@ -297,6 +297,7 @@ float minimax(char** wall_matrix, int boardsize, char depth, float alpha, float 
     }
 
     float eval;
+    char en;
     if (Maximizing)  // White
     {
         // check each possible move
@@ -355,35 +356,39 @@ float minimax(char** wall_matrix, int boardsize, char depth, float alpha, float 
                 {
                     (*white)->walls--;
                     wall_matrix[i][j] = 'b';  // place horizontal wall
+                    en = 0;
                     if (there_is_a_path(wall_matrix, boardsize, *white, *black))
                     {
                         eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, false);
                         max_eval = max(max_eval, eval);
                         wall_matrix[i][j] = 0;
                         (*white)->walls++;
+                        en = 1;
                         alpha = max(alpha, eval);
                         if (beta <= alpha) return max_eval;
                     }
                     // reset placement
                     wall_matrix[i][j] = 0;
-                    (*white)->walls++;
+                    if (!en) (*white)->walls++;
                 }
                 if (!thereIsAWall('r', wall_matrix, boardsize, i, j) && is_vertex_valid(i, boardsize) && is_vertex_valid(j, boardsize) && i != 0)
                 {
                     (*white)->walls--;
                     wall_matrix[i][j] = 'r';  // place vertical wall
+                    en = 0;
                     if (there_is_a_path(wall_matrix, boardsize, *white, *black))
                     {
                         eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, false);
                         max_eval = max(max_eval, eval);
                         wall_matrix[i][j] = 0;
+                        en = 1;
                         (*white)->walls++;
                         alpha = max(alpha, eval);
                         if (beta <= alpha) return max_eval;
                     }
                     // reset placement
                     wall_matrix[i][j] = 0;
-                    (*white)->walls++;
+                    if (!en) (*white)->walls++;
                 } 
             }
         }
@@ -395,7 +400,6 @@ float minimax(char** wall_matrix, int boardsize, char depth, float alpha, float 
 
         // check pawn advancement
         float min_eval = INFINITY;
-        
         if ((*black)->i < boardsize -1 && !wallAbove((*black)->i, (*black)->j, wall_matrix, boardsize))  // up
         {
             ++(*black)->i;
@@ -448,10 +452,12 @@ float minimax(char** wall_matrix, int boardsize, char depth, float alpha, float 
                     if ((*black)->walls == 0) break;
                     (*black)->walls--;
                     wall_matrix[i][j] = 'b';  // place horizontal wall
+                    en = 0;
                     if (there_is_a_path(wall_matrix, boardsize, *white, *black)) 
                     {
                         eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, true);
                         min_eval = max(min_eval, eval);
+                        en = 1;
                         wall_matrix[i][j] = 0;
                         (*black)->walls++;
                         beta = min(beta, eval);
@@ -459,10 +465,11 @@ float minimax(char** wall_matrix, int boardsize, char depth, float alpha, float 
                     }
                     // reset placement
                     wall_matrix[i][j] = 0;
-                    (*black)->walls++;
+                    if (!en) (*black)->walls++;
                 }
                 if (!thereIsAWall('r', wall_matrix, boardsize, i, j) && is_vertex_valid(i, boardsize) && is_vertex_valid(j, boardsize))
                 {
+                    en = 0;
                     (*black)->walls--;
                     wall_matrix[i][j] = 'r';  // place vertical wall 
                     if (there_is_a_path(wall_matrix, boardsize, *white, *black))
@@ -471,12 +478,13 @@ float minimax(char** wall_matrix, int boardsize, char depth, float alpha, float 
                         min_eval = min(min_eval, eval);
                         beta = min(beta, eval);
                         wall_matrix[i][j] = 0;
+                        en = 1;
                         (*black)->walls++;
                         if (beta <= alpha) return min_eval;
                     }
                     // reset placement
                     wall_matrix[i][j] = 0; 
-                    (*black)->walls++;
+                    if (!en) (*black)->walls++;
                 }
             }
         }
