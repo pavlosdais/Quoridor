@@ -312,8 +312,8 @@ void genmove(player *white, player *black, char** wall_matrix, int boardsize, st
         return;
     }
 
-    // search with depth 4
-    returningMove *m = bestMove(wall_matrix, boardsize, pl, &black, &white, 4);
+    // search with depth 3
+    returningMove *m = bestMove(wall_matrix, boardsize, pl, &black, &white, 3);
 
     if (m->move == 'w')  // ai placed a wall
     {
