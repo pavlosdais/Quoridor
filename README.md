@@ -22,4 +22,4 @@ The first player who reaches any of the squares opposite his baseline is the win
 
 * > Make the executable file: make
 * > Clear excess object files: make clear
-* > Run the program: make run
+* > Run the program: make play
