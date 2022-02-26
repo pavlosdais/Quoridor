@@ -2,13 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <float.h>
 #include "helper_commands.h"
 #include "ai.h"
 
 #define BUFFER_SIZE 81
-#define INFINITY FLT_MAX
-#define NEG_INFINITY FLT_MIN
 
 typedef struct player
 {
@@ -325,7 +322,6 @@ void genmove(player *white, player *black, char** wall_matrix, int boardsize, st
     else   // ai placed made a pawn advancement
     {
         printf("= %c%d\n\n", 'A'+m->y, m->x+1);
-        printf("%d\n%d\n", m->y, m->x+1);
     }
 }
 
