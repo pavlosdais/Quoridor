@@ -321,10 +321,12 @@ void genmove(player *white, player *black, char** wall_matrix, int boardsize, st
             printf("= %c%d %c\n\n", 'A'+m->y, m->x+1, 'h');
         else  // m->orientation == 'r'
             printf("= %c%d %c\n\n", 'A'+m->y, m->x+1, 'v');
+        fflush(stdout);
     }
     else   // ai placed made a pawn advancement
     {
         printf("= %c%d\n\n", 'A'+m->y, m->x+1);
+        fflush(stdout);
     }
 }
 
@@ -374,9 +376,12 @@ void undo(char **wall_matrix, player *black, player *white, stackptr *last, int 
 
 void winner(player *white, player *black, int boardsize)
 {
-    if (white->i==boardsize-1) successful_response("true white");
-    else if (black->i==0) successful_response("true black");
-    else successful_response("false");
+    if (white->i==boardsize-1)
+        successful_response("true white");
+    else if (black->i==0)
+        successful_response("true black");
+    else
+        successful_response("false");
 }
 
 void showboard(char **w_mtx, int boardsize, player *black, player *white)
