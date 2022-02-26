@@ -144,12 +144,6 @@ returningMove *bestMove(char** wall_matrix, int boardsize, char pl, player* blac
                 } 
             }
         }
-        if (best->move == 'm')  // Ai moved the pawn
-        {
-            white->i = best->x;
-            white->j = best->y;
-        }
-        else white->walls--;
     }
     else  // black plays
     {
@@ -214,7 +208,7 @@ returningMove *bestMove(char** wall_matrix, int boardsize, char pl, player* blac
         }
 
         // check wall placement
-        for (int i = 1; i < boardsize-1; i++)
+        for (int i = boardsize-1; i > 0; i--)
         {
             if (black->walls == 0) break;
             for (int j = 0; j < boardsize-1; j++)
@@ -262,15 +256,7 @@ returningMove *bestMove(char** wall_matrix, int boardsize, char pl, player* blac
                 }
             }
         }
-        if (best->move == 'm')  // Ai moved the pawn
-        {
-            black->i = best->x;
-            black->j = best->y;
-        }
-        else black->walls--;
-
     }
-    if (best->move == 'w') wall_matrix[best->x][best->y] = best->or;  // Ai placed a wall
     return best;
 }
 
@@ -345,7 +331,9 @@ float minimax(char** wall_matrix, int boardsize, char depth, float alpha, float 
         // check wall placement
         for (int i = 1; i < boardsize; i++)
         {
+            if (depth == 1) break;
             if (white->walls == 0) break;
+            if (beta <= alpha) break;
             for (int j = 0; j < boardsize-1; j++)
             {
                 if (white->walls == 0) break;
@@ -439,8 +427,9 @@ float minimax(char** wall_matrix, int boardsize, char depth, float alpha, float 
         }
 
         // check wall placement
-        for (int i = 1; i < boardsize-1; i++)
+        for (int i = boardsize-1; i > 0; i--)
         {
+            if (depth == 1) break;
             if (black->walls == 0) break;
             if (beta <= alpha) break;
             for (int j = 0; j < boardsize-1; j++)
