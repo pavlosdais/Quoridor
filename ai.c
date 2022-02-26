@@ -9,6 +9,7 @@
 #define true 1
 #define false 0
 
+// Function Prototype
 float minimax(char** wall_matrix, int boardsize, char depth, float alpha, float beta, player** white, player** black, char Maximizing);
 
 typedef struct player
@@ -23,8 +24,8 @@ typedef struct returningMove
 {
     int x;
     int y;
-    char move;  // w for wall , m for move
-    char or;
+    char move;  // w for wall at (x,y), m for move at (x,y)
+    char or;  // orientation of the wall
 }
 returningMove;
 
@@ -33,7 +34,7 @@ returningMove *bestMove(char** wall_matrix, int boardsize, char pl, player** bla
     float eval;
     returningMove *best;
 
-    if (pl == 'w')
+    if (pl == 'w')  // white plays
     {
         // check each possible move
 
@@ -118,6 +119,7 @@ returningMove *bestMove(char** wall_matrix, int boardsize, char pl, player** bla
                             best->y = j;
                         }
                     }
+                    // reset placement
                     (*white)->walls++;
                     wall_matrix[i][j] = 0;
                 }
@@ -138,19 +140,20 @@ returningMove *bestMove(char** wall_matrix, int boardsize, char pl, player** bla
                             best->y = j;
                         }
                     }
+                    // reset placement
                     (*white)->walls++;
                     wall_matrix[i][j] = 0;
                 } 
             }
         }
-        if (best->move == 'm')
+        if (best->move == 'm')  // Ai moved the pawn
         {
             (*white)->i = best->x;
             (*white)->j = best->y;
         }
         else (*white)->walls--;
     }
-    else  // pl == 'b'
+    else  // black plays
     {
         float min_eval = INFINITY;
         // check each possible move
@@ -235,6 +238,7 @@ returningMove *bestMove(char** wall_matrix, int boardsize, char pl, player** bla
                             best->y = j;
                         }
                     }
+                    // reset placement
                     (*black)->walls++;
                     wall_matrix[i][j] = 0;
                 }
@@ -245,7 +249,6 @@ returningMove *bestMove(char** wall_matrix, int boardsize, char pl, player** bla
                     if (there_is_a_path(wall_matrix, boardsize, *white, *black))
                     {
                         eval = minimax(wall_matrix, boardsize, depth-1, NEG_INFINITY, INFINITY, white, black, true);
-                        wall_matrix[i][j] = 0;  // reset placement
                         if (eval < min_eval)
                         {
                             min_eval = eval;
@@ -255,12 +258,13 @@ returningMove *bestMove(char** wall_matrix, int boardsize, char pl, player** bla
                             best->y = j;
                         }
                     }
+                    // reset placement
                     wall_matrix[i][j] = 0;
                     (*black)->walls++;
                 }
             }
         }
-        if (best->move == 'm')
+        if (best->move == 'm')  // Ai moved the pawn
         {
             (*black)->i = best->x;
             (*black)->j = best->y;
@@ -268,15 +272,20 @@ returningMove *bestMove(char** wall_matrix, int boardsize, char pl, player** bla
         else (*black)->walls--;
 
     }
-    if (best->move == 'w') wall_matrix[best->x][best->y] = best->or;
+    if (best->move == 'w') wall_matrix[best->x][best->y] = best->or;  // Ai placed a wall
     return best;
 }
 
-// initial call -> minimax(currentPosition, depth, -infinity, +infinity, true)
+/*
+sources: https://en.wikipedia.org/wiki/Minimax
+         https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning
+*/
+
 float minimax(char** wall_matrix, int boardsize, char depth, float alpha, float beta, player** white, player** black, char Maximizing)
 {
-    if (depth == 0 || (*white)->i == boardsize-1 || (*black)->i == 0)  // End of search - base case
+    if (depth == 0 || (*white)->i == boardsize-1 || (*black)->i == 0)  // Base case
     {
+        // Evaluate the position
         float positionEval;
         if(!positionEvaluation(*black, *white, boardsize, wall_matrix, &positionEval))
         {
@@ -288,14 +297,14 @@ float minimax(char** wall_matrix, int boardsize, char depth, float alpha, float 
     }
 
     float eval;
-    if (Maximizing)
+    if (Maximizing)  // White
     {
         // check each possible move
         
         // check pawn advancement
         float max_eval = NEG_INFINITY;
         
-        if ((*white)->i > 0 && !wallBelow((*white)->i, (*white)->j, wall_matrix, boardsize))
+        if ((*white)->i > 0 && !wallBelow((*white)->i, (*white)->j, wall_matrix, boardsize))  // down
         {
             --(*white)->i;
             eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, false);
@@ -350,12 +359,13 @@ float minimax(char** wall_matrix, int boardsize, char depth, float alpha, float 
                     {
                         eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, false);
                         max_eval = max(max_eval, eval);
-                        wall_matrix[i][j] = 0;  // reset placement
+                        wall_matrix[i][j] = 0;
                         alpha = max(alpha, eval);
                         if (beta <= alpha) return max_eval;
                     }
-                    (*white)->walls++;
+                    // reset placement
                     wall_matrix[i][j] = 0;
+                    (*white)->walls++;
                 }
                 if (!thereIsAWall('r', wall_matrix, boardsize, i, j) && is_vertex_valid(i, boardsize) && is_vertex_valid(j, boardsize) && i != 0)
                 {
@@ -365,18 +375,19 @@ float minimax(char** wall_matrix, int boardsize, char depth, float alpha, float 
                     {
                         eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, false);
                         max_eval = max(max_eval, eval);
-                        wall_matrix[i][j] = 0; // reset placement
+                        wall_matrix[i][j] = 0;
                         alpha = max(alpha, eval);
                         if (beta <= alpha) return max_eval;
                     }
-                    (*white)->walls++;
+                    // reset placement
                     wall_matrix[i][j] = 0;
+                    (*white)->walls++;
                 } 
             }
         }
         return max_eval;
     }
-    else  // !maximizingPlayer
+    else  // !maximizingPlayer - Black
     {
         // check each possible move
 
@@ -439,10 +450,11 @@ float minimax(char** wall_matrix, int boardsize, char depth, float alpha, float 
                     {
                         eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, true);
                         min_eval = max(min_eval, eval);
-                        wall_matrix[i][j] = 0;  // reset placement
+                        wall_matrix[i][j] = 0;
                         beta = min(beta, eval);
                         if (beta <= alpha) return min_eval;
                     }
+                    // reset placement
                     wall_matrix[i][j] = 0;
                     (*black)->walls++;
                 }
@@ -458,7 +470,8 @@ float minimax(char** wall_matrix, int boardsize, char depth, float alpha, float 
                         wall_matrix[i][j] = 0;
                         if (beta <= alpha) return min_eval;
                     }
-                    wall_matrix[i][j] = 0;  // reset placement
+                    // reset placement
+                    wall_matrix[i][j] = 0; 
                     (*black)->walls++;
                 }
             }
