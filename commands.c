@@ -122,18 +122,17 @@ void playmove(char *buff, player *white, player *black, char** wall_mtx, int boa
     char *p = strtok(NULL, " ");
     if (!enough_arguments(p)) return;
 
-    player *pl = check_color(p, black, white);  // player
+    player *pl = check_color(p, black, white);  //player
+    player *op = (pl == white) ? black : white; //opponent
     if (pl == NULL)
     {
         unsuccessful_response("invalid syntax");
         return;
     }
 
-    player *op = (pl == white) ? black : white; // opponent
-
     // Get vertex
-    p = strtok(NULL, " ");
     if (!enough_arguments(p)) return;
+    p = strtok(NULL, " ");
 
     char vertex_y = p[0] - 'a';
     char vertex_x = atoi(p+1) - 1;
@@ -148,7 +147,7 @@ void playmove(char *buff, player *white, player *black, char** wall_mtx, int boa
         unsuccessful_response("illegal move");
         return;
     }
-    
+
     char ok;
     unsigned int dist = abs(pl->i - vertex_x) + abs(pl->j - vertex_y);
 
@@ -241,8 +240,12 @@ void playwall(char *buff, player *white, player *black, char** wall_matrix, int 
         unsuccessful_response("invalid syntax");
         return;
     }
-
-    if (!isValidWall(vertex_x, vertex_y, boardsize, wall_matrix, orientation))
+    else if (!is_vertex_valid(vertex_x, boardsize) || !is_vertex_valid(vertex_y, boardsize) || vertex_x == 0 || vertex_y == boardsize-1)  // orientation out of bounds
+    {
+        unsuccessful_response("illegal move");
+        return;
+    }
+    else if (thereIsAWall(orientation, wall_matrix, boardsize, vertex_x, vertex_y))  // there's already a wall there
     {
         unsuccessful_response("illegal move");
         return;
@@ -310,18 +313,24 @@ void genmove(player *white, player *black, char** wall_matrix, int boardsize, st
     }
 
     // search with depth 3
-    returningMove *m = bestMove(wall_matrix, boardsize, pl, &black, &white, 4);
+    returningMove *m = bestMove(wall_matrix, boardsize, pl, black, white, 3);
 
     if (m->move == 'w')  // ai placed a wall
     {
         if (m->orientation == 'b') 
+        {
             printf("= %c%d %c\n\n", 'A'+m->y, m->x+1, 'h');
+        }
+            
         else  // m->orientation == 'r'
+        {
             printf("= %c%d %c\n\n", 'A'+m->y, m->x+1, 'v');
+        }
     }
     else   // ai placed made a pawn advancement
+    {
         printf("= %c%d\n\n", 'A'+m->y, m->x+1);
-
+    }
     fflush(stdout);
 }
 
