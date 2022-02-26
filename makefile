@@ -23,5 +23,5 @@ clear:
 	rm -f *.o
 
 # run the program
-run:
+play:
 	./ipquoridor
