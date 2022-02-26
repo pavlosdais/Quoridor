@@ -195,6 +195,16 @@ char thereIsAWall(char or, char** wall_matrix, int boardsize, int vertex_x, int 
     return 0;
 }
 
+char isValidWall(int vertex_x, int vertex_y, int boardsize, char** wall_matrix, char orientation)
+{
+    if (!is_vertex_valid(vertex_x, boardsize) || !is_vertex_valid(vertex_y, boardsize) || vertex_x == 0 || vertex_y == boardsize-1)  // orientation out of bounds
+        return 0;
+    else if (thereIsAWall(orientation, wall_matrix, boardsize, vertex_x, vertex_y))  // there's already a wall there
+        return 0;
+    
+    return 1;
+}
+
 float max(int a, int b)
 {
     return a>b ? a:b;
