@@ -3,6 +3,8 @@
 #include <string.h>
 #include <ctype.h>
 #include "bfs.h"
+#define INFINITY 99999999
+#define NEG_INFINITY -99999999
 
 typedef struct player {
     int i;
@@ -137,6 +139,17 @@ the position is equal so neither player has an advantage.
 
 char positionEvaluation(player* black, player* white, int boardsize, char** wall_matrix, float *evaluation)
 {
+    if (black->i == 0)
+    {
+        *evaluation = NEG_INFINITY;
+        return 1;
+    }
+    else if (white->i == boardsize -1)
+    {
+        *evaluation = INFINITY;
+        return 1;
+    }
+
     // calculate the distance white needs to get to the end
     int whiteDistance = bfs(boardsize, wall_matrix, white->i, white->j, boardsize-1);
     if (whiteDistance == -2)
