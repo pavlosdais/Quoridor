@@ -167,11 +167,11 @@ void playmove(char *buff, player *white, player *black, char** wall_mtx, int boa
     {
         if (vertex_x == pl->i && op->i == pl->i && pl->j+vertex_y == 2*op->j) //in the same row, with opponent in the middle
         {
-            ok = !wallOnTheRight(op->i, op->j, wall_mtx, boardsize) && !!wallOnTheLeft(op->i, op->j, wall_mtx, boardsize);
+            ok = !wallOnTheRight(op->i, op->j, wall_mtx, boardsize) && !wallOnTheLeft(op->i, op->j, wall_mtx, boardsize);
         }
         else if (vertex_y == pl->j && op->j == pl->j && pl->i+vertex_x == 2*op->i) //in the same column, with opponent in the middle
         {
-            ok = !wallAbove(op->i, op->j, wall_mtx, boardsize) && !!wallBelow(op->i, op->j, wall_mtx, boardsize);
+            ok = !wallAbove(op->i, op->j, wall_mtx, boardsize) && !wallBelow(op->i, op->j, wall_mtx, boardsize);
         }
         else if (vertex_x != pl->i && vertex_y != pl->j)  //diagonally by 1 vertex
         {
