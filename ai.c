@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "helper_commands.h"
-#include "bfs.h"
 
 #define INFINITY 99999999
 #define NEG_INFINITY -99999999
