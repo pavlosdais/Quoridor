@@ -122,17 +122,18 @@ void playmove(char *buff, player *white, player *black, char** wall_mtx, int boa
     char *p = strtok(NULL, " ");
     if (!enough_arguments(p)) return;
 
-    player *pl = check_color(p, black, white);  //player
-    player *op = (pl == white) ? black : white; //opponent
+    player *pl = check_color(p, black, white);  // player
     if (pl == NULL)
     {
         unsuccessful_response("invalid syntax");
         return;
     }
 
+    player *op = (pl == white) ? black : white; // opponent
+
     // Get vertex
-    if (!enough_arguments(p)) return;
     p = strtok(NULL, " ");
+    if (!enough_arguments(p)) return;
 
     char vertex_y = p[0] - 'a';
     char vertex_x = atoi(p+1) - 1;
@@ -147,7 +148,7 @@ void playmove(char *buff, player *white, player *black, char** wall_mtx, int boa
         unsuccessful_response("illegal move");
         return;
     }
-
+    
     char ok;
     unsigned int dist = abs(pl->i - vertex_x) + abs(pl->j - vertex_y);
 
@@ -313,7 +314,7 @@ void genmove(player *white, player *black, char** wall_matrix, int boardsize, st
     }
 
     // search with depth 3
-    returningMove *m = bestMove(wall_matrix, boardsize, pl, &black, &white, 3);
+    returningMove *m = bestMove(wall_matrix, boardsize, pl, &black, &white, 4);
 
     if (m->move == 'w')  // ai placed a wall
     {
