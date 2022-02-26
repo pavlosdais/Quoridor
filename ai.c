@@ -4,8 +4,8 @@
 #include "helper_commands.h"
 #include "bfs.h"
 
-#define INFINITY 9999999999
-#define NEG_INFINITY -9999999999
+#define INFINITY 99999999
+#define NEG_INFINITY -99999999
 #define true 1
 #define false 0
 
