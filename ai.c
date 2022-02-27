@@ -4,7 +4,6 @@
 
 #define INFINITY 99999999
 #define NEG_INFINITY -99999999
-#define ERROR_VALLUE 100000000
 #define true 1
 #define false 0
 
@@ -43,7 +42,7 @@ returningMove bestMove(char** wall_matrix, int boardsize, char pl, player* black
         {
             ++white->i;
             eval = minimax(wall_matrix, boardsize, depth-1, NEG_INFINITY, INFINITY, white, black, false);
-            if (eval == ERROR_VALLUE)
+            if (eval == INFINITY)
             {
                 evalMove.move = -1;
                 return evalMove;
@@ -62,7 +61,7 @@ returningMove bestMove(char** wall_matrix, int boardsize, char pl, player* black
         {
             ++white->j;
             eval = minimax(wall_matrix, boardsize, depth-1, NEG_INFINITY, INFINITY, white, black, false);
-            if (eval == ERROR_VALLUE)
+            if (eval == INFINITY)
             {
                 evalMove.move = -1;
                 return evalMove;
@@ -81,7 +80,7 @@ returningMove bestMove(char** wall_matrix, int boardsize, char pl, player* black
         {
             --white->j;
             eval = minimax(wall_matrix, boardsize, depth-1, NEG_INFINITY, INFINITY, white, black, false);
-            if (eval == ERROR_VALLUE)
+            if (eval == INFINITY)
             {
                 evalMove.move = -1;
                 return evalMove;
@@ -100,7 +99,7 @@ returningMove bestMove(char** wall_matrix, int boardsize, char pl, player* black
         {
             --white->i;
             eval = minimax(wall_matrix, boardsize, depth-1, NEG_INFINITY, INFINITY, white, black, false);
-            if (eval == ERROR_VALLUE)
+            if (eval == INFINITY)
             {
                 evalMove.move = -1;
                 return evalMove;
@@ -129,7 +128,7 @@ returningMove bestMove(char** wall_matrix, int boardsize, char pl, player* black
                     if (there_is_a_path(wall_matrix, boardsize, white, black))
                     {
                         eval = minimax(wall_matrix, boardsize, depth-1, NEG_INFINITY, INFINITY, white, black, false);
-                        if (eval == ERROR_VALLUE)
+                        if (eval == INFINITY)
                         {
                             evalMove.move = -1;
                             return evalMove;
@@ -155,7 +154,7 @@ returningMove bestMove(char** wall_matrix, int boardsize, char pl, player* black
                     if (there_is_a_path(wall_matrix, boardsize, white, black))
                     {
                         eval = minimax(wall_matrix, boardsize, depth-1, NEG_INFINITY, INFINITY, white, black, false);
-                        if (eval == ERROR_VALLUE)
+                        if (eval == INFINITY)
                         {
                             evalMove.move = -1;
                             return evalMove;
@@ -186,7 +185,7 @@ returningMove bestMove(char** wall_matrix, int boardsize, char pl, player* black
         {
             --black->i;
             eval = minimax(wall_matrix, boardsize, depth-1, NEG_INFINITY, INFINITY, white, black, true);
-            if (eval == ERROR_VALLUE)
+            if (eval == INFINITY)
             {
                 evalMove.move = -1;
                 return evalMove;
@@ -205,7 +204,7 @@ returningMove bestMove(char** wall_matrix, int boardsize, char pl, player* black
         {
             ++black->j;
             eval = minimax(wall_matrix, boardsize, depth-1, NEG_INFINITY, INFINITY, white, black, true);
-            if (eval == ERROR_VALLUE)
+            if (eval == INFINITY)
             {
                 evalMove.move = -1;
                 return evalMove;
@@ -224,7 +223,7 @@ returningMove bestMove(char** wall_matrix, int boardsize, char pl, player* black
         {
             --black->j;
             eval = minimax(wall_matrix, boardsize, depth-1, NEG_INFINITY, INFINITY, white, black, true);
-            if (eval == ERROR_VALLUE)
+            if (eval == INFINITY)
             {
                 evalMove.move = -1;
                 return evalMove;
@@ -243,7 +242,7 @@ returningMove bestMove(char** wall_matrix, int boardsize, char pl, player* black
         {
             ++black->i;
             eval = minimax(wall_matrix, boardsize, depth-1, NEG_INFINITY, INFINITY, white, black, true);
-            if (eval == ERROR_VALLUE)
+            if (eval == INFINITY)
             {
                 evalMove.move = -1;
                 return evalMove;
@@ -272,7 +271,7 @@ returningMove bestMove(char** wall_matrix, int boardsize, char pl, player* black
                     if (there_is_a_path(wall_matrix, boardsize, white, black))
                     {
                         eval = minimax(wall_matrix, boardsize, depth-1, NEG_INFINITY, INFINITY, white, black, true);
-                        if (eval == ERROR_VALLUE)
+                        if (eval == INFINITY)
                         {
                             evalMove.move = -1;
                             return evalMove;
@@ -297,7 +296,7 @@ returningMove bestMove(char** wall_matrix, int boardsize, char pl, player* black
                     if (there_is_a_path(wall_matrix, boardsize, white, black))
                     {
                         eval = minimax(wall_matrix, boardsize, depth-1, NEG_INFINITY, INFINITY, white, black, true);
-                        if (eval == ERROR_VALLUE)
+                        if (eval == INFINITY)
                         {
                             evalMove.move = -1;
                             return evalMove;
@@ -336,7 +335,7 @@ float minimax(char** wall_matrix, int boardsize, char depth, float alpha, float 
         {
             printf("? allocation failure\n\n");
             fflush(stdout);
-            return ERROR_VALLUE;
+            return INFINITY;
         }
         return positionEval;
     }
@@ -392,7 +391,7 @@ float minimax(char** wall_matrix, int boardsize, char depth, float alpha, float 
         // check wall placement
         for (int i = 1; i < boardsize; i++)
         {
-            if (depth == 1) break;
+            //if (depth == 1) break;
             if (white->walls == 0 || beta <= alpha) break;
             for (int j = 0; j < boardsize-1; j++)
             {
@@ -490,7 +489,7 @@ float minimax(char** wall_matrix, int boardsize, char depth, float alpha, float 
         // check wall placement
         for (int i = boardsize-1; i > 0; i--)
         {
-            if (depth == 1) break;
+            //if (depth == 1) break;
             if (black->walls == 0 || beta <= alpha) break;
             for (int j = 0; j < boardsize-1; j++)
             {
