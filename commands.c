@@ -30,12 +30,10 @@ char **allocate_memory(int boardsize);
 void free_array(char **A, int boardsize);
 char command_num(char *ans);
 void reset_pawns(int boardsize, player *white, player *black);
-void free_stack(stackptr *top);
 
 void print_name(char *p)
 {
-    successful_response( p);
-    fflush(stdout);
+    successful_response(p);
 }
 
 void known_command()
@@ -61,20 +59,15 @@ void update_boardsize(int *boardsize, int *prev_boardsize, char ***wall_matrix, 
 {
     char *p = strtok(NULL, " ");
     if (!enough_arguments(p)) return;
-    if (isNumber(p))
+    if (isNumber(p) && p[0] != '-')
     {
-        int t = atoi(p);
-        if (t < 0)
-        {
-            unsuccessful_response("invalid size");
-            return;
-        }
-        *boardsize = t;
-        
+        *boardsize = atoi(p);
+
+        // free previous grid
         free_array(*wall_matrix, *prev_boardsize);
         free(*wall_matrix);
 
-        // allocate memory for the new matrix
+        // allocate memory for the new grid
         *wall_matrix = allocate_memory(*boardsize);
         if (wall_matrix == NULL)
             unsuccessful_response("Error! Can not allocate memory");
@@ -105,6 +98,8 @@ void clear_board(int boardsize, char **wall_matrix, player *white, player *black
     // white's and black's pawns return to their starting position
     reset_pawns(boardsize, white, black);
     *totalmoves = 0;
+
+    // clear history
     stackptr temp = NULL;
     while (*history != NULL)
     {
@@ -120,7 +115,7 @@ void update_walls(player *black, player *white, int* number_of_walls)
     char *p = strtok(NULL, " ");   // number of walls
     if (!enough_arguments(p)) return;
 
-    if (isNumber(p))
+    if (isNumber(p) && p[0] != '-')
     {
         *number_of_walls = atoi(p);
         black->walls = *number_of_walls;
@@ -319,9 +314,8 @@ void genmove(player *white, player *black, char** wall_matrix, int boardsize, st
         return;
     }
 
-    // search with depth 4
+    // search with depth 3
     returningMove evalMove = bestMove(wall_matrix, boardsize, pl, black, white, 3);
-
     if (evalMove.move == 'w')  // ai placed a wall
     {
         wall_matrix[evalMove.x][evalMove.y] = evalMove.orientation;
@@ -338,7 +332,7 @@ void genmove(player *white, player *black, char** wall_matrix, int boardsize, st
         char ok = addMove(lastaddr, evalMove.x, evalMove.y, type);
         if (ok) (*totalmoves)++;
     }
-    else if(evalMove.move == 'm')  // ai placed made a pawn advancement
+    else if (evalMove.move == 'm')  // ai placed made a pawn advancement
     {
         char *type = (pl == 'w') ? "wm" : "bm";
         char ok;
@@ -357,10 +351,8 @@ void genmove(player *white, player *black, char** wall_matrix, int boardsize, st
         if (ok) (*totalmoves)++;
         printf("= %c%d\n\n", 'A'+evalMove.y, evalMove.x+1);
     }
-    else  // error in memory allocation
-    {
-        printf("? allocation failure\n\n");
-    }
+    else return;  // memory allocation problem
+
     fflush(stdout);
 }
 
@@ -503,7 +495,18 @@ void showboard(char **w_mtx, int boardsize, player *black, player *white)
     fflush(stdout);
 }
 
-// Functions needed in main
+// Functions needed in main program
+
+void reset_pawns(int boardsize, player *white, player *black)
+{
+    // White's position
+    white->i = 0;
+    white->j = boardsize / 2;
+
+    // Black's position
+    black->i = boardsize - 1;
+    black->j = boardsize / 2;
+}
 
 char command_num(char *ans)
 {
@@ -581,15 +584,4 @@ void command_preprocess(char *buff)
         whsp = 0;
     }
     buff[j] = '\0';
-}
-
-void reset_pawns(int boardsize, player *white, player *black)
-{
-    // White's position
-    white->i = 0;
-    white->j = boardsize / 2;
-
-    // Black's position
-    black->i = boardsize - 1;
-    black->j = boardsize / 2;
 }
