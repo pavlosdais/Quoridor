@@ -1,11 +1,6 @@
 typedef struct player player;
 typedef struct stacknode *stackptr;
 
-void unsuccessful_response(char *msg);
-void successful_response(char *msg);
-char **allocate_memory(int boardsize);
-void free_array(char **A, int boardsize);
-char command_num(char *ans);
 void print_name(char *p);
 void known_command(void);
 void list_commands();
@@ -18,6 +13,10 @@ void genmove(player *white, player *black, char** wall_matrix, int boardsize, st
 void undo(char **wall_matrix, player *black, player *white, stackptr *last, int *totalmoves);
 void winner(player *white, player *black, int boardsize);
 void showboard(char **w_mtx, int boardsize, player *black, player *white);
+char command_num(char *ans);
 void command_preprocess(char *buff);
 void reset_pawns(int boardsize, player *white, player *black);
-void free_stack(stackptr *top);
+char **allocate_memory(int boardsize);
+void free_array(char **A, int boardsize);
+void unsuccessful_response(char *msg);
+void successful_response(char *msg);
