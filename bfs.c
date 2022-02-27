@@ -67,8 +67,17 @@ int bfs(int boardsize, char**m, int startx, int starty, int goalx)
         }
 
         // enqueue adjecent cells
-        if (!explore_neighbours(&q, nr, nc, boardsize, m, have_visited, &nodes_next_in_layer)) return -2;  // error in enqueuing adject cells 
-
+        if (!explore_neighbours(&q, nr, nc, boardsize, m, have_visited, &nodes_next_in_layer))  // error in enqueuing adject cells
+        {
+            QueueNode *tmp = NULL;
+            while(q.head != NULL)
+            {
+                tmp = q.head;
+                q.head = q.head->next;
+                free(tmp);
+            }
+            return -2;
+        }
         if (--nodes_left_in_layer == 0)
         {
             nodes_left_in_layer = nodes_next_in_layer;
@@ -169,6 +178,6 @@ void dequeue(queue *q, int *i, int*j)
     q->head = q->head->next;
     free(tmp);
 
-    // empty queue
+    // reset empty queue
     if (isQueueEmpty(q)) q->tail = NULL;
 }
