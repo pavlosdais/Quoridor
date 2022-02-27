@@ -250,12 +250,7 @@ void playwall(char *buff, player *white, player *black, char** wall_matrix, int 
         unsuccessful_response("invalid syntax");
         return;
     }
-    else if (!is_vertex_valid(vertex_x, boardsize) || !is_vertex_valid(vertex_y, boardsize) || vertex_x == 0 || vertex_y == boardsize-1)  // orientation out of bounds
-    {
-        unsuccessful_response("illegal move");
-        return;
-    }
-    else if (thereIsAWall(orientation, wall_matrix, boardsize, vertex_x, vertex_y))  // there's already a wall there
+    else if (!isValidWall(vertex_x, vertex_y, boardsize, wall_matrix, orientation))
     {
         unsuccessful_response("illegal move");
         return;
