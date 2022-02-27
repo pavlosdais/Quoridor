@@ -26,20 +26,16 @@ struct stacknode {
 int main(int argc, char* argv[])
 {
     char *p, m;
-    int prev_boardsize = 9, number_of_walls;
-
-    char* buff = malloc(sizeof(char) * BUFFER_SIZE);
-    
     // default values
-    int boardsize = 9;
-    player black, white;
+    int boardsize = 9, number_of_walls = 10, prev_boardsize = 9;
 
+    player black, white;
     reset_pawns(boardsize, &white, &black);  // default walues
     black.walls = white.walls = 10;
     
     /* 
-    Wall_matrix is used to represent if a wall begins next to a specific cell. for example wall_matrix[2][5] informs us
-    about whether or not a wall starts next to the cell (3,6) or else F3. For that purpose we use a character.
+    Wall_matrix is used to represent if a wall begins next to a specific cell. for example wall_matrix[2][5] informs us about whether or not
+    a wall starts next to the cell (3,6) or else F3. For that purpose we use a character.
     If the character is 'b' it means that a horizontal wall of length 2 has been placed below the specific cell and the cell on its right.
     If the character is 'r' it means that a vertical wall of length 2 has been placed on the right of the specific cell and the cell below.
     If not the character is the one with ascii code 0, as initialized by the following calloc. Since no walls cannot stack on top of another 
@@ -62,7 +58,7 @@ int main(int argc, char* argv[])
 
     stackptr history = NULL;
     int totalmoves = 0;
-
+    char* buff = malloc(sizeof(char) * BUFFER_SIZE);
     while (1)
     {
         fgets(buff, BUFFER_SIZE, stdin);
@@ -75,66 +71,52 @@ int main(int argc, char* argv[])
             continue;
         }
 
-        // command
-        p = strtok(buff, " ");
+        p = strtok(buff, " "); // command
         
         if ((m = command_num(p)) == 1)  // name
-        {
-            print_name(" SP Quoridor");
-        }
+            print_name("SP Quoridor");
+
         else if (m == 2)  // known_command
-        {
             known_command();
-        }
+
         else if (m == 3)  // list_commands
-        {
             list_commands();
-        }
+
         else if (m == 4)  // quit
         {
             successful_response("");
             break;
         }
+
         else if (m == 5)  // boardsize
-        {
             update_boardsize(&boardsize, &prev_boardsize, &wall_matrix, &white, &black, &history, &totalmoves);
-        }
+
         else if (m == 6)  // clear_board
-        {
             clear_board(boardsize, wall_matrix, &white, &black, &history, &totalmoves);
-        }
+
         else if (m == 7)  // walls
-        {
             update_walls(&black, &white, &number_of_walls);
-        }
+
         else if (m == 8) // playmove
-        {
             playmove(buff, &white, &black, wall_matrix, boardsize, &history, &totalmoves);
-        }
+
         else if (m == 9)  // playwall
-        {
             playwall(buff, &white, &black, wall_matrix, boardsize, &history, &totalmoves);
-        }
+
         else if (m == 10)  // genmove
-        {
             genmove(&white, &black, wall_matrix, boardsize, &history, &totalmoves);
-        }
+
         else if (m == 11)  // undo
-        {
             undo(wall_matrix, &black, &white, &history, &totalmoves);
-        }
+
         else if (m == 12)  // winner
-        {
             winner(&white, &black, boardsize);
-        }
+
         else if (m == 13)  // showboard
-        {
-            showboard(wall_matrix, boardsize, &black, &white);    
-        }
+            showboard(wall_matrix, boardsize, &black, &white);   
+
         else  // command not recognized
-        {
             unsuccessful_response("unknown command");
-        }
     }
 
     // clear history
