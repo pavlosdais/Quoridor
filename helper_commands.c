@@ -3,8 +3,6 @@
 #include <string.h>
 #include <ctype.h>
 #include "bfs.h"
-#define INFINITY 99999999
-#define NEG_INFINITY -99999999
 
 typedef struct player {
     int i;
@@ -55,6 +53,21 @@ player *check_color(char *p, player *black, player *white)
         return NULL;
 }
 
+char colorValue(char *p)
+{
+    // returns the color's value
+    if (strcmp(p, "white") == 0)
+        return 'w';
+    else if (strcmp(p, "w") == 0)
+        return 'w';
+    else if (strcmp(p, "black") == 0)
+        return 'b';
+    else if (strcmp(p, "b") == 0)
+        return 'b';
+    else
+        return -1;
+}
+
 char check_orientation(char *orientation)
 {
     // returns b for horizontal, r for vertical and -1 for unknown orientation
@@ -86,7 +99,7 @@ char there_is_a_path(char **wall_matrix, int boardsize, player *white, player *b
     /* returns 1 if the path is not being blocked for neither player, -1 if it's blocked for at least one 
     player and -2 if there's an error in allocating enough memory for the calculation */
 
-    int steps = bfs(boardsize, wall_matrix, boardsize/2, boardsize-1, 0);  // black wins if he gets to the first row
+    int steps = bfs(boardsize, wall_matrix, black->i, black->j, 0);  // black wins if he gets to the first row
     if (steps == -1)
         return 0;  
     else if (steps == -2)
@@ -97,64 +110,6 @@ char there_is_a_path(char **wall_matrix, int boardsize, player *white, player *b
     else if (steps == -2)
         return -1;
 
-    return 1;
-}
-
-char addMove(stackptr *last, int i, int j, char *type)
-{
-    stackptr temp = *last;
-    *last = malloc(sizeof(struct stacknode));
-    if (*last == NULL)
-    {
-        printf("? allocation failure\n\n");
-        fflush(stdout);
-        return 0;
-    }
-    (*last)->i = i;
-    (*last)->j = j;
-    (*last)->type = type;
-    (*last)->next = temp;
-    return 1;
-}
-
-/*
-positionEvaluation is a heuristic function is used for the evaluation of the current situation of the game.
-It takes into account the distance each player from the end in order to win as well as the number of walls each player
-has in order to give an advantage (or lack of) for a certain player. When it's positive it calculates that the position
-iσ advantageous for white and when it's negative it calculates that black has an advantage. If it's 0 it means that
-the position is equal so neither player has an advantage.
-*/
-
-char positionEvaluation(player* black, player* white, int boardsize, char** wall_matrix, int *evaluation)
-{
-    if (black->i == 0)
-    {
-        *evaluation = NEG_INFINITY;
-        return 1;
-    }
-    else if (white->i == boardsize -1)
-    {
-        *evaluation = INFINITY;
-        return 1;
-    }
-
-    // calculate the distance white needs to get to the end
-    int whiteDistance = bfs(boardsize, wall_matrix, white->i, white->j, boardsize-1);
-    if (whiteDistance == -2)
-    {
-        printf("? allocation failure\n\n");
-        fflush(stdout);
-        return 0;
-    }
-    // calculate the distance black needs to get to the end
-    int blackDistance = bfs(boardsize, wall_matrix, black->i, black->j, 0);
-    if (blackDistance == -2)
-    {
-        printf("? allocation failure\n\n");
-        fflush(stdout);
-        return 0;
-    }
-    *evaluation = 10*(blackDistance-whiteDistance) + 2*(white->walls-black->walls);
     return 1;
 }
 
@@ -208,11 +163,64 @@ char isValidWall(int vertex_x, int vertex_y, int boardsize, char** wall_matrix, 
     return 1;
 }
 
-char colorValue(char *p)
+char addMove(stackptr *last, int i, int j, char *type)
 {
-    if (strcmp(p, "white") == 0) return 'w';
-    else if (strcmp(p, "w") == 0) return 'w';
-    else if (strcmp(p, "black") == 0) return 'b';
-    else if (strcmp(p, "b") == 0) return 'b';
-    else return -1;
+    stackptr temp = *last;
+    *last = malloc(sizeof(struct stacknode));
+    if (*last == NULL)
+    {
+        printf("? allocation failure\n\n");
+        fflush(stdout);
+        return 0;
+    }
+    (*last)->i = i;
+    (*last)->j = j;
+    (*last)->type = type;
+    (*last)->next = temp;
+    return 1;
 }
+
+/*
+positionEvaluation is a heuristic function is used for the evaluation of the current situation of the game.
+It takes into account the distance each player from the end in order to win as well as the number of walls each player
+has in order to give an advantage (or lack of) for a certain player. When it's positive it calculates that the position
+iσ advantageous for white and when it's negative it calculates that black has an advantage. If it's 0 it means that
+the position is equal so neither player has an advantage.
+*/
+
+char positionEvaluation(player* black, player* white, int boardsize, char** wall_matrix, int *evaluation)
+{
+    #define WHITE_WIN 99999
+    #define BLACK_WIN -99999
+
+    if (black->i == 0)  // black won
+    {
+        *evaluation = BLACK_WIN;
+        return 1;
+    }
+    else if (white->i == boardsize -1)  // white won
+    {
+        *evaluation = WHITE_WIN;
+        return 1;
+    }
+
+    // calculate the distance white needs to get to the end
+    int whiteDistance = bfs(boardsize, wall_matrix, white->i, white->j, boardsize-1);
+    if (whiteDistance == -2)
+    {
+        printf("? allocation failure\n\n");
+        fflush(stdout);
+        return 0;
+    }
+    // calculate the distance black needs to get to the end
+    int blackDistance = bfs(boardsize, wall_matrix, black->i, black->j, 0);
+    if (blackDistance == -2)
+    {
+        printf("? allocation failure\n\n");
+        fflush(stdout);
+        return 0;
+    }
+    *evaluation = 10*(blackDistance-whiteDistance) + 3*(white->walls-black->walls);
+    return 1;
+}
+
