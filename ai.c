@@ -8,7 +8,7 @@
 #define false 0
 
 // Function Prototype
-float minimax(char** wall_matrix, int boardsize, char depth, float alpha, float beta, player* white, player* black, char Maximizing);
+float minimax(char** wall_matrix, int boardsize, unsigned char depth, float alpha, float beta, player* white, player* black, char Maximizing);
 
 typedef struct player
 {
@@ -27,7 +27,7 @@ typedef struct returningMove
 }
 returningMove;
 
-returningMove bestMove(char** wall_matrix, int boardsize, char pl, player* black, player* white, char depth)
+returningMove bestMove(char** wall_matrix, int boardsize, char pl, player* black, player* white, unsigned char depth)
 {
     int eval;
     returningMove evalMove;
@@ -38,7 +38,7 @@ returningMove bestMove(char** wall_matrix, int boardsize, char pl, player* black
 
         // check pawn advancement
         int max_eval = NEG_INFINITY;
-        if (white->i < boardsize - 1 && !wallAbove(white->i, white->j, wall_matrix, boardsize) && !(white->i + 1 == black->i && white->j == black->j))
+        if (white->i < boardsize - 1 && !wallAbove(white->i, white->j, wall_matrix, boardsize) && !(white->i + 1 == black->i && white->j == black->j))  // up
         {
             ++white->i;
             eval = minimax(wall_matrix, boardsize, depth-1, NEG_INFINITY, INFINITY, white, black, false);
@@ -57,7 +57,7 @@ returningMove bestMove(char** wall_matrix, int boardsize, char pl, player* black
             --white->i;  // reset movement
         }
 
-        if (white->j < boardsize - 1 && !wallOnTheRight(white->i, white->j, wall_matrix, boardsize) && !(white->i == black->i && white->j + 1 == black->j))
+        if (white->j < boardsize - 1 && !wallOnTheRight(white->i, white->j, wall_matrix, boardsize) && !(white->i == black->i && white->j + 1 == black->j))  // right
         {
             ++white->j;
             eval = minimax(wall_matrix, boardsize, depth-1, NEG_INFINITY, INFINITY, white, black, false);
@@ -95,7 +95,7 @@ returningMove bestMove(char** wall_matrix, int boardsize, char pl, player* black
             ++white->j;  // reset movement
         }
         
-        if (white->i > 0 && !wallBelow(white->i, white->j, wall_matrix, boardsize) && !(white->i - 1 == black->i && white->j == black->j))
+        if (white->i > 0 && !wallBelow(white->i, white->j, wall_matrix, boardsize) && !(white->i - 1 == black->i && white->j == black->j))  // down
         {
             --white->i;
             eval = minimax(wall_matrix, boardsize, depth-1, NEG_INFINITY, INFINITY, white, black, false);
@@ -325,7 +325,7 @@ sources: https://en.wikipedia.org/wiki/Minimax
          https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning
 */
 
-float minimax(char** wall_matrix, int boardsize, char depth, float alpha, float beta, player* white, player* black, char Maximizing)
+float minimax(char** wall_matrix, int boardsize, unsigned char depth, float alpha, float beta, player* white, player* black, char Maximizing)
 {
     if (depth == 0 || white->i == boardsize-1 || black->i == 0)  // Base case
     {
