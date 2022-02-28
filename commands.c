@@ -303,14 +303,13 @@ void genmove(player *white, player *black, char** wall_matrix, int boardsize, st
     if (!enough_arguments(p)) return;
     
     char pl;
-    if ((pl =colorValue(p)) == -1)
+    if ((pl=colorValue(p)) == -1)
     {
         unsuccessful_response("invalid syntax");
         return;
     }
 
-    // search with depth 3
-    returningMove evalMove = bestMove(wall_matrix, boardsize, pl, black, white, 3);
+    returningMove evalMove = bestMove(wall_matrix, boardsize, pl, black, white, depth(boardsize));
     if (evalMove.move == 'w')  // ai placed a wall
     {
         wall_matrix[evalMove.x][evalMove.y] = evalMove.orientation;
