@@ -70,7 +70,7 @@ void update_boardsize(int *boardsize, int *prev_boardsize, char ***wall_matrix, 
         // allocate memory for the new grid
         *wall_matrix = allocate_memory(*boardsize);
         if (wall_matrix == NULL)
-            unsuccessful_response("Error! Can not allocate memory");
+            unsuccessful_response("allocation failure");
 
         reset_pawns(*boardsize, white, black);
 
