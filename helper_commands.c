@@ -227,8 +227,7 @@ char positionEvaluation(player* black, player* white, int boardsize, char** wall
 
 unsigned char depth(int boardsize)
 {
-    if (boardsize <= 3) return 7;
-    else if (boardsize <= 5) return 6;
+    if (boardsize <= 5) return 6;
     else if (boardsize <= 7) return 4;
     else if (boardsize <= 11) return 3;
     else if (boardsize <= 15) return 2;
