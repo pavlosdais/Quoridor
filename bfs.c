@@ -30,15 +30,14 @@ char wallAbove(int i, int j, char **w_mtx, int boardsize);
 char wallOnTheRight(int i, int j, char **w_mtx, int boardsize);
 char wallOnTheLeft(int i, int j, char **w_mtx, int boardsize);
 
-/*
-Breadth-first search
+/* Breadth-first search
 -wiki page: https://en.wikipedia.org/wiki/Breadth-first_search
--algorithm: https://www.youtube.com/watch?v=KiCBXu4P-2Y
+-pathfinding algorithm: https://www.youtube.com/watch?v=KiCBXu4P-2Y
 Function returns the steps a cell requires moving only up, down, left and right from a certain cell (startx, starty)
 in order to reach a certain row goalx. In this context it calculates how many steps a player either with the black or white
-colour needs in order to reach the row and  win. In case of an allocating error it returns -2, and if such path doesn't 
-exist it returns -2, in any other case a positive integer.
-*/
+colour needs in order to reach the row and  win. In case of an allocating error it returns -2, and if such path doesn't
+exist it returns -2, in any other case a positive integer. */
+
 int bfs(int boardsize, char**m, int startx, int starty, int goalx)
 {
     char **have_visited = malloc(sizeof(char*) * boardsize);
