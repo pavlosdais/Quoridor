@@ -132,8 +132,8 @@ void playmove(char *buff, player *white, player *black, char** wall_mtx, int boa
     char *p = strtok(NULL, " ");
     if (!enough_arguments(p)) return;
 
-    player *pl = check_color(p, black, white);  //player
-    player *op = (pl == white) ? black : white; //opponent
+    player *pl = check_color(p, black, white);  // player
+    player *op = (pl == white) ? black : white;  // opponent
     if (pl == NULL)
     {
         unsuccessful_response("invalid syntax");
@@ -175,15 +175,15 @@ void playmove(char *buff, player *white, player *black, char** wall_mtx, int boa
     }
     else  // dist == 2
     {
-        if (vertex_x == pl->i && op->i == pl->i && pl->j+vertex_y == 2*op->j) //in the same row, with opponent in the middle
+        if (vertex_x == pl->i && op->i == pl->i && pl->j+vertex_y == 2*op->j) // in the same row, with opponent in the middle
         {
             ok = !wallOnTheRight(op->i, op->j, wall_mtx, boardsize) && !wallOnTheLeft(op->i, op->j, wall_mtx, boardsize);
         }
-        else if (vertex_y == pl->j && op->j == pl->j && pl->i+vertex_x == 2*op->i) //in the same column, with opponent in the middle
+        else if (vertex_y == pl->j && op->j == pl->j && pl->i+vertex_x == 2*op->i) // in the same column, with opponent in the middle
         {
             ok = !wallAbove(op->i, op->j, wall_mtx, boardsize) && !wallBelow(op->i, op->j, wall_mtx, boardsize);
         }
-        else if (vertex_x != pl->i && vertex_y != pl->j)  //diagonally by 1 vertex
+        else if (vertex_x != pl->i && vertex_y != pl->j)  // diagonally by 1 vertex
         {
             if (vertex_x == op->i && pl->j == op->j)
             {
@@ -206,6 +206,7 @@ void playmove(char *buff, player *white, player *black, char** wall_mtx, int boa
         return;
     }
     
+    // add pawn movement to history
     char *type = (pl == white) ? "wm" : "bm";
     ok = addMove(lastaddr, pl->i, pl->j, type);  // adding pawn's position to history before moving the pawn
     if (ok) 
@@ -258,9 +259,10 @@ void playwall(char *buff, player *white, player *black, char** wall_matrix, int 
 
     wall_matrix[vertex_x][vertex_y] = orientation;  // place wall
     
+    // check to see if by placing the wall the path towards the end is blocked for either player
     char path = there_is_a_path(wall_matrix, boardsize, white, black);
 
-    if (!path)  // by placing the wall the path is blocked
+    if (!path)  // by placing the wall the path is blocked for at least a player
     {
         wall_matrix[vertex_x][vertex_y] = 0;    // reset placing the wall
         unsuccessful_response("illegal move");
@@ -274,6 +276,7 @@ void playwall(char *buff, player *white, player *black, char** wall_matrix, int 
     }
     (pl->walls)--;
     
+    // add wall placement to history
     char *type = (pl == white) ? "ww" : "bw";
     char ok = addMove(lastaddr, vertex_x, vertex_y, type);
     if (ok)
@@ -310,23 +313,24 @@ void genmove(player *white, player *black, char** wall_matrix, int boardsize, st
     }
 
     returningMove evalMove = bestMove(wall_matrix, boardsize, pl, black, white, depth(boardsize));
-    if (evalMove.move == 'w')  // ai placed a wall
+    if (evalMove.move == 'w')  // ai evaluated placing a wall
     {
         wall_matrix[evalMove.x][evalMove.y] = evalMove.orientation;
         if (pl == 'w') --white->walls;
         else --black->walls;
 
-        if (evalMove.orientation == 'b') 
+        if (evalMove.orientation == 'b')  // horizontal
             printf("= %c%d %c\n\n", 'A'+evalMove.y, evalMove.x+1, 'h');
             
-        else  // m->orientation == 'r'
+        else  // vertical
             printf("= %c%d %c\n\n", 'A'+evalMove.y, evalMove.x+1, 'v');
         
+        // add wall placement to history
         char *type = (pl == 'w') ? "ww" : "bw";
         char ok = addMove(lastaddr, evalMove.x, evalMove.y, type);
         if (ok) (*totalmoves)++;
     }
-    else if (evalMove.move == 'm')  // ai placed made a pawn advancement
+    else if (evalMove.move == 'm')  // ai evaluated a pawn movement
     {
         char *type = (pl == 'w') ? "wm" : "bm";
         char ok;
@@ -346,7 +350,6 @@ void genmove(player *white, player *black, char** wall_matrix, int boardsize, st
         printf("= %c%d\n\n", 'A'+evalMove.y, evalMove.x+1);
     }
     else return;  // memory allocation problem
-
     fflush(stdout);
 }
 
@@ -517,7 +520,7 @@ char command_num(char *ans)
     else if (strcmp("undo", ans) == 0) return 11;
     else if (strcmp("winner", ans) == 0) return 12;
     else if (strcmp("showboard", ans) == 0) return 13;
-    else return 14;  // command was not recognized
+    else return 14;  // command not recognized
 }
 
 void successful_response(char *msg)
@@ -535,11 +538,11 @@ void unsuccessful_response(char *msg)
 char **allocate_memory(int boardsize)
 {
     char **A = malloc(boardsize*sizeof(char *));
-    if(A == NULL) return NULL;  // error allocating memory, exit
+    if (A == NULL) return NULL;  // error allocating memory, exit
     for (int i = 0; i < boardsize; i++)
     {
-        A[i] = calloc(boardsize, sizeof(char));  // error allocating memory, exit
-        if (A[i] == NULL) return NULL;
+        A[i] = calloc(boardsize, sizeof(char));
+        if (A[i] == NULL) return NULL;  // error allocating memory, exit
     }
 
     // no error in allocationg, return array
