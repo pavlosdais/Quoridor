@@ -20,7 +20,7 @@ struct stacknode {
 char isNumber(char *n)
 {
     int i = 0;
-    if (n[0] == '-') i = 1;
+    if (n[0] == '-') i = 1;  // potentially a negative number
     while(n[i] != '\n' && n[i] != '\0')
     {
         if (!isdigit(n[i]))
@@ -84,7 +84,7 @@ char check_orientation(char *orientation)
 
 char enough_arguments(char *argument)
 {
-    if (argument == NULL)   // not a valid argument
+    if (argument == NULL)  // not a valid argument
     {
         printf("? %s\n\n", "invalid syntax");
         fflush(stdout);
@@ -96,20 +96,22 @@ char enough_arguments(char *argument)
 
 char there_is_a_path(char **wall_matrix, int boardsize, player *white, player *black, char pl)
 {
-    /* returns 1 if the path is not being blocked for neither player, -1 if it's blocked for at least one 
-    player and -2 if there's an error in allocating enough memory for the calculation */
+    /* returns 1 if the path is not blocked for neither player, -1 if it's blocked for at least
+    one player and -2 if there's an error in allocating enough memory for the calculation */
 
-    int steps = bfs(boardsize, wall_matrix, black->i, black->j, 0);  // black wins if he gets to the first row
-    if (steps == -1)
-        return 0;  
-    else if (steps == -2)
-        return -1;
-    steps = bfs(boardsize, wall_matrix, white->i, white->j, boardsize-1);  // white wins if he gets to the last row
-    if (steps == -1)
+    int steps = bfs(boardsize, wall_matrix, white->i, white->j, boardsize-1);  // white wins if he gets to the last row
+    if (steps == -1)  // the path is blocked for white
         return 0;
-    else if (steps == -2)
+    else if (steps == -2)  // allocation failure
         return -1;
 
+    steps = bfs(boardsize, wall_matrix, black->i, black->j, 0);  // black wins if he gets to the first row
+    if (steps == -1)  // the path is blocked for black
+        return 0;  
+    else if (steps == -2)  // allocation failure
+        return -1;
+    
+    // the path is not blocked for neither player
     return 1;
 }
 
@@ -160,6 +162,7 @@ char isValidWall(int vertex_x, int vertex_y, int boardsize, char** wall_matrix, 
     else if (thereIsAWall(orientation, wall_matrix, boardsize, vertex_x, vertex_y))  // there's already a wall there
         return 0;
     
+    // in any other case, a valid wall placement
     return 1;
 }
 
@@ -180,25 +183,23 @@ char addMove(stackptr *last, int i, int j, char *type)
     return 1;
 }
 
-/*
-positionEvaluation is a heuristic function is used for the evaluation of the current situation of the game.
-It takes into account the distance each player from the end in order to win as well as the number of walls each player
-has in order to give an advantage (or lack of) for a certain player. When it's positive it calculates that the position
-iσ advantageous for white and when it's negative it calculates that black has an advantage. If it's 0 it means that
-the position is equal so neither player has an advantage.
-*/
+/* positionEvaluation is a heuristic function is used for the evaluation of the current situation of the game.
+It takes into account the distance each player needs in order to win as well as the number of walls each player
+has in order to give an advantage (or lack of) for a certain player. When it's positive it calculates that the
+position is advantageous for white and when it's negative it calculates that black has an advantage. If it's 0
+it means that the position is equal so neither player has an advantage. */
 
 char positionEvaluation(player* black, player* white, int boardsize, char** wall_matrix, int *evaluation)
 {
-    #define WHITE_WIN 99999
-    #define BLACK_WIN -99999
+    #define WHITE_WIN 999999
+    #define BLACK_WIN -999999
 
-    if (black->i == 0)  // black won
+    if (black->i == 0)  // black wins
     {
         *evaluation = BLACK_WIN;
         return 1;
     }
-    else if (white->i == boardsize -1)  // white won
+    else if (white->i == boardsize -1)  // white wins
     {
         *evaluation = WHITE_WIN;
         return 1;
