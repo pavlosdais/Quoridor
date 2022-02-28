@@ -220,7 +220,16 @@ char positionEvaluation(player* black, player* white, int boardsize, char** wall
         fflush(stdout);
         return 0;
     }
-    *evaluation = 10*(blackDistance-whiteDistance) + 3*(white->walls-black->walls);
+    *evaluation = 10*(blackDistance-whiteDistance) + 5*(white->walls-black->walls);
     return 1;
 }
 
+unsigned char depth(int boardsize)
+{
+    if (boardsize <= 3) return 7;
+    else if (boardsize <= 5) return 6;
+    else if (boardsize <= 7) return 4;
+    else if (boardsize <= 11) return 3;
+    else if (boardsize <= 15) return 2;
+    else return 1;
+}
