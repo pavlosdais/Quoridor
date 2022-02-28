@@ -7,10 +7,8 @@
 
 struct player
 {
-    /*
-    i and j will follow the matrix numbering, from 0 to n-1, and will refer to the cell (i+1,j+1)
-    eg if black.i is 3 and black.j is 6, it means that the black pawn is on (4,7) or else H4
-    */
+    /* i and j will follow the matrix numbering, from 0 to n-1, and will refer to the cell (i+1,j+1)
+    eg if black.i is 3 and black.j is 6, it means that the black pawn is on (4,7) or else H4 */
     int i;
     int j;
     int walls;
@@ -69,7 +67,6 @@ int main(int argc, char* argv[])
             unsuccessful_response("unknown command");
             continue;
         }
-
         p = strtok(buff, " "); // command
         
         if ((m = command_num(p)) == 1)  // name
@@ -126,10 +123,9 @@ int main(int argc, char* argv[])
         history = history->next;
         temp = history;
     }
-
-    free_array(wall_matrix, boardsize);
-    free(wall_matrix);
     free(history);
     free(buff);
+    free_array(wall_matrix, boardsize);
+    free(wall_matrix);
     return 0;
 }
