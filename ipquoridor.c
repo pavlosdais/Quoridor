@@ -33,8 +33,7 @@ int main(int argc, char* argv[])
     reset_pawns(boardsize, &white, &black);  // default walues
     black.walls = white.walls = 10;
     
-    /* 
-    Wall_matrix is used to represent if a wall begins next to a specific cell. for example wall_matrix[2][5] informs us about whether or not
+    /* Wall_matrix is used to represent if a wall begins next to a specific cell. for example wall_matrix[2][5] informs us about whether or not
     a wall starts next to the cell (3,6) or else F3. For that purpose we use a character.
     If the character is 'b' it means that a horizontal wall of length 2 has been placed below the specific cell and the cell on its right.
     If the character is 'r' it means that a vertical wall of length 2 has been placed on the right of the specific cell and the cell below.
@@ -49,9 +48,9 @@ int main(int argc, char* argv[])
     wall_matrix[3][3] might be 0, it does NOT necessarily mean that no wall EXISTS below or on the right of D4, but simply a wall does not START
     there. If wall_matrix[3][2] is 'b', the wall starting below C4 keeps going below D4, or if wall_matrix[4][3] is 'r', the wall starting on the
     right of D5 keeps going on the right of D4. The same applies for cells with 'r'/'b'. Even though a wall does not start
-    beneath them / on their right, it is possible that a wall starts below their left cell / on the right of the cell above and keeps going adjacently
-    to the specific cell.
-    */
+    beneath them / on their right, it is possible that a wall starts below their left cell / on the right of the cell above and keeps going
+    adjacently to the specific cell. */
+    
     char **wall_matrix = allocate_memory(boardsize);
     if (wall_matrix == NULL)
         unsuccessful_response("allocation failure");
