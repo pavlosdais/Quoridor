@@ -606,7 +606,7 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, float alpha,
             if (white->i > 0 && !wallBelow(white->i, white->j, wall_matrix, boardsize))
             {
                 (black->i)-=2;
-                eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, 1);
+                eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, true);
                 min_eval = min_eval < eval ? min_eval:eval;
                 beta = beta < eval ? beta:eval;
                 (black->i)+=2;  // reset movement
@@ -618,7 +618,7 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, float alpha,
                 {
                     --black->i;
                     ++black->j;
-                    eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, 1);
+                    eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, true);
                     min_eval = min_eval < eval ? min_eval:eval;
                     beta = beta < eval ? beta:eval;
                     ++black->i;  // reset movement
@@ -630,7 +630,7 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, float alpha,
                 {
                     --black->i;
                     --black->j;
-                    eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, 1);
+                    eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, true);
                     min_eval = min_eval < eval ? min_eval:eval;
                     beta = beta < eval ? beta:eval;
                     --black->i;  // reset movement
@@ -644,7 +644,7 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, float alpha,
             if (white->j > 0 && !wallOnTheLeft(white->i, white->j, wall_matrix, boardsize))
             {
                 (black->j)-=2;
-                eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, 1);
+                eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, true);
                 min_eval = min_eval < eval ? min_eval:eval;
                 beta = beta < eval ? beta:eval;
                 (black->j)+=2;  // reset movement
@@ -656,7 +656,7 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, float alpha,
                 {
                     --black->i;
                     --black->j;
-                    eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, 1);
+                    eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, true);
                     min_eval = min_eval < eval ? min_eval:eval;
                     beta = beta < eval ? beta:eval;
                     --black->i;  // reset movement
@@ -668,7 +668,7 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, float alpha,
                 {
                     ++black->i;
                     --black->j;
-                    eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, 1);
+                    eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, true);
                     min_eval = min_eval < eval ? min_eval:eval;
                     beta = beta < eval ? beta:eval;
                     --black->i;  // reset movement
@@ -682,7 +682,7 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, float alpha,
             if (white->j < boardsize - 1 && !wallOnTheRight(white->i, white->j, wall_matrix, boardsize))
             {
                 (black->j)+=2;
-                eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, 1);
+                eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, true);
                 min_eval = min_eval < eval ? min_eval:eval;
                 beta = beta < eval ? beta:eval;
                 (black->j)-=2;  // reset movement
@@ -694,7 +694,7 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, float alpha,
                 {
                     --black->i;
                     ++black->j;
-                    eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, 1);
+                    eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, true);
                     min_eval = min_eval < eval ? min_eval:eval;
                     beta = beta < eval ? beta:eval;
                     ++black->i;  // reset movement
@@ -706,7 +706,7 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, float alpha,
                 {
                     ++black->i;
                     ++black->j;
-                    eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, 1);
+                    eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, true);
                     min_eval = min_eval < eval ? min_eval:eval;
                     beta = beta < eval ? beta:eval;
                     --black->i;  // reset movement
@@ -720,7 +720,7 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, float alpha,
             if (white->i < boardsize - 1 && !wallAbove(white->i, white->j, wall_matrix, boardsize))
             {
                 (black->i)+=2;
-                eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, 1);
+                eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, true);
                 min_eval = min_eval < eval ? min_eval:eval;
                 beta = beta < eval ? beta:eval;
                 (black->i)-=2;  // reset movement
@@ -732,7 +732,7 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, float alpha,
                 {
                     ++black->i;
                     ++black->j;
-                    eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, 1);
+                    eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, true);
                     min_eval = min_eval < eval ? min_eval:eval;
                     beta = beta < eval ? beta:eval;
                     --black->i;  // reset movement
@@ -744,7 +744,7 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, float alpha,
                 {
                     ++black->i;
                     --black->j;
-                    eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, 1);
+                    eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, true);
                     min_eval = min_eval < eval ? min_eval:eval;
                     beta = beta < eval ? beta:eval;
                     --black->i;  // reset movement
@@ -757,7 +757,7 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, float alpha,
         if (black->i > 0 && !wallBelow(black->i, black->j, wall_matrix, boardsize) && !(black->i - 1 == white->i && black->j == white->j))  // down
         {
             --black->i;
-            eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, 1);
+            eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, true);
             min_eval = min_eval < eval ? min_eval:eval;
             beta = beta < eval ? beta:eval;
             ++black->i;  // reset movement
