@@ -601,7 +601,7 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, float alpha,
         // check pawn movement
         int min_eval = INFINITY;
 
-        if (black->i - 1 == white->i && black->j == white->j && !wallBelow(white->i, white->j, wall_matrix, boardsize)) //white below black
+        if (black->i - 1 == white->i && black->j == white->j && !wallBelow(black->i, black->j, wall_matrix, boardsize)) //white below black
         {
             if (white->i > 0 && !wallBelow(white->i, white->j, wall_matrix, boardsize))
             {
