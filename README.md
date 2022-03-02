@@ -1,5 +1,4 @@
 # Quoridor
-Problem set 4, Semester 1, Department of Informatics and Telecommunications - UoA (2022)
 
 * **Board**:
 Quoridor is played on a game board of 81 square cells (9x9) and each player starts with 10 walls. However, the game can be also played in different boardsizes and with a different number of starting walls.
@@ -23,3 +22,5 @@ The first player who reaches any of the squares opposite his baseline is the win
 * > Make the executable file: make
 * > Clear excess object files: make clear
 * > Run the program: make play
+
+Problem set 4, Semester 1, Department of Informatics and Telecommunications - UoA (2022)
