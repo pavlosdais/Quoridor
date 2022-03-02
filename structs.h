@@ -1,8 +1,8 @@
-#define INFINITY INT_MAX
-#define NEG_INFINITY INT_MIN
+#define BUFFER_SIZE 81
 #define true 1
 #define false 0
-#define BUFFER_SIZE 81
+#define INFINITY INT_MAX
+#define NEG_INFINITY INT_MIN
 
 typedef struct player {
     /* i and j will follow the matrix numbering, from 0 to n-1, and will refer to the cell (i+1,j+1)
