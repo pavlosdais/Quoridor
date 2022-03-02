@@ -595,7 +595,7 @@ returningMove bestMove(char** wall_matrix, int boardsize, char pl, player* black
                             evalMove.move = -1;
                             return evalMove;
                         }
-                        updateWallWallPlacementBlack(&evalMove, 'b', i, j, &eval, &max_eval);
+                        updateWallWallPlacementBlack(&evalMove, 'b', i, j, &eval, &min_eval);
                     }
                     resetWallPlacement(black, wall_matrix, i, j, 0);
                 }
@@ -610,7 +610,7 @@ returningMove bestMove(char** wall_matrix, int boardsize, char pl, player* black
                             evalMove.move = -1;
                             return evalMove;
                         }
-                        updateWallWallPlacementBlack(&evalMove, 'r', i, j, &eval, &max_eval);
+                        updateWallWallPlacementBlack(&evalMove, 'r', i, j, &eval, &min_eval);
                     }
                     resetWallPlacement(black, wall_matrix, i, j, 0);
                 }
@@ -629,7 +629,7 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, int alpha, i
     {
         // Evaluate the position
         int positionEval;
-        if(!positionEvaluation(black, white, boardsize, wall_matrix, &positionEval))
+        if(!positionEvaluation(*black, *white, boardsize, wall_matrix, &positionEval))
         {
             printf("? allocation failure\n\n");
             fflush(stdout);
@@ -647,7 +647,7 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, int alpha, i
         // check pawn movement
         int max_eval = NEG_INFINITY;
 
-        if (white->i+1 == black->i && white->j == black->j && !wallAbove(white->i, white->j, wall_matrix, boardsize)) // black above white
+        if (white->i+1 == black->i && white->j == black->j && !wallAbove(white->i, white->j, wall_matrix, boardsize))  // black above white
         {
             if (black->i < boardsize-1 && !wallAbove(black->i, black->j, wall_matrix, boardsize))
             {
@@ -826,10 +826,10 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, int alpha, i
 
         // check wall placement
         int lim = boardsize;
-        if (depth == 1) lim = boardsize/2+1;
+        if (depth == 1) lim = boardsize/3;
         for (int i = 1; i < lim; i++)
         {
-            if (white->walls == 0 || beta <= alpha) break;
+            if (beta <= alpha || white->walls == 0) break;
             for (int j = 0; j < boardsize-1; j++)
             {
                 if (white->walls == 0) break;
@@ -1051,10 +1051,10 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, int alpha, i
 
         // check wall placement
         int lim = 0;
-        if (depth == 1) lim = boardsize/2;
+        if (depth == 1) lim = boardsize/3;
         for (int i = boardsize-1; i > lim; i--)
         {
-            if (black->walls == 0 || beta <= alpha) break;
+            if (beta <= alpha || black->walls == 0) break;
             for (int j = 0; j < boardsize-1; j++)
             {
                 if (black->walls == 0) break;
@@ -1074,8 +1074,8 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, int alpha, i
                 }
                 if (!thereIsAWall('r', wall_matrix, boardsize, i, j))
                 {
-                    en = 0;
                     placeWall(black, wall_matrix, 'r', i, j);
+                    en = 0;
                     if (there_is_a_path(wall_matrix, boardsize, white, black))
                     {
                         eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, true);
