@@ -2,20 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "structs.h"
 #include "bfs.h"
-
-typedef struct player {
-    int i;
-    int j;
-    int walls;
-} player;
-
-typedef struct stacknode *stackptr;
-struct stacknode {
-    int i,j;
-    char *type; // 'b': black player left (i,j), 'w': white player left (i,j), 'n': new wall placed at (i,j)
-    stackptr next;
-};
 
 char isNumber(char *n)
 {
@@ -221,7 +209,7 @@ char positionEvaluation(player black, player white, int boardsize, char** wall_m
         fflush(stdout);
         return 0;
     }
-    *evaluation = 10*(blackDistance-whiteDistance);
+    *evaluation = 10*(blackDistance-whiteDistance) + 2*(white.i - black.i);
     return 1;
 }
 
