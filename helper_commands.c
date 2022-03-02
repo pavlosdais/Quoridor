@@ -109,7 +109,8 @@ char wallBelow(int i, int j, char **w_mtx, int boardsize)
     return (w_mtx[i][j]=='b' || (j>0 && w_mtx[i][j-1]=='b'));
 }
 
-char wallAbove(int i, int j, char **w_mtx, int boardsize) {
+char wallAbove(int i, int j, char **w_mtx, int boardsize)
+{
     if (i==boardsize-1) return 0;
     return wallBelow(i+1, j, w_mtx, boardsize);
 }
@@ -171,7 +172,7 @@ char addMove(stackptr *last, int i, int j, char *type)
     return 1;
 }
 
-/* positionEvaluation is a heuristic function is used for the evaluation of the current situation of the game.
+/* positionEvaluation is a heuristic function used for the evaluation of the current situation of the game.
 It takes into account the distance each player needs in order to win as well as the number of walls each player
 has in order to give an advantage (or lack of) for a certain player. When it's positive it calculates that the
 position is advantageous for white and when it's negative it calculates that black has an advantage. If it's 0
