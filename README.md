@@ -1,4 +1,4 @@
-# Quoridor AI based on minimax with alpha-beta pruning in C.
+# Quoridor AI based on minimax with alpha-beta pruning
 
 * **Board**:
 Quoridor is played on a game board of 81 square cells (9x9) and each player starts with 10 walls. However, the game can be also played in different boardsizes and with a different number of starting walls.
