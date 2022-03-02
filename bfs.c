@@ -14,31 +14,27 @@ QueueNode;
 
 typedef struct 
 {
-    QueueNode *head;
-    QueueNode *tail;
+    QueueNode* head;
+    QueueNode* tail;
 }
 queue;
 
 // Function Prototypes
-char explore_neighbours(queue *q, int cur_r, int cur_c, int boardsize, char**m, char**have_visited, int* nodes_next_in_layer);
-void init_queue(queue *q);
-char enqueue(queue *q, int i, int j);
-void dequeue(queue *q, int *i, int *j);
-char isQueueEmpty(queue *q);
-char wallBelow(int i, int j, char **w_mtx, int boardsize);
-char wallAbove(int i, int j, char **w_mtx, int boardsize);
-char wallOnTheRight(int i, int j, char **w_mtx, int boardsize);
-char wallOnTheLeft(int i, int j, char **w_mtx, int boardsize);
+char explore_neighbours(queue *q, int cur_r, int cur_c, int boardsize, char** m, char** have_visited, int* nodes_next_in_layer);
+void init_queue(queue* q);
+char enqueue(queue* q, int i, int j);
+void dequeue(queue* q, int* i, int* j);
+char isQueueEmpty(queue* q);
 
 /* Breadth-first search
 -wiki page: https://en.wikipedia.org/wiki/Breadth-first_search
 -pathfinding algorithm: https://www.youtube.com/watch?v=KiCBXu4P-2Y
 Function returns the steps a cell requires moving only up, down, left and right from a certain cell (startx, starty)
 in order to reach a certain row goalx. In this context it calculates how many steps a player either with the black or white
-colour needs in order to reach the row and  win. In case of an allocating error it returns -2, and if such path doesn't
+colour needs in order to reach the row and win. In case of an allocating error it returns -2, and if such path doesn't
 exist it returns -2, in any other case a positive integer. */
 
-int bfs(int boardsize, char**m, int startx, int starty, int goalx)
+int bfs(int boardsize, char** m, int startx, int starty, int goalx)
 {
     char **have_visited = malloc(sizeof(char*) * boardsize);
     if (have_visited == NULL) return -2;
@@ -101,13 +97,13 @@ int bfs(int boardsize, char**m, int startx, int starty, int goalx)
     return -1;
 }
 
-char explore_neighbours(queue *q, int cur_r, int cur_c, int boardsize, char**m, char**have_visited, int* nodes_next_in_layer)
+char explore_neighbours(queue* q, int cur_r, int cur_c, int boardsize, char** m, char** have_visited, int* nodes_next_in_layer)
 {
-    /*  matrices with the coordinates of adjacent cells of (c,r) 
+    /* matrices with the coordinates of adjacent cells of (c,r) 
     -south (c-1,r)
     -north (c+1,r)
     -east (c,r+1)
-    -west (c,r-1)  */
+    -west (c,r-1) */
     
     int dr[] = {-1, 1, 0, 0}, dc[] = {0, 0, 1, -1}, rr, cc;
 
@@ -134,19 +130,19 @@ char explore_neighbours(queue *q, int cur_r, int cur_c, int boardsize, char**m, 
     return 1;
 }
 
-void init_queue(queue *q)
+void init_queue(queue* q)
 {
     // Initialize Queue
     q->head = NULL;
     q->tail = NULL;
 }
 
-char isQueueEmpty(queue *q)
+char isQueueEmpty(queue* q)
 {
     return (q->head == NULL);
 }
 
-char enqueue(queue *q, int i, int j)
+char enqueue(queue* q, int i, int j)
 {
     QueueNode* newnode = malloc(sizeof(QueueNode));
     if (newnode == NULL) return 0;  // error in allocating memory for a new node
@@ -167,7 +163,7 @@ char enqueue(queue *q, int i, int j)
     return 1;  //  there was no problem in allocating memory for the new node
 }
 
-void dequeue(queue *q, int *i, int*j)
+void dequeue(queue* q, int* i, int* j)
 {
     if (q->head == NULL) return;
     QueueNode* tmp = q->head;
