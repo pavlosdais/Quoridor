@@ -189,24 +189,24 @@ has in order to give an advantage (or lack of) for a certain player. When it's p
 position is advantageous for white and when it's negative it calculates that black has an advantage. If it's 0
 it means that the position is equal so neither player has an advantage. */
 
-char positionEvaluation(player* black, player* white, int boardsize, char** wall_matrix, int *evaluation)
+char positionEvaluation(player black, player white, int boardsize, char** wall_matrix, int *evaluation)
 {
     #define WHITE_WIN 99999
     #define BLACK_WIN -99999
 
-    if (black->i == 0)  // black wins
+    if (black.i == 0)  // black wins
     {
         *evaluation = BLACK_WIN;
         return 1;
     }
-    else if (white->i == boardsize -1)  // white wins
+    else if (white.i == boardsize -1)  // white wins
     {
         *evaluation = WHITE_WIN;
         return 1;
     }
 
     // calculate the distance white needs to get to the end
-    int whiteDistance = bfs(boardsize, wall_matrix, white->i, white->j, boardsize-1);
+    int whiteDistance = bfs(boardsize, wall_matrix, white.i, white.j, boardsize-1);
     if (whiteDistance == -2)
     {
         printf("? allocation failure\n\n");
@@ -214,14 +214,14 @@ char positionEvaluation(player* black, player* white, int boardsize, char** wall
         return 0;
     }
     // calculate the distance black needs to get to the end
-    int blackDistance = bfs(boardsize, wall_matrix, black->i, black->j, 0);
+    int blackDistance = bfs(boardsize, wall_matrix, black.i, black.j, 0);
     if (blackDistance == -2)
     {
         printf("? allocation failure\n\n");
         fflush(stdout);
         return 0;
     }
-    *evaluation = 10*(blackDistance-whiteDistance) + 3*(white->walls-black->walls);
+    *evaluation = 10*(blackDistance-whiteDistance);
     return 1;
 }
 
