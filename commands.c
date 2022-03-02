@@ -38,7 +38,7 @@ void list_commands()
     fflush(stdout);
 }
 
-void update_boardsize(int *boardsize, int *prev_boardsize, char ***wall_matrix, player *white, player *black, stackptr* history, int *totalmoves)
+void update_boardsize(int* boardsize, int* prev_boardsize, char*** wall_matrix, player* white, player* black, stackptr* history, int* totalmoves)
 {
     char *p = strtok(NULL, " ");
     if (!enough_arguments(p)) return;
@@ -72,14 +72,14 @@ void update_boardsize(int *boardsize, int *prev_boardsize, char ***wall_matrix, 
         unsuccessful_response("invalid syntax");
 }
 
-void clear_board(int boardsize, char **wall_matrix, player *white, player *black, stackptr* history, int *totalmoves)
+void clear_board(int boardsize, char** wall_matrix, player white, player black, stackptr* history, int *totalmoves)
 {
     for (int i = 0; i < boardsize; i++) 
         for (int j = 0; j < boardsize; j++) 
             wall_matrix[i][j] = 0;
     
     // white's and black's pawns return to their starting position
-    reset_pawns(boardsize, white, black);
+    reset_pawns(boardsize, &white, &black);
     *totalmoves = 0;
 
     // clear history
@@ -93,7 +93,7 @@ void clear_board(int boardsize, char **wall_matrix, player *white, player *black
     successful_response("");
 }
 
-void update_walls(player *white, player *black, int* number_of_walls)
+void update_walls(player* white, player* black, int* number_of_walls)
 {
     char *p = strtok(NULL, " ");   // number of walls
     if (!enough_arguments(p)) return;
@@ -109,7 +109,7 @@ void update_walls(player *white, player *black, int* number_of_walls)
         unsuccessful_response("invalid syntax");
 }
 
-void playmove(char *buff, player *white, player *black, char** wall_mtx, int boardsize, stackptr *lastaddr, int *totalmoves)
+void playmove(char* buff, player* white, player* black, char** wall_mtx, int boardsize, stackptr* lastaddr, int* totalmoves)
 {
     // Get color
     char *p = strtok(NULL, " ");
@@ -204,7 +204,7 @@ void playmove(char *buff, player *white, player *black, char** wall_mtx, int boa
     successful_response("");    
 }
 
-void playwall(char *buff, player *white, player *black, char** wall_matrix, int boardsize, stackptr *lastaddr, int *totalmoves)
+void playwall(char* buff, player* white, player* black, char** wall_matrix, int boardsize, stackptr* lastaddr, int* totalmoves)
 {
     // Get color
     char *p = strtok(NULL, " ");
@@ -274,7 +274,7 @@ void playwall(char *buff, player *white, player *black, char** wall_matrix, int 
     successful_response("");
 }
 
-void genmove(player *white, player *black, char** wall_matrix, int boardsize, stackptr *lastaddr, int *totalmoves)
+void genmove(player* white, player* black, char** wall_matrix, int boardsize, stackptr* lastaddr, int* totalmoves)
 {
     char *p = strtok(NULL, " ");
     if (!enough_arguments(p)) return;
@@ -286,7 +286,7 @@ void genmove(player *white, player *black, char** wall_matrix, int boardsize, st
         return;
     }
 
-    returningMove evalMove = bestMove(wall_matrix, boardsize, pl, black, white, depth(boardsize));
+    returningMove evalMove = bestMove(wall_matrix, boardsize, pl, black, white, findDepth(boardsize));
     if (evalMove.move == 'w')  // ai evaluated placing a wall
     {
         wall_matrix[evalMove.x][evalMove.y] = evalMove.or;
@@ -327,7 +327,7 @@ void genmove(player *white, player *black, char** wall_matrix, int boardsize, st
     fflush(stdout);
 }
 
-void undo(char **wall_matrix, player *white, player *black, stackptr *last, int *totalmoves)
+void undo(char** wall_matrix, player* white, player* black, stackptr* last, int* totalmoves)
 {    
     int times;
     char *p = strtok(NULL, " ");
@@ -371,11 +371,11 @@ void undo(char **wall_matrix, player *white, player *black, stackptr *last, int 
     successful_response("");
 }
 
-void winner(player *white, player *black, int boardsize)
+void winner(player white, player black, int boardsize)
 {
-    if (white->i==boardsize-1)
+    if (white.i==boardsize-1)
         successful_response("true white");
-    else if (black->i==0)
+    else if (black.i==0)
         successful_response("true black");
     else
         successful_response("false");
@@ -398,7 +398,7 @@ void winner(player *white, player *black, int boardsize)
    right of D5 keeps going on the right of D4. The same applies for cells with 'r'/'b'. Even though a wall does not start
    beneath them / on their right, it is possible that a wall starts below their left cell / on the right of the cell above and keeps going
    adjacently to the specific cell. */
-void showboard(char **w_mtx, int boardsize, player *white, player *black)
+void showboard(char** wall_matrix, int boardsize, player* white, player* black)
 {
     printf("=\n");
     /*min field width is the greatest power of 10 in which when 10 is raised gives a result less than or equal to boardsize
@@ -439,8 +439,8 @@ void showboard(char **w_mtx, int boardsize, player *white, player *black)
             if (j==boardsize-1) break;
             
             // the vertical seperating line/wall
-            if (w_mtx[i][j]=='r') putchar('H');
-            else if (i<boardsize-1 && w_mtx[i+1][j]=='r') putchar('H');
+            if (wall_matrix[i][j]=='r') putchar('H');
+            else if (i<boardsize-1 && wall_matrix[i+1][j]=='r') putchar('H');
             else putchar('|');
         }
         printf("| %-*d  ", mfw, i+1);
@@ -456,16 +456,16 @@ void showboard(char **w_mtx, int boardsize, player *white, player *black)
         for (j = 0; j <= boardsize-1; j++)
         {
             // the horizontal seperating lines/walls
-            if (w_mtx[i][j]=='b') ch = '=';
-            else if (j>0 && w_mtx[i][j-1]=='b') ch = '=';
+            if (wall_matrix[i][j]=='b') ch = '=';
+            else if (j>0 && wall_matrix[i][j-1]=='b') ch = '=';
             else ch = '-';
             printf("%c%c%c", ch, ch, ch);
             
             if (j==boardsize-1) break;
             
             // the intersection of grid lines
-            if(w_mtx[i][j]=='b') putchar('=');
-            else if (w_mtx[i][j]=='r') putchar('H');
+            if(wall_matrix[i][j]=='b') putchar('=');
+            else if (wall_matrix[i][j]=='r') putchar('H');
             else putchar('+');
         }
         printf("+\n");
@@ -485,7 +485,7 @@ void showboard(char **w_mtx, int boardsize, player *white, player *black)
 
 // Functions needed in main program
 
-void reset_pawns(int boardsize, player *white, player *black)
+void reset_pawns(int boardsize, player* white, player* black)
 {
     // White's position
     white->i = 0;
@@ -514,13 +514,13 @@ char command_num(char *ans)
     else return 14;  // command not recognized
 }
 
-void successful_response(char *msg)
+void successful_response(char* msg)
 {
     printf("= %s\n\n", msg);
     fflush(stdout);
 }
 
-void unsuccessful_response(char *msg)
+void unsuccessful_response(char* msg)
 {
     printf("? %s\n\n", msg);
     fflush(stdout);
@@ -540,13 +540,13 @@ char **allocate_memory(int boardsize)
     return A;
 }
 
-void free_array(char **A, int boardsize)
+void free_array(char** A, int boardsize)
 {
     for (int i = 0; i < boardsize; i++)
         free(A[i]);
 }
 
-void command_preprocess(char *buff)
+void command_preprocess(char* buff)
 {
     // Get rid of whitespace characters and convert the command into lower case characters
     int i = 0, j = 0;
