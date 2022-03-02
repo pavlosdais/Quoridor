@@ -6,7 +6,7 @@
 
 int main(int argc, char* argv[])
 {
-    char *p, m;
+    char* p, m;
     // default values
     int boardsize = 9, prev_boardsize = 9, number_of_walls = 10;
 
@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
     reset_pawns(boardsize, &white, &black);  // default walues
     black.walls = white.walls = 10;
     
-    char **wall_matrix = allocate_memory(boardsize);
+    char** wall_matrix = allocate_memory(boardsize);
     if (wall_matrix == NULL)
         unsuccessful_response("allocation failure");
 
@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
             update_boardsize(&boardsize, &prev_boardsize, &wall_matrix, &white, &black, &history, &totalmoves);
 
         else if (m == 6)  // clear_board
-            clear_board(boardsize, wall_matrix, &white, &black, &history, &totalmoves);
+            clear_board(boardsize, wall_matrix, white, black, &history, &totalmoves);
 
         else if (m == 7)  // walls
             update_walls(&white, &black, &number_of_walls);
@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
             undo(wall_matrix, &white, &black, &history, &totalmoves);
 
         else if (m == 12)  // winner
-            winner(&white, &black, boardsize);
+            winner(white, black, boardsize);
 
         else if (m == 13)  // showboard
             showboard(wall_matrix, boardsize, &white, &black);   
