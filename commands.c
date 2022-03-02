@@ -2,26 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "structs.h"
 #include "helper_commands.h"
 #include "ai.h"
-
-#define BUFFER_SIZE 81
-
-typedef struct player
-{
-    int i;
-    int j;
-    int walls;
-}
-player;
-
-typedef struct stacknode *stackptr;
-struct stacknode
-{
-    int i,j;
-    char *type; // "bm": black player left (i,j), "wm": white player left (i,j), "bw": black placed wall at (i,j), "ww": black placed wall at (i,j)
-    stackptr next;
-};
 
 // Function Prototypes
 void unsuccessful_response(char *msg);
@@ -42,7 +25,7 @@ void known_command()
     char m = command_num(p);
 
     if (m >= 1 && m <= 13)
-        successful_response(" true");
+        successful_response("true");
     else
         unsuccessful_response("false");
 }
@@ -110,7 +93,7 @@ void clear_board(int boardsize, char **wall_matrix, player *white, player *black
     successful_response("");
 }
 
-void update_walls(player *black, player *white, int* number_of_walls)
+void update_walls(player *white, player *black, int* number_of_walls)
 {
     char *p = strtok(NULL, " ");   // number of walls
     if (!enough_arguments(p)) return;
@@ -291,15 +274,6 @@ void playwall(char *buff, player *white, player *black, char** wall_matrix, int 
     successful_response("");
 }
 
-typedef struct returningMove
-{
-    int x;
-    int y;
-    char move;  // w for wall at (x,y), m for move at (x,y)
-    char orientation;  // orientation of the wall
-} 
-returningMove;
-
 void genmove(player *white, player *black, char** wall_matrix, int boardsize, stackptr *lastaddr, int *totalmoves)
 {
     char *p = strtok(NULL, " ");
@@ -315,11 +289,11 @@ void genmove(player *white, player *black, char** wall_matrix, int boardsize, st
     returningMove evalMove = bestMove(wall_matrix, boardsize, pl, black, white, depth(boardsize));
     if (evalMove.move == 'w')  // ai evaluated placing a wall
     {
-        wall_matrix[evalMove.x][evalMove.y] = evalMove.orientation;
+        wall_matrix[evalMove.x][evalMove.y] = evalMove.or;
         if (pl == 'w') --white->walls;
         else --black->walls;
 
-        if (evalMove.orientation == 'b')  // horizontal
+        if (evalMove.or == 'b')  // horizontal
             printf("= %c%d %c\n\n", 'A'+evalMove.y, evalMove.x+1, 'h');
             
         else  // vertical
@@ -353,7 +327,7 @@ void genmove(player *white, player *black, char** wall_matrix, int boardsize, st
     fflush(stdout);
 }
 
-void undo(char **wall_matrix, player *black, player *white, stackptr *last, int *totalmoves)
+void undo(char **wall_matrix, player *white, player *black, stackptr *last, int *totalmoves)
 {    
     int times;
     char *p = strtok(NULL, " ");
@@ -407,7 +381,24 @@ void winner(player *white, player *black, int boardsize)
         successful_response("false");
 }
 
-void showboard(char **w_mtx, int boardsize, player *black, player *white)
+/* Wall_matrix is used to represent if a wall begins next to a specific cell. for example wall_matrix[2][5] informs us about whether or not
+   a wall starts next to the cell (3,6) or else F3. For that purpose we use a character.
+   If the character is 'b' it means that a horizontal wall of length 2 has been placed below the specific cell and the cell on its right.
+   If the character is 'r' it means that a vertical wall of length 2 has been placed on the right of the specific cell and the cell below.
+   If not the character is the one with ascii code 0, as initialized by the following calloc. Since no walls cannot stack on top of another 
+   or somehow cross, it is not possible that there are walls starting both horizontally below and vertically on the right of the specific cell
+   Some examples:
+    1.  wall_matrix[3][7] == 'r' means that no horizontal wall starts below H4, but a vertical one does on its right. So there is a vertical 
+        wall between H4 and I4, which keeps going between H3 and I3.
+    2.  wall_matrix[5][2] == 'b' means that no vertical wall starts on the right of C6, but a horizontal one does below it. So there is a
+        horizontal wall between C6 and C5, which keeps going between D6 and D5.
+   !It is important to notice that if a cell is 0 it does not mean that there might not be walls below or on its right. For example, even though
+   wall_matrix[3][3] might be 0, it does NOT necessarily mean that no wall EXISTS below or on the right of D4, but simply a wall does not START
+   there. If wall_matrix[3][2] is 'b', the wall starting below C4 keeps going below D4, or if wall_matrix[4][3] is 'r', the wall starting on the
+   right of D5 keeps going on the right of D4. The same applies for cells with 'r'/'b'. Even though a wall does not start
+   beneath them / on their right, it is possible that a wall starts below their left cell / on the right of the cell above and keeps going
+   adjacently to the specific cell. */
+void showboard(char **w_mtx, int boardsize, player *white, player *black)
 {
     printf("=\n");
     /*min field width is the greatest power of 10 in which when 10 is raised gives a result less than or equal to boardsize
