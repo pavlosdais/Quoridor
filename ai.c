@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
-#include "structs.h"
 #include "helper_commands.h"
+#include "structs.h"
 
 // Function Prototypes
 int minimax(char** wall_matrix, int boardsize, unsigned char depth, int alpha, int beta, player* white, player* black, char Maximizing);
@@ -805,7 +805,7 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, int alpha, i
 
         // check wall placement
         int lim = boardsize;
-        if (depth == 1) lim = boardsize/3;
+        if (depth == 1 && findDepth(boardsize) % 2 != 0) lim = boardsize/3;
         for (int i = 1; i < lim; i++)
         {
             if (beta <= alpha || white->walls == 0) break;
@@ -1030,7 +1030,7 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, int alpha, i
 
         // check wall placement
         int lim = 0;
-        if (depth == 1) lim = boardsize/3;
+        if (depth == 1 && findDepth(boardsize) % 2 != 0) lim = boardsize/3;
         for (int i = boardsize-1; i > lim; i--)
         {
             if (beta <= alpha || black->walls == 0) break;
@@ -1069,6 +1069,18 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, int alpha, i
         }
         return min_eval;
     }
+}
+
+void placeWall(player* pl, char** wall_matrix, char orientation, int i, int j)
+{
+    pl->walls--;
+    wall_matrix[i][j] = orientation;
+}
+
+void resetWallPlacement(player* pl, char** wall_matrix, int i, int j, char en)
+{
+    if (!en) pl->walls++;
+    wall_matrix[i][j] = 0;
 }
 
 void updateWallWallPlacementWhite(returningMove* evalMove, char orientation, int i, int j, int* eval, int* max_eval)
@@ -1117,25 +1129,13 @@ void updatePawnMovementBlack(player* black, returningMove* evalMove, int* eval, 
     }
 }
 
-void placeWall(player* pl, char** wall_matrix, char orientation, int i, int j)
-{
-    pl->walls--;
-    wall_matrix[i][j] = orientation;
-}
-
-void resetWallPlacement(player* pl, char** wall_matrix, int i, int j, char en)
-{
-    if (!en) pl->walls++;
-    wall_matrix[i][j] = 0;
-}
-
 void updateEvalWhite(int* max_eval, int* eval, int* alpha)
 {
     *max_eval = *max_eval > *eval ? *max_eval:*eval;
     *alpha = *alpha > *eval ? *alpha:*eval;
 }
 
-void updateEvalBlack(int *min_eval, int *eval, int *beta)
+void updateEvalBlack(int* min_eval, int* eval, int* beta)
 {
     *min_eval = *min_eval < *eval ? *min_eval:*eval;
     *beta = *beta < *eval ? *beta:*eval;
