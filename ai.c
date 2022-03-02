@@ -30,7 +30,7 @@ returningMove bestMove(char** wall_matrix, int boardsize, char pl, player* black
         // check each possible move
 
         // check pawn movement
-        if (white->i+1 == black->i && white->j == black->j && !wallAbove(white->i, white->j, wall_matrix, boardsize)) // black above white
+        if (white->i+1 == black->i && white->j == black->j && !wallAbove(white->i, white->j, wall_matrix, boardsize))  // black above white
         {
             if (black->i < boardsize - 1 && !wallAbove(black->i, black->j, wall_matrix, boardsize))
             {
