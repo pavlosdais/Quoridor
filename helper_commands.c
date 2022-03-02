@@ -5,7 +5,7 @@
 #include "structs.h"
 #include "bfs.h"
 
-char isNumber(char *n)
+char isNumber(char* n)
 {
     int i = 0;
     if (n[0] == '-') i = 1;  // potentially a negative number
@@ -26,10 +26,10 @@ char is_vertex_valid(char hor, int boardsize)
     return 0;
 }
 
-player *check_color(char *p, player *black, player *white)
+player *check_color(char* p, player* black, player* white)
 {
     // returns the player with the corresponding color
-    if (strcmp(p, "white") == 0) 
+    if (strcmp(p, "white") == 0)
         return white;
     else if (strcmp(p, "w") == 0)
         return white;
@@ -41,7 +41,7 @@ player *check_color(char *p, player *black, player *white)
         return NULL;
 }
 
-char colorValue(char *p)
+char colorValue(char* p)
 {
     // returns the color's value
     if (strcmp(p, "white") == 0)
@@ -56,7 +56,7 @@ char colorValue(char *p)
         return -1;
 }
 
-char check_orientation(char *orientation)
+char check_orientation(char* orientation)
 {
     // returns b for horizontal, r for vertical and -1 for unknown orientation
     if (strcmp(orientation, "horizontal") == 0)
@@ -82,7 +82,7 @@ char enough_arguments(char *argument)
     return 1;
 }
 
-char there_is_a_path(char **wall_matrix, int boardsize, player *white, player *black, char pl)
+char there_is_a_path(char** wall_matrix, int boardsize, player* white, player* black, char pl)
 {
     /* returns 1 if the path is not blocked for neither player, -1 if it's blocked for at least
     one player and -2 if there's an error in allocating enough memory for the calculation */
@@ -103,28 +103,28 @@ char there_is_a_path(char **wall_matrix, int boardsize, player *white, player *b
     return 1;
 }
 
-char wallBelow(int i, int j, char **w_mtx, int boardsize)
+char wallBelow(int i, int j, char** wall_matrix, int boardsize)
 {
     if (i==0) return 0;
-    return (w_mtx[i][j]=='b' || (j>0 && w_mtx[i][j-1]=='b'));
+    return (wall_matrix[i][j]=='b' || (j>0 && wall_matrix[i][j-1]=='b'));
 }
 
-char wallAbove(int i, int j, char **w_mtx, int boardsize)
+char wallAbove(int i, int j, char **wall_matrix, int boardsize)
 {
     if (i==boardsize-1) return 0;
-    return wallBelow(i+1, j, w_mtx, boardsize);
+    return wallBelow(i+1, j, wall_matrix, boardsize);
 }
 
-char wallOnTheRight(int i, int j, char **w_mtx, int boardsize)
+char wallOnTheRight(int i, int j, char **wall_matrix, int boardsize)
 {
     if (j==boardsize-1) return 0;
-    return (w_mtx[i][j]=='r' || (i<boardsize-1 && w_mtx[i+1][j]=='r'));
+    return (wall_matrix[i][j]=='r' || (i<boardsize-1 && wall_matrix[i+1][j]=='r'));
 }
 
-char wallOnTheLeft(int i, int j, char **w_mtx, int boardsize)
+char wallOnTheLeft(int i, int j, char** wall_matrix, int boardsize)
 {
     if (j==0) return 0;
-    return wallOnTheRight(i, j-1, w_mtx, boardsize);
+    return wallOnTheRight(i, j-1, wall_matrix, boardsize);
 }
 
 char thereIsAWall(char or, char** wall_matrix, int boardsize, int vertex_x, int vertex_y)
@@ -133,9 +133,9 @@ char thereIsAWall(char or, char** wall_matrix, int boardsize, int vertex_x, int 
     {
         if (wall_matrix[vertex_x][vertex_y] != 0) return 1;
         else if (wall_matrix[vertex_x][vertex_y+1] == 'b') return 1;
-        else if (vertex_y > 0 &&wall_matrix[vertex_x][vertex_y-1] == 'b') return 1;
+        else if (vertex_y > 0 && wall_matrix[vertex_x][vertex_y-1] == 'b') return 1;
     }
-    else // if (or == 'r')
+    else  // if (or == 'r')
     {
         if (wall_matrix[vertex_x][vertex_y] != 0) return 1;
         else if (wall_matrix[vertex_x-1][vertex_y] == 'r') return 1;
@@ -155,7 +155,7 @@ char isValidWall(int vertex_x, int vertex_y, int boardsize, char** wall_matrix, 
     return 1;
 }
 
-char addMove(stackptr *last, int i, int j, char *type)
+char addMove(stackptr* last, int i, int j, char* type)
 {
     stackptr temp = *last;
     *last = malloc(sizeof(struct stacknode));
@@ -178,7 +178,7 @@ has in order to give an advantage (or lack of) for a certain player. When it's p
 position is advantageous for white and when it's negative it calculates that black has an advantage. If it's 0
 it means that the position is equal so neither player has an advantage. */
 
-char positionEvaluation(player black, player white, int boardsize, char** wall_matrix, int *evaluation)
+char positionEvaluation(player black, player white, int boardsize, char** wall_matrix, int* evaluation)
 {
     #define WHITE_WIN 99999
     #define BLACK_WIN -99999
@@ -214,11 +214,11 @@ char positionEvaluation(player black, player white, int boardsize, char** wall_m
     return 1;
 }
 
-unsigned char depth(int boardsize)
+unsigned char findDepth(int boardsize)
 {
-    if (boardsize <= 5) return 7;
-    else if (boardsize <= 7) return 5;
-    else if (boardsize <= 11) return 4;
-    else if (boardsize <= 15) return 3;
-    else return 2;
+    if (boardsize <= 5) return 8;  // for boardsizes lower or equal to 5 search at depth 8
+    else if (boardsize <= 7) return 6;  // for boardsizes lower or equal to 7 search at depth 6
+    else if (boardsize <= 11) return 4;  // for boardsizes lower or equal to 11 search at depth 4
+    else if (boardsize <= 15) return 4;  // for boardsizes lower or equal to 15 search at depth 4
+    else return 2;  // for boardsizes higher than 5 search at depth 8
 }
