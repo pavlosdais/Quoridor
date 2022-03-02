@@ -1,29 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
+#include "structs.h"
 #include "helper_commands.h"
-
-#define INFINITY INT_MAX
-#define NEG_INFINITY INT_MIN
-#define true 1
-#define false 0
-
-typedef struct player
-{
-    int i;
-    int j;
-    int walls;
-}
-player;
-
-typedef struct returningMove
-{
-    int x;
-    int y;
-    char move;  // w for wall at (x,y), m for move at (x,y) and -1 for error
-    char or;  // orientation of the wall
-}
-returningMove;
 
 // Function Prototypes
 int minimax(char** wall_matrix, int boardsize, unsigned char depth, int alpha, int beta, player* white, player* black, char Maximizing);
@@ -300,7 +279,7 @@ returningMove bestMove(char** wall_matrix, int boardsize, char pl, player* black
             {
                 if (!thereIsAWall('b', wall_matrix, boardsize, i, j))
                 {
-                    placeWall(white, wall_matrix, 'b', i, j);
+                    placeWall(white, wall_matrix, 'b', i, j);  // place horizontal wall
                     if (there_is_a_path(wall_matrix, boardsize, white, black))
                     {
                         eval = minimax(wall_matrix, boardsize, depth-1, NEG_INFINITY, INFINITY, white, black, false);
@@ -316,7 +295,7 @@ returningMove bestMove(char** wall_matrix, int boardsize, char pl, player* black
                 
                 if (!thereIsAWall('r', wall_matrix, boardsize, i, j))
                 {
-                    placeWall(white, wall_matrix, 'r', i, j);
+                    placeWall(white, wall_matrix, 'r', i, j);  // place vertical wall
                     if (there_is_a_path(wall_matrix, boardsize, white, black))
                     {
                         eval = minimax(wall_matrix, boardsize, depth-1, NEG_INFINITY, INFINITY, white, black, false);
@@ -586,7 +565,7 @@ returningMove bestMove(char** wall_matrix, int boardsize, char pl, player* black
             {
                 if (!thereIsAWall('b', wall_matrix, boardsize, i, j))
                 {
-                    placeWall(black, wall_matrix, 'b', i, j);
+                    placeWall(black, wall_matrix, 'b', i, j);  // place horizontal wall
                     if (there_is_a_path(wall_matrix, boardsize, white, black))
                     {
                         eval = minimax(wall_matrix, boardsize, depth-1, NEG_INFINITY, INFINITY, white, black, true);
@@ -601,7 +580,7 @@ returningMove bestMove(char** wall_matrix, int boardsize, char pl, player* black
                 }
                 if (!thereIsAWall('r', wall_matrix, boardsize, i, j))
                 {
-                    placeWall(black, wall_matrix, 'r', i, j);
+                    placeWall(black, wall_matrix, 'r', i, j);  // place vertical wall
                     if (there_is_a_path(wall_matrix, boardsize, white, black))
                     {
                         eval = minimax(wall_matrix, boardsize, depth-1, NEG_INFINITY, INFINITY, white, black, true);
@@ -835,7 +814,7 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, int alpha, i
                 if (white->walls == 0) break;
                 if (!thereIsAWall('b', wall_matrix, boardsize, i, j))
                 {
-                    placeWall(white, wall_matrix, 'b', i, j);
+                    placeWall(white, wall_matrix, 'b', i, j);  // place horizontal wall
                     en = 0;
                     if (there_is_a_path(wall_matrix, boardsize, white, black))
                     {
@@ -849,7 +828,7 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, int alpha, i
                 }
                 if (!thereIsAWall('r', wall_matrix, boardsize, i, j))
                 {
-                    placeWall(white, wall_matrix, 'r', i, j);
+                    placeWall(white, wall_matrix, 'r', i, j);  // place vertical wall
                     en = 0;
                     if (there_is_a_path(wall_matrix, boardsize, white, black))
                     {
@@ -1061,7 +1040,7 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, int alpha, i
                 if (!thereIsAWall('b', wall_matrix, boardsize, i, j))
                 {
                     en = 0;
-                    placeWall(black, wall_matrix, 'b', i, j);
+                    placeWall(black, wall_matrix, 'b', i, j);  // place horizontal wall
                     if (there_is_a_path(wall_matrix, boardsize, white, black))
                     {
                         eval = minimax(wall_matrix, boardsize, depth-1, alpha, beta, white, black, true);
@@ -1074,7 +1053,7 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, int alpha, i
                 }
                 if (!thereIsAWall('r', wall_matrix, boardsize, i, j))
                 {
-                    placeWall(black, wall_matrix, 'r', i, j);
+                    placeWall(black, wall_matrix, 'r', i, j);  // place vertical wall
                     en = 0;
                     if (there_is_a_path(wall_matrix, boardsize, white, black))
                     {
