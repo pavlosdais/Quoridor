@@ -285,8 +285,9 @@ void genmove(player* white, player* black, char** wall_matrix, int boardsize, st
         unsuccessful_response("invalid syntax");
         return;
     }
-
-    returningMove evalMove = bestMove(wall_matrix, boardsize, pl, black, white, findDepth(boardsize));
+	char pseudodepth;
+	char depth = findDepth(boardsize, &pseudodepth);
+    returningMove evalMove = bestMove(wall_matrix, boardsize, pl, black, white, depth, pseudodepth);
     if (evalMove.move == 'w')  // ai evaluated placing a wall
     {
         wall_matrix[evalMove.x][evalMove.y] = evalMove.or;
