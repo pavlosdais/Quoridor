@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
         p = strtok(buff, " "); // command
         
         if ((m = command_num(p)) == 1)  // name
-            print_name("SP Quoridor");
+            print_name("21-122.21-164");
 
         else if (m == 2)  // known_command
             known_command();
