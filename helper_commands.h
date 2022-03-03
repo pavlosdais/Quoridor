@@ -18,4 +18,4 @@ char wallOnTheLeft(int i, int j, char** wall_matrix, int boardsize);
 char addMove(stackptr* last, int i, int j, char* type);
 unsigned char depth(int boardsize);
 char positionEvaluation(player black, player white, int boardsize, char** wall_matrix, int* evaluation);
-unsigned char findDepth(int boardsize);
+unsigned char findDepth(int boardsize, char* pseudo);
