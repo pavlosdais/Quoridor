@@ -231,11 +231,36 @@ char positionEvaluation(player black, player white, int boardsize, char** wall_m
     return 1;
 }
 
-unsigned char findDepth(int boardsize)
+unsigned char findDepth(int boardsize, char* pseudo)
 {
-    if (boardsize <= 5) return 8;  // for boardsizes lower or equal to 5 search at depth 8
-    else if (boardsize <= 7) return 6;  // for boardsizes lower or equal to 7 search at depth 6
-    else if (boardsize <= 11) return 4;  // for boardsizes lower or equal to 11 search at depth 4
-    else if (boardsize <= 15) return 4;  // for boardsizes lower or equal to 15 search at depth 4
-    else return 2;  // for boardsizes higher than 5 search at depth 8
+    if (boardsize <= 5)  // depth 6
+	{
+		*pseudo = 0;
+		return 6;
+	}
+    else if (boardsize <= 7)  // depth 4
+	{
+		*pseudo = 0;
+		return 4;
+	}
+	else if (boardsize <= 9)  // pseudo depth works at 4
+	{
+		*pseudo = 1;
+		return 4;
+	}
+    else if (boardsize <= 11)  // depth 3
+	{
+		*pseudo = 0;
+		return 3;
+	}
+    else if (boardsize <= 15)  // depth 3
+	{
+		*pseudo = 0;
+		return 3;
+	}
+    else  // pseudodepth works at 2
+	{
+		*pseudo = 1;
+		return 2;
+	}
 }
