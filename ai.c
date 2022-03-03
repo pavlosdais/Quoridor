@@ -30,7 +30,7 @@ returningMove bestMove(char** wall_matrix, int boardsize, char pl, player* black
         // check each possible move
 
         // check pawn movement
-        if (white->i+1 == black->i && white->j == black->j && !wallAbove(white->i, white->j, wall_matrix, boardsize))  // black above white
+        if (white->i+1 == black->i && white->j == black->j && !wallAbove(white->i, white->j, wall_matrix, boardsize)) // black above white
         {
             if (black->i < boardsize - 1 && !wallAbove(black->i, black->j, wall_matrix, boardsize))
             {
@@ -804,10 +804,9 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, int alpha, i
         }
 
         // check wall placement
-        int lim = boardsize;
-        if (depth == 1 && findDepth(boardsize) % 2 != 0) lim = boardsize/3;
-        for (int i = 1; i < lim; i++)
+        for (int i = 1; i < boardsize; i++)
         {
+            if (depth == 1) break;
             if (beta <= alpha || white->walls == 0) break;
             for (int j = 0; j < boardsize-1; j++)
             {
@@ -1029,10 +1028,9 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, int alpha, i
         }
 
         // check wall placement
-        int lim = 0;
-        if (depth == 1 && findDepth(boardsize) % 2 != 0) lim = boardsize/3;
-        for (int i = boardsize-1; i > lim; i--)
+        for (int i = boardsize-1; i > 0; i--)
         {
+            if (depth == 1) break;
             if (beta <= alpha || black->walls == 0) break;
             for (int j = 0; j < boardsize-1; j++)
             {
