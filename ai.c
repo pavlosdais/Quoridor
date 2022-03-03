@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
-#include "helper_commands.h"
 #include "structs.h"
+#include "helper_commands.h"
 
 // Function Prototypes
 int minimax(char** wall_matrix, int boardsize, unsigned char depth, int alpha, int beta, player* white, player* black, char Maximizing);
@@ -802,11 +802,17 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, int alpha, i
             ++white->i;  // reset movement
             if (beta <= alpha) return max_eval;
         }
-
+		int st = 1;
+		int end = boardsize;
+		if (depth == 1)
+		{
+			if (black->i > 1) st = black->i-1;
+			if (black->i < boardsize-1) end = black->i+1;
+		}
         // check wall placement
-        for (int i = 1; i < boardsize; i++)
+        for (int i = st; i < end; i++)
         {
-            if (depth == 1) break;
+            // if (depth == 1) break;
             if (beta <= alpha || white->walls == 0) break;
             for (int j = 0; j < boardsize-1; j++)
             {
@@ -1028,9 +1034,16 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, int alpha, i
         }
 
         // check wall placement
-        for (int i = boardsize-1; i > 0; i--)
+		int st = boardsize-1;
+		int end = 1;
+		if (depth == 1)
+		{
+			if (white->i > 1) end = white->i-1;
+			if (white->i < boardsize-1) st = white->i+1;
+		}
+        for (int i = st; i > end; i--)
         {
-            if (depth == 1) break;
+            //if (depth == 1) break;
             if (beta <= alpha || black->walls == 0) break;
             for (int j = 0; j < boardsize-1; j++)
             {
