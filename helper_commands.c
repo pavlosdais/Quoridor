@@ -195,22 +195,39 @@ char positionEvaluation(player black, player white, int boardsize, char** wall_m
     }
 
     // calculate the distance white needs to get to the end
-    int whiteDistance = bfs(boardsize, wall_matrix, white.i, white.j, boardsize-1);
-    if (whiteDistance == -2)
+    int whiteDistanceFromEnd = bfs(boardsize, wall_matrix, white.i, white.j, boardsize-1);
+    if (whiteDistanceFromEnd == -2)
     {
         printf("? allocation failure\n\n");
         fflush(stdout);
         return 0;
     }
     // calculate the distance black needs to get to the end
-    int blackDistance = bfs(boardsize, wall_matrix, black.i, black.j, 0);
-    if (blackDistance == -2)
+    int blackDistanceFromEnd = bfs(boardsize, wall_matrix, black.i, black.j, 0);
+    if (blackDistanceFromEnd == -2)
     {
         printf("? allocation failure\n\n");
         fflush(stdout);
         return 0;
     }
-    *evaluation = 10*(blackDistance-whiteDistance) + 2*(white.i - black.i);
+
+    int whiteDistanceFromNextRow = bfs(boardsize, wall_matrix, white.i, white.j, white.i+1);
+    if (whiteDistanceFromNextRow == -2)
+    {
+        printf("? allocation failure\n\n");
+        fflush(stdout);
+        return 0;
+    }
+
+    int blackDistanceFromNextRow = bfs(boardsize, wall_matrix, black.i, black.j, black.i-1);
+    if (blackDistanceFromNextRow == -2)
+    {
+        printf("? allocation failure\n\n");
+        fflush(stdout);
+        return 0;
+    }
+
+    *evaluation = 10*(blackDistanceFromEnd-whiteDistanceFromEnd) + 2*(blackDistanceFromNextRow - whiteDistanceFromNextRow) + 4*(white.walls - black.walls);
     return 1;
 }
 
