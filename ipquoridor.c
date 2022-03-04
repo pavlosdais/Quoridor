@@ -6,7 +6,7 @@
 
 int main(int argc, char* argv[])
 {
-    char* p, m, panic;
+    char* p, m, panic = false;
     // default values
     int boardsize = 9, prev_boardsize = 9, number_of_walls = 10;
 
@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
     while (!panic)
     {
         fgets(buff, BUFFER_SIZE, stdin);
-	if (buff[0] == '\n') continue;
+	    if (buff[0] == '\n') continue;
         if (command_preprocess(buff) == true) continue;  // hash sign
         if (buff[0] == '\0') 
         {
@@ -62,9 +62,9 @@ int main(int argc, char* argv[])
             update_walls(&white, &black, &number_of_walls);
 
         else if (m == 8) // playmove
-	{
+        {
             playmove(buff, &white, &black, wall_matrix, boardsize, &history, &totalmoves);
-	}
+        }
 
         else if (m == 9)  // playwall
         {
@@ -89,22 +89,26 @@ int main(int argc, char* argv[])
             unsuccessful_response("unknown command");
     }
 
-    // clear history
-    stackptr temp = history;
-    while (temp != NULL)
+    if (totalmoves > 0)  // clear history
     {
-        free(temp);
-        history = history->next;
-        temp = history;
+        stackptr temp = NULL;
+        while (history != NULL)
+        {
+            temp = history;
+            history = history->next;
+            free(temp);
+        }
     }
-    free(history);
+    
     free(buff);
     free_array(wall_matrix, boardsize);
     free(wall_matrix);
+    
     if (panic == true)
     {
         unsuccessful_response("allocation failure");
         return -1;
     }
+
     return 0;
 }
