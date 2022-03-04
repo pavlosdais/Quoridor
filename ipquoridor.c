@@ -6,7 +6,7 @@
 
 int main(int argc, char* argv[])
 {
-    char* p, m;
+    char* p, m, panic = 0;
     // default values
     int boardsize = 9, prev_boardsize = 9, number_of_walls = 10;
 
@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
     
     char** wall_matrix = allocate_memory(boardsize);
     if (wall_matrix == NULL)
-    {
+	{
         unsuccessful_response("allocation failure");
 		return -1;
 	}
@@ -24,16 +24,17 @@ int main(int argc, char* argv[])
     stackptr history = NULL;
     int totalmoves = 0;
     char* buff = malloc(sizeof(char) * BUFFER_SIZE);
-    if (buff == NULL)
-    {
-	unsuccessful_response("allocation failure");
-	return -1;
-    }
-    while (true)
+	if (buff == NULL)
+	{
+		unsuccessful_response("allocation failure");
+		panic = 1;
+	}
+
+    while (true && !panic)
     {
         fgets(buff, BUFFER_SIZE, stdin);
-        if (command_preprocess(buff) == 1) continue;  // hash sign
-        if (buff[0] == '\0') 
+        if (command_preprocess(buff)) continue;  // hash sign
+        if (buff[0] == '\0')
         {
             unsuccessful_response("unknown command");
             continue;
@@ -56,7 +57,9 @@ int main(int argc, char* argv[])
         }
 
         else if (m == 5)  // boardsize
-            update_boardsize(&boardsize, &prev_boardsize, &wall_matrix, &white, &black, &history, &totalmoves);
+		{
+            if (update_boardsize(&boardsize, &prev_boardsize, &wall_matrix, &white, &black, &history, &totalmoves) == 0) panic = 1;  // allocation failure
+		}
 
         else if (m == 6)  // clear_board
             clear_board(boardsize, wall_matrix, white, black, &history, &totalmoves);
@@ -98,5 +101,6 @@ int main(int argc, char* argv[])
     free(buff);
     free_array(wall_matrix, boardsize);
     free(wall_matrix);
+	if (panic) return -1;
     return 0;
 }
