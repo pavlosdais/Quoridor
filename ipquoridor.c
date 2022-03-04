@@ -27,6 +27,7 @@ int main(int argc, char* argv[])
     while (!panic)
     {
         fgets(buff, BUFFER_SIZE, stdin);
+	if (buff[0] == '\n') continue;
         if (command_preprocess(buff) == true) continue;  // hash sign
         if (buff[0] == '\0') 
         {
@@ -62,7 +63,7 @@ int main(int argc, char* argv[])
 
         else if (m == 8) // playmove
 		{
-            if (playmove(buff, &white, &black, wall_matrix, boardsize, &history, &totalmoves) == false) panic = 1;
+            playmove(buff, &white, &black, wall_matrix, boardsize, &history, &totalmoves);
 		}
 
         else if (m == 9)  // playwall
