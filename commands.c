@@ -367,7 +367,7 @@ void undo(char** wall_matrix, player* white, player* black, stackptr* last, int*
             wall_matrix[(*last)->i][(*last)->j] = 0;
             (black->walls)++;
         }
-        else  // strcmp((*last)->type,"bw") == 0
+        else  // strcmp((*last)->type,"ww") == 0
         {
             wall_matrix[(*last)->i][(*last)->j] = 0;
             (white->walls)++;
