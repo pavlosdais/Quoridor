@@ -62,9 +62,9 @@ int main(int argc, char* argv[])
             update_walls(&white, &black, &number_of_walls);
 
         else if (m == 8) // playmove
-		{
+	{
             playmove(buff, &white, &black, wall_matrix, boardsize, &history, &totalmoves);
-		}
+	}
 
         else if (m == 9)  // playwall
         {
