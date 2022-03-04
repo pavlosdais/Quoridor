@@ -7,12 +7,12 @@
 #include "ai.h"
 
 // Function Prototypes
-void unsuccessful_response(char *msg);
-void successful_response(char *msg);
+void unsuccessful_response(char* msg);
+void successful_response(char* msg);
 char **allocate_memory(int boardsize);
-void free_array(char **A, int boardsize);
-char command_num(char *ans);
-void reset_pawns(int boardsize, player *white, player *black);
+void free_array(char** A, int boardsize);
+char command_num(char* ans);
+void reset_pawns(int boardsize, player* white, player* black);
 
 void print_name(char *p)
 {
