@@ -558,11 +558,11 @@ void free_array(char** A, int boardsize)
 char command_preprocess(char* buff)
 {
     // Get rid of whitespace characters and convert the command into lower case characters
-	if (buff[0] == '#')  // returns 1 if the first character is hash sign
-	{
-		buff[0] = '\0';
-		return 1;
-	}
+    if (buff[0] == '#')  // returns 1 if the first character is hash sign
+    {
+        buff[0] = '\0';
+        return 1;
+    }
     int i = 0, j = 0;
     char whsp = 0;
     while (buff[i] != '\n' && buff[i] != '\0')
@@ -586,5 +586,5 @@ char command_preprocess(char* buff)
         whsp = 0;
     }
     buff[j] = '\0';
-	return 0;
+    return 0;
 }
