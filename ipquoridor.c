@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
     
     char** wall_matrix = allocate_memory(boardsize);
     if (wall_matrix == NULL)
-	{
+    {
         unsuccessful_response("allocation failure");
 		return -1;
 	}
@@ -24,12 +24,11 @@ int main(int argc, char* argv[])
     stackptr history = NULL;
     int totalmoves = 0;
     char* buff = malloc(sizeof(char) * BUFFER_SIZE);
-	if (buff == NULL)
-	{
-		unsuccessful_response("allocation failure");
-		return -1;
-	}
-
+    if (buff == NULL)
+    {
+	unsuccessful_response("allocation failure");
+	return -1;
+    }
     while (true)
     {
         fgets(buff, BUFFER_SIZE, stdin);
