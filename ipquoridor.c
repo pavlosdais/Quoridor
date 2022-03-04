@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
 
         else if (m == 8) // playmove
 		{
-            if (playmove(buff, &white, &black, wall_matrix, boardsize, &history, &totalmoves) == false) panice = 1;
+            if (playmove(buff, &white, &black, wall_matrix, boardsize, &history, &totalmoves) == false) panic = 1;
 		}
 
         else if (m == 9)  // playwall
