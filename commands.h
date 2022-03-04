@@ -1,10 +1,10 @@
 typedef struct player player;
 typedef struct stacknode *stackptr;
 
-void print_name(char* p);
+void print_name(char *p);
 void known_command(void);
 void list_commands();
-void update_boardsize(int* boardsize, int* prev_boardsize, char*** wall_matrix, player* white, player* black, stackptr* history, int* totalmoves);
+char update_boardsize(int* boardsize, int* prev_boardsize, char*** wall_matrix, player* white, player* black, stackptr* history, int* totalmoves);
 void clear_board(int boardsize, char** wall_matrix, player white, player black, stackptr* history, int* totalmoves);
 void update_walls(player* white, player* black, int* number_of_walls);
 void playmove(char* buff, player* white, player* black, char** wall_matrix, int boardsize, stackptr* history, int* totalmoves);
