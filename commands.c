@@ -76,7 +76,6 @@ char update_boardsize(int* boardsize, int* prev_boardsize, char*** wall_matrix, 
         unsuccessful_response("invalid syntax");
 		return 2;
 	}
-	
 	return 1;
 }
 
