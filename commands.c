@@ -332,7 +332,7 @@ char genmove(player* white, player* black, char** wall_matrix, int boardsize, st
         if (ok) (*totalmoves)++;
         printf("= %c%d\n\n", 'A'+evalMove.y, evalMove.x+1);
     }
-    else return 0;  // memory allocation problem
+    else return false;  // memory allocation problem
     fflush(stdout);
     return 1;
 }
