@@ -3,7 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "structs.h"
-#include "helper_commands.h"
+#include "utilities.h"
 #include "ai.h"
 
 // Function Prototypes
