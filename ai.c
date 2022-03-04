@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "structs.h"
-#include "helper_commands.h"
+#include "utilities.h"
 
 // Function Prototypes
 int minimax(char** wall_matrix, int boardsize, unsigned char depth, int alpha, int beta, player* white, player* black, char Maximizing, char pseudo);
