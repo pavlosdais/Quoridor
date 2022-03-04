@@ -96,6 +96,10 @@ int main(int argc, char* argv[])
     free(buff);
     free_array(wall_matrix, boardsize);
     free(wall_matrix);
-    if (panic == true) return -1;
+    if (panic == true)
+    {
+        unsuccessful_response("allocation failure");
+        return -1;
+    }
     return 0;
 }
