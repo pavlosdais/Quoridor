@@ -129,16 +129,15 @@ char wallOnTheLeft(int i, int j, char** wall_matrix, int boardsize)
 
 char thereIsAWall(char or, char** wall_matrix, int boardsize, int vertex_x, int vertex_y)
 {
-    if (or == 'b')
+	if (wall_matrix[vertex_x][vertex_y] != 0) return 1;
+    if (or == 'b')  // horizontal
     {
-        if (wall_matrix[vertex_x][vertex_y] != 0) return 1;
-        else if (wall_matrix[vertex_x][vertex_y+1] == 'b') return 1;
+        if (wall_matrix[vertex_x][vertex_y+1] == 'b') return 1;
         else if (vertex_y > 0 && wall_matrix[vertex_x][vertex_y-1] == 'b') return 1;
     }
-    else  // if (or == 'r')
+    else  // vertical
     {
-        if (wall_matrix[vertex_x][vertex_y] != 0) return 1;
-        else if (wall_matrix[vertex_x-1][vertex_y] == 'r') return 1;
+        if (wall_matrix[vertex_x-1][vertex_y] == 'r') return 1;
         else if (vertex_x < boardsize-1 && wall_matrix[vertex_x+1][vertex_y] == 'r') return 1;
     }
     return 0;
@@ -172,25 +171,23 @@ char addMove(stackptr* last, int i, int j, char* type)
     return 1;
 }
 
-/* positionEvaluation is a heuristic function used for the evaluation of the current situation of the game.
-It takes into account the distance each player needs in order to win as well as the number of walls each player
-has in order to give an advantage (or lack of) for a certain player. When it's positive it calculates that the
-position is advantageous for white and when it's negative it calculates that black has an advantage. If it's 0
-it means that the position is equal so neither player has an advantage. */
+/* positionEvaluation is a heuristic function used for the evaluation of the current position of the game.
+It takes into account the distance each player needs in order to win (factor = 1), the number of steps each player
+needs to get to the next row (factor = 0.4) as well as the number of walls each player has (factor = 0.5) in order
+to give an advantage (or lack of) for a certain player. When it's positive it calculates that the position is
+advantageous for white and when it's negative it calculates that black has an advantage. If it's 0 it means that
+the position is equal so neither player has an advantage. */
 
 char positionEvaluation(player black, player white, int boardsize, char** wall_matrix, int* evaluation)
 {
-    #define WHITE_WIN 99999
-    #define BLACK_WIN -99999
-
     if (black.i == 0)  // black wins
     {
-        *evaluation = BLACK_WIN;
+        *evaluation = NEG_INFINITY;
         return 1;
     }
     else if (white.i == boardsize -1)  // white wins
     {
-        *evaluation = WHITE_WIN;
+        *evaluation = INFINITY - 1;
         return 1;
     }
 
