@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "helper_commands.h"
+#include "utilities.h"
 
 typedef struct QueueNode
 {
