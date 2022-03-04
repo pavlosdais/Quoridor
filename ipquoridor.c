@@ -6,7 +6,7 @@
 
 int main(int argc, char* argv[])
 {
-    char* p, m, panic = false;
+    char* p, m, panic;
     // default values
     int boardsize = 9, prev_boardsize = 9, number_of_walls = 10;
 
@@ -20,21 +20,15 @@ int main(int argc, char* argv[])
         unsuccessful_response("allocation failure");
         return -1;
     }
-
+    
     stackptr history = NULL;
     int totalmoves = 0;
     char* buff = malloc(sizeof(char) * BUFFER_SIZE);
-    if (buff == NULL)
-    {
-        unsuccessful_response("allocation failure");
-        panic = true;
-    }
-
-    while (true && !panic)
+    while (!panic)
     {
         fgets(buff, BUFFER_SIZE, stdin);
-        if (command_preprocess(buff)) continue;  // hash sign
-        if (buff[0] == '\0')
+        if (command_preprocess(buff) == true) continue;
+        if (buff[0] == '\0') 
         {
             unsuccessful_response("unknown command");
             continue;
@@ -57,8 +51,9 @@ int main(int argc, char* argv[])
         }
 
         else if (m == 5)  // boardsize
-            if (update_boardsize(&boardsize, &prev_boardsize, &wall_matrix, &white, &black, &history, &totalmoves) == false) panic = true;  // allocation failure
-
+        {
+            if (update_boardsize(&boardsize, &prev_boardsize, &wall_matrix, &white, &black, &history, &totalmoves) == false) panic = 1;
+        }
         else if (m == 6)  // clear_board
             clear_board(boardsize, wall_matrix, white, black, &history, &totalmoves);
 
@@ -69,11 +64,13 @@ int main(int argc, char* argv[])
             playmove(buff, &white, &black, wall_matrix, boardsize, &history, &totalmoves);
 
         else if (m == 9)  // playwall
-            if (playwall(buff, &white, &black, wall_matrix, boardsize, &history, &totalmoves) == false) panic = true;
+            playwall(buff, &white, &black, wall_matrix, boardsize, &history, &totalmoves);
 
         else if (m == 10)  // genmove
+        {
             if (genmove(&white, &black, wall_matrix, boardsize, &history, &totalmoves) == false) panic = true;
-
+        }
+        
         else if (m == 11)  // undo
             undo(wall_matrix, &white, &black, &history, &totalmoves);
 
@@ -99,6 +96,6 @@ int main(int argc, char* argv[])
     free(buff);
     free_array(wall_matrix, boardsize);
     free(wall_matrix);
-    if (panic) return -1;
+    if (panic == true) return -1;
     return 0;
 }
