@@ -180,52 +180,30 @@ the position is equal so neither player has an advantage. */
 
 char positionEvaluation(player black, player white, int boardsize, char** wall_matrix, int* evaluation)
 {
-    #define WHITE_WIN 99999
-    #define BLACK_WIN -99999
-
     if (black.i == 0)  // black wins
     {
-        *evaluation = BLACK_WIN;
+        *evaluation = NEG_INFINITY;
         return 1;
     }
     else if (white.i == boardsize -1)  // white wins
     {
-        *evaluation = WHITE_WIN;
+        *evaluation = INFINITY-1;
         return 1;
     }
 
     // calculate the distance white needs to get to the end
     int whiteDistanceFromWinning = bfs(boardsize, wall_matrix, white.i, white.j, boardsize-1);
-    if (whiteDistanceFromWinning == -2)
-    {
-        printf("? allocation failure\n\n");
-        fflush(stdout);
-        return 0;
-    }
+    if (whiteDistanceFromWinning == -2) return 0;
+
     // calculate the distance black needs to get to the end
     int blackDistanceFromWinning = bfs(boardsize, wall_matrix, black.i, black.j, 0);
-    if (blackDistanceFromWinning == -2)
-    {
-        printf("? allocation failure\n\n");
-        fflush(stdout);
-        return 0;
-    }
+    if (blackDistanceFromWinning == -2) return 0;
 
     int whiteDistanceFromNextRow = bfs(boardsize, wall_matrix, white.i, white.j, white.i+1);
-    if (whiteDistanceFromNextRow == -2)
-    {
-        printf("? allocation failure\n\n");
-        fflush(stdout);
-        return 0;
-    }
+    if (whiteDistanceFromNextRow == -2) return 0;
 
     int blackDistanceFromNextRow = bfs(boardsize, wall_matrix, black.i, black.j, black.i-1);
-    if (blackDistanceFromNextRow == -2)
-    {
-        printf("? allocation failure\n\n");
-        fflush(stdout);
-        return 0;
-    }
+    if (blackDistanceFromNextRow == -2) return 0;
 
     *evaluation = 10*(blackDistanceFromWinning-whiteDistanceFromWinning) + 4*(blackDistanceFromNextRow - whiteDistanceFromNextRow) + 5*(white.walls - black.walls);
     return 1;
@@ -233,34 +211,38 @@ char positionEvaluation(player black, player white, int boardsize, char** wall_m
 
 unsigned char findDepth(int boardsize, char* pseudo)
 {
+    /* pseudodepth is used to simulate a further search to make the depth even.
+    If pseudodepth is true the last step will only check opponent's "most likely"
+    responses instead of all possible answers. This means it will check pawn movement
+    and wall placement near the enemy pawn to disrupt it's movement */
     if (boardsize <= 5)  // depth 6
-	{
-		*pseudo = 0;
-		return 6;
-	}
+    {
+        *pseudo = 0;
+        return 6;
+    }
     else if (boardsize <= 7)  // depth 4
-	{
-		*pseudo = 0;
-		return 4;
-	}
-	else if (boardsize <= 9)  // pseudo depth works at 4
-	{
-		*pseudo = 1;
-		return 4;
-	}
+    {
+        *pseudo = 0;
+        return 4;
+    }
+    else if (boardsize <= 9)  // pseudo depth works at 4
+    {
+        *pseudo = 1;
+        return 4;
+    }
     else if (boardsize <= 11)  // depth 3
-	{
-		*pseudo = 0;
-		return 3;
-	}
+    {
+        *pseudo = 0;
+        return 3;
+    }
     else if (boardsize <= 15)  // depth 3
-	{
-		*pseudo = 0;
-		return 3;
-	}
+    {
+        *pseudo = 0;
+        return 3;
+    }
     else  // pseudodepth works at 2
-	{
-		*pseudo = 1;
-		return 2;
-	}
+    {
+        *pseudo = 1;
+        return 2;
+    }
 }
