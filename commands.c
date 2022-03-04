@@ -81,6 +81,7 @@ char update_boardsize(int* boardsize, int* prev_boardsize, char*** wall_matrix, 
 
 void clear_board(int boardsize, char** wall_matrix, player white, player black, stackptr* history, int *totalmoves)
 {
+    // clear board of the walls
     for (int i = 0; i < boardsize; i++) 
         for (int j = 0; j < boardsize; j++) 
             wall_matrix[i][j] = 0;
@@ -118,6 +119,7 @@ void update_walls(player* white, player* black, int* number_of_walls)
 
 char playmove(char* buff, player* white, player* black, char** wall_mtx, int boardsize, stackptr* lastaddr, int* totalmoves)
 {
+    // return 2 for random error, 0 for allocation error, 1 if all went good
     // Get color
     char *p = strtok(NULL, " ");
     if (!enough_arguments(p)) return 2;
@@ -199,22 +201,19 @@ char playmove(char* buff, player* white, player* black, char** wall_mtx, int boa
     // add pawn movement to history
     char *type = (pl == white) ? "wm" : "bm";
     ok = addMove(lastaddr, pl->i, pl->j, type);  // adding pawn's position to history before moving the pawn
-    if (ok) 
+    if (ok)
         (*totalmoves)++;
-    else
-    {
-        unsuccessful_response("allocation failure");
-        return 0;
-    }
+    else return false;
+
     pl->i = vertex_x;
     pl->j = vertex_y;
     successful_response("");    
-	return 1;
+	return true;
 }
 
 char playwall(char* buff, player* white, player* black, char** wall_matrix, int boardsize, stackptr* lastaddr, int* totalmoves)
 {
-    // return 1 if wall was placed, 2 if there was an error in trying to place the wall and 0 for allocation error
+    // return 2 for random error, 0 for allocation error, 1 if all went good
     // Get color
     char *p = strtok(NULL, " ");
     if (!enough_arguments(p)) return 2;
@@ -262,7 +261,7 @@ char playwall(char* buff, player* white, player* black, char** wall_matrix, int 
     else if (path == -1)  // error in allocating memory to search if the path is being blocked
     {
         wall_matrix[vertex_x][vertex_y] = 0;    // reset placing the wall
-        return 0;
+        return false;
     }
     (pl->walls)--;
     
@@ -273,12 +272,12 @@ char playwall(char* buff, player* white, player* black, char** wall_matrix, int 
         (*totalmoves)++;
     else
     {
-        wall_matrix[vertex_x][vertex_y] = 0;    // reset placing the wall
+        wall_matrix[vertex_x][vertex_y] = 0;  // reset placing the wall
         (pl->walls)++;
-        return 0;
+        return false;
     }    
     successful_response("");
-    return 1;
+    return true;
 }
 
 char genmove(player* white, player* black, char** wall_matrix, int boardsize, stackptr* lastaddr, int* totalmoves)
@@ -334,7 +333,7 @@ char genmove(player* white, player* black, char** wall_matrix, int boardsize, st
     }
     else return false;  // memory allocation problem
     fflush(stdout);
-    return 1;
+    return true;
 }
 
 void undo(char** wall_matrix, player* white, player* black, stackptr* last, int* totalmoves)
