@@ -72,11 +72,11 @@ char update_boardsize(int* boardsize, int* prev_boardsize, char*** wall_matrix, 
         successful_response("");
     }
     else
-	{
+    {
         unsuccessful_response("invalid syntax");
         return 2;
-	}
-	return 1;
+    }
+    return 1;
 }
 
 void clear_board(int boardsize, char** wall_matrix, player white, player black, stackptr* history, int *totalmoves)
