@@ -827,8 +827,10 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, int alpha, i
             ++white->i;  // reset movement
             if (beta <= alpha) return max_eval;
         }
+        
 		int st = 1;
 		int end = boardsize;
+        // last search of a pseudodepth check, only check wall placement near black's pawn
 		if (depth == 1 && pseudo == 1)
 		{
 			if (black->i > 1) st = black->i-1;
@@ -837,7 +839,6 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, int alpha, i
         // check wall placement
         for (int i = st; i < end; i++)
         {
-            // if (depth == 1) break;
             if (beta <= alpha || white->walls == 0) break;
             for (int j = 0; j < boardsize-1; j++)
             {
@@ -1061,6 +1062,7 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, int alpha, i
         // check wall placement
 		int st = boardsize-1;
 		int end = 1;
+        // last search of a pseudodepth check, only check wall placement near white's pawn
 		if (depth == 1 && pseudo == 1)
 		{
 			if (white->i > 1) end = white->i-1;
@@ -1068,7 +1070,6 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, int alpha, i
 		}
         for (int i = st; i > end; i--)
         {
-            //if (depth == 1) break;
             if (beta <= alpha || black->walls == 0) break;
             for (int j = 0; j < boardsize-1; j++)
             {
