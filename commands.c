@@ -38,10 +38,10 @@ void list_commands()
     fflush(stdout);
 }
 
-void update_boardsize(int* boardsize, int* prev_boardsize, char*** wall_matrix, player* white, player* black, stackptr* history, int* totalmoves)
+char update_boardsize(int* boardsize, int* prev_boardsize, char*** wall_matrix, player* white, player* black, stackptr* history, int* totalmoves)
 {
     char *p = strtok(NULL, " ");
-    if (!enough_arguments(p)) return;
+    if (!enough_arguments(p)) return 2;
     if (isNumber(p) && p[0] != '-')
     {
         *boardsize = atoi(p);
@@ -53,7 +53,10 @@ void update_boardsize(int* boardsize, int* prev_boardsize, char*** wall_matrix, 
         // allocate memory for the new grid
         *wall_matrix = allocate_memory(*boardsize);
         if (wall_matrix == NULL)
+		{
             unsuccessful_response("allocation failure");
+			return 0;
+		}
 
         reset_pawns(*boardsize, white, black);
 
@@ -69,7 +72,12 @@ void update_boardsize(int* boardsize, int* prev_boardsize, char*** wall_matrix, 
         successful_response("");
     }
     else
+	{
         unsuccessful_response("invalid syntax");
+		return 2;
+	}
+	
+	return 1;
 }
 
 void clear_board(int boardsize, char** wall_matrix, player white, player black, stackptr* history, int *totalmoves)
