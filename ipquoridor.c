@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
     while (!panic)
     {
         fgets(buff, BUFFER_SIZE, stdin);
-        if (command_preprocess(buff) == true) continue;
+        if (command_preprocess(buff) == true) continue;  // hash sign
         if (buff[0] == '\0') 
         {
             unsuccessful_response("unknown command");
@@ -64,7 +64,9 @@ int main(int argc, char* argv[])
             playmove(buff, &white, &black, wall_matrix, boardsize, &history, &totalmoves);
 
         else if (m == 9)  // playwall
-            playwall(buff, &white, &black, wall_matrix, boardsize, &history, &totalmoves);
+        {
+            if (playwall(buff, &white, &black, wall_matrix, boardsize, &history, &totalmoves) == false) panic = true; 
+        }
 
         else if (m == 10)  // genmove
         {
