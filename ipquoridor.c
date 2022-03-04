@@ -6,7 +6,7 @@
 
 int main(int argc, char* argv[])
 {
-    char* p, m, panic = 0;
+    char* p, m, panic = false;
     // default values
     int boardsize = 9, prev_boardsize = 9, number_of_walls = 10;
 
@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
     if (buff == NULL)
     {
         unsuccessful_response("allocation failure");
-        panic = 1;
+        panic = true;
     }
 
     while (true && !panic)
@@ -57,8 +57,7 @@ int main(int argc, char* argv[])
         }
 
         else if (m == 5)  // boardsize
-            if (update_boardsize(&boardsize, &prev_boardsize, &wall_matrix, &white, &black, &history, &totalmoves) == 0) panic = 1;  // allocation failure
-
+            if (update_boardsize(&boardsize, &prev_boardsize, &wall_matrix, &white, &black, &history, &totalmoves) == false) panic = true;  // allocation failure
 
         else if (m == 6)  // clear_board
             clear_board(boardsize, wall_matrix, white, black, &history, &totalmoves);
@@ -70,10 +69,10 @@ int main(int argc, char* argv[])
             playmove(buff, &white, &black, wall_matrix, boardsize, &history, &totalmoves);
 
         else if (m == 9)  // playwall
-            playwall(buff, &white, &black, wall_matrix, boardsize, &history, &totalmoves);
+            if (playwall(buff, &white, &black, wall_matrix, boardsize, &history, &totalmoves) == false) panic = true;
 
         else if (m == 10)  // genmove
-            genmove(&white, &black, wall_matrix, boardsize, &history, &totalmoves);
+            if (genmove(&white, &black, wall_matrix, boardsize, &history, &totalmoves) == false) panic = true;
 
         else if (m == 11)  // undo
             undo(wall_matrix, &white, &black, &history, &totalmoves);
