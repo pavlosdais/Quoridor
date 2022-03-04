@@ -1,3 +1,4 @@
+#include <limits.h>
 #define BUFFER_SIZE 81
 #define true 1
 #define false 0
@@ -25,5 +26,4 @@ typedef struct returningMove
     int y;
     char move;  // w for wall at (x,y), m for move at (x,y) and -1 for error
     char or;  // orientation of the wall
-}
-returningMove;
+} returningMove;
