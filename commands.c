@@ -212,40 +212,40 @@ void playmove(char* buff, player* white, player* black, char** wall_mtx, int boa
     successful_response("");    
 }
 
-void playwall(char* buff, player* white, player* black, char** wall_matrix, int boardsize, stackptr* lastaddr, int* totalmoves)
+char playwall(char* buff, player* white, player* black, char** wall_matrix, int boardsize, stackptr* lastaddr, int* totalmoves)
 {
+    // return 1 if wall was placed, 2 if there was an error in trying to place the wall and 0 for allocation error
     // Get color
     char *p = strtok(NULL, " ");
-    if (!enough_arguments(p)) return;
+    if (!enough_arguments(p)) return 2;
     
     player *pl = check_color(p, black, white);
     if (pl == NULL)
     {
         unsuccessful_response("invalid syntax");
-        return;
+        return 2;
     }
     
     // Get vertex
     p = strtok(NULL, " ");
-    if (!enough_arguments(p)) return;
-
+    if (!enough_arguments(p)) return 2;
     char vertex_y = p[0] - 'a';
     char vertex_x = atoi(p+1) - 1;
 
     // Get orientation
     p = strtok(NULL, " ");
-    if (!enough_arguments(p)) return;
+    if (!enough_arguments(p)) return 2;
 
     char orientation = check_orientation(p);
     if (orientation == -1)  // invalid orientation
     {
         unsuccessful_response("invalid syntax");
-        return;
+        return 2;
     }
     else if (!isValidWall(vertex_x, vertex_y, boardsize, wall_matrix, orientation))
     {
         unsuccessful_response("illegal move");
-        return;
+        return 2;
     }
 
     wall_matrix[vertex_x][vertex_y] = orientation;  // place wall
@@ -257,13 +257,12 @@ void playwall(char* buff, player* white, player* black, char** wall_matrix, int 
     {
         wall_matrix[vertex_x][vertex_y] = 0;    // reset placing the wall
         unsuccessful_response("illegal move");
-        return;
+        return 2;
     }
     else if (path == -1)  // error in allocating memory to search if the path is being blocked
     {
         wall_matrix[vertex_x][vertex_y] = 0;    // reset placing the wall
-        unsuccessful_response("allocation failure");
-        return;
+        return 0;
     }
     (pl->walls)--;
     
@@ -275,23 +274,24 @@ void playwall(char* buff, player* white, player* black, char** wall_matrix, int 
     else
     {
         wall_matrix[vertex_x][vertex_y] = 0;    // reset placing the wall
-        unsuccessful_response("allocation failure");
         (pl->walls)++;
-        return;
+        return 0;
     }    
     successful_response("");
+    return 1;
 }
 
-void genmove(player* white, player* black, char** wall_matrix, int boardsize, stackptr* lastaddr, int* totalmoves)
+char genmove(player* white, player* black, char** wall_matrix, int boardsize, stackptr* lastaddr, int* totalmoves)
 {
+    // return 2 for random error, 0 for allocation error, 1 if all went good
     char *p = strtok(NULL, " ");
-    if (!enough_arguments(p)) return;
+    if (!enough_arguments(p)) return 2;
     
     char pl;
     if ((pl=colorValue(p)) == -1)
     {
         unsuccessful_response("invalid syntax");
-        return;
+        return 2;
     }
 	char pseudodepth;
 	char depth = findDepth(boardsize, &pseudodepth);
@@ -332,8 +332,9 @@ void genmove(player* white, player* black, char** wall_matrix, int boardsize, st
         if (ok) (*totalmoves)++;
         printf("= %c%d\n\n", 'A'+evalMove.y, evalMove.x+1);
     }
-    else return;  // memory allocation problem
+    else return 0;  // memory allocation problem
     fflush(stdout);
+    return 1;
 }
 
 void undo(char** wall_matrix, player* white, player* black, stackptr* last, int* totalmoves)
