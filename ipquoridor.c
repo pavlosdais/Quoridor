@@ -16,18 +16,25 @@ int main(int argc, char* argv[])
     
     char** wall_matrix = allocate_memory(boardsize);
     if (wall_matrix == NULL)
+	{
         unsuccessful_response("allocation failure");
+		return -1;
+	}
 
     stackptr history = NULL;
     int totalmoves = 0;
     char* buff = malloc(sizeof(char) * BUFFER_SIZE);
+	if (buff == NULL)
+	{
+		unsuccessful_response("allocation failure");
+		return -1;
+	}
+
     while (true)
     {
         fgets(buff, BUFFER_SIZE, stdin);
-        command_preprocess(buff);
-
-        if (buff[0] == '#') continue;
-        else if (buff[0] == '\0') 
+        if (command_preprocess(buff) == 1) continue;  // hash sign
+        if (buff[0] == '\0') 
         {
             unsuccessful_response("unknown command");
             continue;
