@@ -116,22 +116,22 @@ void update_walls(player* white, player* black, int* number_of_walls)
         unsuccessful_response("invalid syntax");
 }
 
-void playmove(char* buff, player* white, player* black, char** wall_mtx, int boardsize, stackptr* lastaddr, int* totalmoves)
+char playmove(char* buff, player* white, player* black, char** wall_mtx, int boardsize, stackptr* lastaddr, int* totalmoves)
 {
     // Get color
     char *p = strtok(NULL, " ");
-    if (!enough_arguments(p)) return;
+    if (!enough_arguments(p)) return 2;
 
     player *pl = check_color(p, black, white);  // player
     player *op = (pl == white) ? black : white;  // opponent
     if (pl == NULL)
     {
         unsuccessful_response("invalid syntax");
-        return;
+        return 2;
     }
 
     // Get vertex
-    if (!enough_arguments(p)) return;
+    if (!enough_arguments(p)) return 2;
     p = strtok(NULL, " ");
 
     char vertex_y = p[0] - 'a';
@@ -140,12 +140,12 @@ void playmove(char* buff, player* white, player* black, char** wall_mtx, int boa
     if (!is_vertex_valid(vertex_x, boardsize) || !is_vertex_valid(vertex_y, boardsize))
     {
         unsuccessful_response("illegal move");
-        return;
+        return 2;
     }
     if (vertex_x == op->i && vertex_y == op->j)
     {
         unsuccessful_response("illegal move");
-        return;
+        return 2;
     }
 
     char ok;
@@ -154,7 +154,7 @@ void playmove(char* buff, player* white, player* black, char** wall_mtx, int boa
     if (dist > 2 || dist == 0)
     {
         unsuccessful_response("illegal move");
-        return;
+        return 2;
     }
     else if (dist == 1)
     {
@@ -193,7 +193,7 @@ void playmove(char* buff, player* white, player* black, char** wall_mtx, int boa
     if (!ok)
     {
         unsuccessful_response("illegal move");
-        return;
+        return 2;
     }
     
     // add pawn movement to history
@@ -204,11 +204,12 @@ void playmove(char* buff, player* white, player* black, char** wall_mtx, int boa
     else
     {
         unsuccessful_response("allocation failure");
-        return;
+        return 0;
     }
     pl->i = vertex_x;
     pl->j = vertex_y;
     successful_response("");    
+	return 1;
 }
 
 char playwall(char* buff, player* white, player* black, char** wall_matrix, int boardsize, stackptr* lastaddr, int* totalmoves)
