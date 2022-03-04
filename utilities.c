@@ -129,13 +129,13 @@ char wallOnTheLeft(int i, int j, char** wall_matrix, int boardsize)
 
 char thereIsAWall(char or, char** wall_matrix, int boardsize, int vertex_x, int vertex_y)
 {
-	if (wall_matrix[vertex_x][vertex_y] != 0) return 1;
-    if (or == 'b')  // horizontal
+    if (wall_matrix[vertex_x][vertex_y] != 0) return 1;
+    if (or == 'b')
     {
         if (wall_matrix[vertex_x][vertex_y+1] == 'b') return 1;
         else if (vertex_y > 0 && wall_matrix[vertex_x][vertex_y-1] == 'b') return 1;
     }
-    else  // vertical
+    else  // if (or == 'r')
     {
         if (wall_matrix[vertex_x-1][vertex_y] == 'r') return 1;
         else if (vertex_x < boardsize-1 && wall_matrix[vertex_x+1][vertex_y] == 'r') return 1;
@@ -180,30 +180,52 @@ the position is equal so neither player has an advantage. */
 
 char positionEvaluation(player black, player white, int boardsize, char** wall_matrix, int* evaluation)
 {
+    #define WHITE_WIN 99999
+    #define BLACK_WIN -99999
+
     if (black.i == 0)  // black wins
     {
-        *evaluation = NEG_INFINITY;
+        *evaluation = BLACK_WIN;
         return 1;
     }
     else if (white.i == boardsize -1)  // white wins
     {
-        *evaluation = INFINITY - 1;
+        *evaluation = WHITE_WIN;
         return 1;
     }
 
     // calculate the distance white needs to get to the end
     int whiteDistanceFromWinning = bfs(boardsize, wall_matrix, white.i, white.j, boardsize-1);
-    if (whiteDistanceFromWinning == -2) return 0;
-
+    if (whiteDistanceFromWinning == -2)
+    {
+        printf("? allocation failure\n\n");
+        fflush(stdout);
+        return 0;
+    }
     // calculate the distance black needs to get to the end
     int blackDistanceFromWinning = bfs(boardsize, wall_matrix, black.i, black.j, 0);
-    if (blackDistanceFromWinning == -2) return 0;
+    if (blackDistanceFromWinning == -2)
+    {
+        printf("? allocation failure\n\n");
+        fflush(stdout);
+        return 0;
+    }
 
     int whiteDistanceFromNextRow = bfs(boardsize, wall_matrix, white.i, white.j, white.i+1);
-    if (whiteDistanceFromNextRow == -2) return 0;
+    if (whiteDistanceFromNextRow == -2)
+    {
+        printf("? allocation failure\n\n");
+        fflush(stdout);
+        return 0;
+    }
 
     int blackDistanceFromNextRow = bfs(boardsize, wall_matrix, black.i, black.j, black.i-1);
-    if (blackDistanceFromNextRow == -2) return 0;
+    if (blackDistanceFromNextRow == -2)
+    {
+        printf("? allocation failure\n\n");
+        fflush(stdout);
+        return 0;
+    }
 
     *evaluation = 10*(blackDistanceFromWinning-whiteDistanceFromWinning) + 4*(blackDistanceFromNextRow - whiteDistanceFromNextRow) + 5*(white.walls - black.walls);
     return 1;
