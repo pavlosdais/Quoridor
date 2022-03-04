@@ -7,12 +7,12 @@
 #include "ai.h"
 
 // Function Prototypes
-void unsuccessful_response(char* msg);
-void successful_response(char* msg);
+void unsuccessful_response(char *msg);
+void successful_response(char *msg);
 char **allocate_memory(int boardsize);
-void free_array(char** A, int boardsize);
-char command_num(char* ans);
-void reset_pawns(int boardsize, player* white, player* black);
+void free_array(char **A, int boardsize);
+char command_num(char *ans);
+void reset_pawns(int boardsize, player *white, player *black);
 
 void print_name(char *p)
 {
@@ -53,10 +53,10 @@ char update_boardsize(int* boardsize, int* prev_boardsize, char*** wall_matrix, 
         // allocate memory for the new grid
         *wall_matrix = allocate_memory(*boardsize);
         if (wall_matrix == NULL)
-		{
+        {
             unsuccessful_response("allocation failure");
-			return 0;
-		}
+            return 0;
+        }
 
         reset_pawns(*boardsize, white, black);
 
@@ -74,7 +74,7 @@ char update_boardsize(int* boardsize, int* prev_boardsize, char*** wall_matrix, 
     else
 	{
         unsuccessful_response("invalid syntax");
-		return 2;
+        return 2;
 	}
 	return 1;
 }
