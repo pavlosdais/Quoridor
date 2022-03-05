@@ -173,7 +173,7 @@ char addMove(stackptr* last, int i, int j, char* type)
 
 /* positionEvaluation is a heuristic function used for the evaluation of the current position of the game.
 It takes into account the distance each player needs in order to win (factor = 1), the number of steps each player
-needs to get to the next row (factor = 0.4) as well as the number of walls each player has (factor = 0.5) in order
+needs to get to the next row (factor = 0.6) as well as the number of walls each player has (factor = 0.8) in order
 to give an advantage (or lack of) for a certain player. When it's positive it calculates that the position is
 advantageous for white and when it's negative it calculates that black has an advantage. If it's 0 it means that
 the position is equal so neither player has an advantage. */
@@ -207,7 +207,7 @@ char positionEvaluation(player black, player white, int boardsize, char** wall_m
     int blackDistanceFromNextRow = bfs(boardsize, wall_matrix, black.i, black.j, black.i-1);
     if (blackDistanceFromNextRow == -2) return 0;
 
-    *evaluation = 10*(blackDistanceFromWinning-whiteDistanceFromWinning) + 5*(blackDistanceFromNextRow - whiteDistanceFromNextRow) + 7*(white.walls - black.walls);
+    *evaluation = 10*(blackDistanceFromWinning-whiteDistanceFromWinning) + 6*(blackDistanceFromNextRow - whiteDistanceFromNextRow) + 8*(white.walls - black.walls);
     return 1;
 }
 
