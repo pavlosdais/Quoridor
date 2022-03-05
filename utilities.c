@@ -199,9 +199,11 @@ char positionEvaluation(player black, player white, int boardsize, char** wall_m
     int blackDistanceFromWinning = bfs(boardsize, wall_matrix, black.i, black.j, 0);
     if (blackDistanceFromWinning == -2) return 0;
 
+    // calculate the distance white needs to get to the next row
     int whiteDistanceFromNextRow = bfs(boardsize, wall_matrix, white.i, white.j, white.i+1);
     if (whiteDistanceFromNextRow == -2) return 0;
 
+    // calculate the distance black needs to get to the end
     int blackDistanceFromNextRow = bfs(boardsize, wall_matrix, black.i, black.j, black.i-1);
     if (blackDistanceFromNextRow == -2) return 0;
 
