@@ -182,12 +182,12 @@ char positionEvaluation(player black, player white, int boardsize, char** wall_m
 {
     if (black.i == 0)  // black wins
     {
-        *evaluation = NEG_INFINITY;
+        *evaluation = -999999;
         return 1;
     }
     else if (white.i == boardsize -1)  // white wins
     {
-        *evaluation = INFINITY-1;
+        *evaluation = 999999;
         return 1;
     }
 
@@ -207,7 +207,7 @@ char positionEvaluation(player black, player white, int boardsize, char** wall_m
     int blackDistanceFromNextRow = bfs(boardsize, wall_matrix, black.i, black.j, black.i-1);
     if (blackDistanceFromNextRow == -2) return 0;
 
-    *evaluation = 10*(blackDistanceFromWinning-whiteDistanceFromWinning) + 4*(blackDistanceFromNextRow - whiteDistanceFromNextRow) + 5*(white.walls - black.walls);
+    *evaluation = 10*(blackDistanceFromWinning-whiteDistanceFromWinning) + 5*(blackDistanceFromNextRow - whiteDistanceFromNextRow) + 7*(white.walls - black.walls);
     return 1;
 }
 
