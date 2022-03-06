@@ -237,14 +237,19 @@ unsigned char findDepth(int boardsize, char* pseudo)
         *pseudo = 0;
         return 3;
     }
-    else if (boardsize <= 15)  // depth 3
+    else if (boardsize <= 17)  // depth 2
     {
         *pseudo = 0;
-        return 3;
+        return 2;
     }
-    else  // pseudodepth works at 2
+	else if (boardsize <= 23)  // pseudodepth works at 2
     {
         *pseudo = 1;
         return 2;
+    }
+    else  // depth 1
+    {
+        *pseudo = 0;
+        return 1;
     }
 }
