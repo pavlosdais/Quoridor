@@ -1,6 +1,6 @@
 # make the executable file
-ipquoridor.21-122.21-164.5: ipquoridor.o commands.o utilities.o bfs.o ai.o
-	gcc -o ipquoridor ipquoridor.o commands.o utilities.o bfs.o ai.o
+ipquoridor: ipquoridor.o commands.o utilities.o bfs.o ai.o
+	gcc -o .21-122.21-164.5 ipquoridor.o commands.o utilities.o bfs.o ai.o
 
 # make the object files needed
 ipquoridor.o: ipquoridor.c
