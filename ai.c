@@ -833,8 +833,16 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, int alpha, i
         // last search of a pseudodepth check, only check wall placement near black's pawn
 		if (depth == 1 && pseudo == 1)
 		{
-			if (black->i > 1) st = black->i-1;
-			if (black->i < boardsize-1) end = black->i+1;
+			if (black->i > 1)
+			{
+				st = black->i-1;
+				if (black->i < boardsize-1) end = black->i+1;
+			}
+			else if (black->i > 2)
+			{
+				st = black->i-2;
+				end = black->i;
+			}
 		}
         // check wall placement
         for (int i = st; i < end; i++)
@@ -1065,8 +1073,16 @@ int minimax(char** wall_matrix, int boardsize, unsigned char depth, int alpha, i
         // last search of a pseudodepth check, only check wall placement near white's pawn
 		if (depth == 1 && pseudo == 1)
 		{
-			if (white->i > 1) end = white->i-1;
-			if (white->i < boardsize-1) st = white->i+1;
+			if (white->i < boardsize-1)
+			{
+				st = white->i+1;
+				if (white->i > 1) end = white->i-1;
+			}
+			else if (white->i < boardsize-2)
+			{
+				st = white->i+2;
+				end = white->i;
+			}
 		}
         for (int i = st; i > end; i--)
         {
