@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
     while (!panic)
     {
         fgets(buff, BUFFER_SIZE, stdin);
-	if (buff[0] == '\n') continue;
+        if (buff[0] == '\n') continue;
         if (command_preprocess(buff) == true) continue;  // hash sign
         if (buff[0] == '\0') 
         {
