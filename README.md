@@ -44,7 +44,7 @@ The first player who reaches any of the squares opposite his baseline is the win
 > **boardsize** n <br/>
   The board size is changed to n.
   
-> **walls** <br/>
+> **walls** n <br/>
   The number of walls for each player is changed to n.
   
 > **list_commands** <br/>
