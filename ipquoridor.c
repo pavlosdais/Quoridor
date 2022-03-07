@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
             if (update_boardsize(&boardsize, &prev_boardsize, &wall_matrix, &white, &black, &history, &totalmoves) == false) panic = true;
         }
         else if (m == 6)  // clear_board
-            clear_board(boardsize, wall_matrix, white, black, &history, &totalmoves);
+            clear_board(boardsize, wall_matrix, &white, &black, &history, &totalmoves);
 
         else if (m == 7)  // walls
             update_walls(&white, &black, &number_of_walls);
