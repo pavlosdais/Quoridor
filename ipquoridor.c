@@ -53,10 +53,32 @@ int main(int argc, char* argv[])
 
         else if (m == 5)  // boardsize
         {
+            if (totalmoves > 0)  // clear history
+            {
+                stackptr temp = NULL;
+                while (history != NULL)
+                {
+                    temp = history;
+                    history = history->next;
+                    free(temp);
+                }
+            }
             if (update_boardsize(&boardsize, &prev_boardsize, &wall_matrix, &white, &black, &history, &totalmoves) == false) panic = true;
         }
         else if (m == 6)  // clear_board
+        {
+            if (totalmoves > 0)  // clear history
+            {
+                stackptr temp = NULL;
+                while (history != NULL)
+                {
+                    temp = history;
+                    history = history->next;
+                    free(temp);
+                }
+            }
             clear_board(boardsize, wall_matrix, &white, &black, &history, &totalmoves);
+        }
 
         else if (m == 7)  // walls
             update_walls(&white, &black, &number_of_walls);
