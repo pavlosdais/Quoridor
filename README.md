@@ -21,12 +21,13 @@ Walls are flat two-cell-wide pieces which can be placed between 2 sets of 2 squa
 The first player who reaches any of the squares opposite his baseline is the winner.
 
 **Ingame commands**:
-* >playmove <player> <position> <br />
+* >playmove <player> <position> <br />* >
   example: playmove white e2 - move white's pawn to E2
   
-* >playwall <player> <position> <orientation> <br />
-  examples: playwall black a3 horizontal(OR h) - black places a horizontal wall starting at A3 <br />
-            playwall white b4 vertical(OR v) - white places a vertical wall starting at B4 <br />
+* >playwall <player> <position> <orientation> <br />* >
+  examples:<br />
+  playwall black a3 horizontal(OR h) - black places a horizontal wall starting at A3 <br />
+  playwall white b4 vertical(OR v) - white places a vertical wall starting at B4 <br />
   
 * >genmove <player> <br />
   example: genmove white - engine plays a move for the player specified.
