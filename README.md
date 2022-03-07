@@ -50,5 +50,5 @@ The first player who reaches any of the squares opposite his baseline is the win
 > **list_commands** <br/>
   List all commands
 
-Problem set 4, Semester 1, Department of Informatics and Telecommunications - UoA (2022)
 > Project made by Pavlos Dais (sdi2100122) and Stavros Prentzas (sdi2100164)
+Problem set 4, Semester 1, Department of Informatics and Telecommunications - UoA (2022)
