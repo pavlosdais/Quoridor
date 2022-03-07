@@ -25,7 +25,8 @@ The first player who reaches any of the squares opposite his baseline is the win
   example: playmove white e2 - move white's pawn to E2
   
 * >playwall <player> <position> <orientation> <br />
-  example: playwall black a3 horizontal(OR h) - black places a horizontal wall starting at A3
+  examples: playwall black a3 horizontal(OR h) - black places a horizontal wall starting at A3 <br />
+            playwall white b4 vertical(OR v) - white places a vertical wall starting at B4 <br />
   
 * >genmove <player> <br />
   example: genmove white - engine plays a move for the player specified.
