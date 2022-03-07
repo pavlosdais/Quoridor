@@ -1,5 +1,7 @@
 # Quoridor AI based on minimax with alpha-beta pruning
 
+Wiki: https://en.wikipedia.org/wiki/Quoridor
+
 * **Board**:
 Quoridor is played on a game board of 81 square cells (9x9) and each player starts with 10 walls. However, the game can be also played in different boardsizes and with a different number of starting walls.
 
@@ -18,9 +20,33 @@ Walls are flat two-cell-wide pieces which can be placed between 2 sets of 2 squa
 * **End of the game**:
 The first player who reaches any of the squares opposite his baseline is the winner.
 
-
-* > Make the executable file: make
-* > Clear excess object files: make clear
-* > Run the program: make play
+**Ingame commands**:
+* >playmove <player> <position>
+  example: playmove white e2 - move white's pawn to E2
+  
+* >playwall <player> <position> <orientation>
+  example: playwall black a3 horizontal(OR h) - black places a horizontal wall starting at A3
+  
+* >genmove <player>
+  example: genmove white - engine plays a move for the player specified.
+ 
+* >showboard
+  Draw the board.
+  
+* >quit
+  Exit the game.
+  
+* >undo <n>
+  The game goes n moves back.
+  
+* >boardsize <n>
+  The board size is changed to n.
+  
+* >walls
+  The number of walls for each player is changed to n.
+  
+* >list_commands
+  List of commands
 
 Problem set 4, Semester 1, Department of Informatics and Telecommunications - UoA (2022)
+* > Project by Pavlos Dais (sdi2100122) and Stavros Prentzas (sdi2100164)
