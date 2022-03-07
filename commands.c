@@ -59,20 +59,9 @@ char update_boardsize(int* boardsize, int* prev_boardsize, char*** wall_matrix, 
         }
 
         reset_pawns(*boardsize, white, black);
-
-        if (*totalmoves > 0)
-	{
-	    stackptr temp = NULL;
-            while (*history != NULL)
-            {
-                temp = *history;
-                history = &((*history)->next);
-                free(temp);
-            }
-	}
         
         *prev_boardsize = *boardsize;
-	*totalmoves = 0;
+	    *totalmoves = 0;
         successful_response("");
     }
     else
@@ -92,17 +81,6 @@ void clear_board(int boardsize, char** wall_matrix, player* white, player* black
     
     // white's and black's pawns return to their starting position
     reset_pawns(boardsize, white, black);
-    // clear history
-    if (*totalmoves > 0)
-    {
-        stackptr temp = NULL;
-        while (*history != NULL)
-        {
-            temp = *history;
-            history = &((*history)->next);
-            free(temp);
-        }
-    }
     *totalmoves = 0;
     
     successful_response("");
