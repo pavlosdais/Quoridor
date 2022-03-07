@@ -24,4 +24,4 @@ clear:
 
 # run the program
 play:
-	./ipquoridor
+	./ipquoridor.21-122.21-164.5
