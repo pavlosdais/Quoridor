@@ -81,7 +81,6 @@ char update_boardsize(int* boardsize, int* prev_boardsize, char*** wall_matrix, 
 
 void clear_board(int boardsize, char** wall_matrix, player* white, player* black, stackptr* history, int *totalmoves)
 {
-    printf("Entered clear_board\n");
     // clear board of the walls
     for (int i = 0; i < boardsize; i++) 
         for (int j = 0; j < boardsize; j++) 
