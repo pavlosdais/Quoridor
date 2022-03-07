@@ -60,15 +60,19 @@ char update_boardsize(int* boardsize, int* prev_boardsize, char*** wall_matrix, 
 
         reset_pawns(*boardsize, white, black);
 
-        *totalmoves = 0;
-        stackptr temp = NULL;
-        while (*history != NULL)
-        {
-            temp = *history;
-            history = &((*history)->next);
-            free(temp);
-        }
+        if (*totalmoves > 0)
+	{
+	    stackptr temp = NULL;
+            while (*history != NULL)
+            {
+                temp = *history;
+                history = &((*history)->next);
+                free(temp);
+            }
+	}
+        
         *prev_boardsize = *boardsize;
+	*totalmoves = 0;
         successful_response("");
     }
     else
