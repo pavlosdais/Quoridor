@@ -21,32 +21,32 @@ Walls are flat two-cell-wide pieces which can be placed between 2 sets of 2 squa
 The first player who reaches any of the squares opposite his baseline is the winner.
 
 **Ingame commands**:
-* >playmove <player> <position>
+* >playmove <player> <position>__
   example: playmove white e2 - move white's pawn to E2
   
-* >playwall <player> <position> <orientation>
+* >playwall <player> <position> <orientation>__
   example: playwall black a3 horizontal(OR h) - black places a horizontal wall starting at A3
   
-* >genmove <player>
+* >genmove <player>__
   example: genmove white - engine plays a move for the player specified.
  
-* >showboard
+* >showboard__
   Draw the board.
   
-* >quit
+* >quit__
   Exit the game.
   
-* >undo <n>
+* >undo <n>__
   The game goes n moves back.
   
-* >boardsize <n>
+* >boardsize <n>__
   The board size is changed to n.
   
-* >walls
+* >walls__
   The number of walls for each player is changed to n.
   
-* >list_commands
+* >list_commands__
   List of commands
 
 Problem set 4, Semester 1, Department of Informatics and Telecommunications - UoA (2022)
-* > Project by Pavlos Dais (sdi2100122) and Stavros Prentzas (sdi2100164)
+* > Project made by Pavlos Dais (sdi2100122) and Stavros Prentzas (sdi2100164)
