@@ -48,7 +48,7 @@ The first player who reaches any of the squares opposite his baseline is the win
   The number of walls for each player is changed to n.
   
 > **list_commands** <br/>
-  List all commands
+  List all commands.
 
 Assignment 4, Semester 1, Department of Informatics and Telecommunications - UoA (2022)
 > Project made by Pavlos Dais (sdi2100122) and Stavros Prentzas (sdi2100164)
