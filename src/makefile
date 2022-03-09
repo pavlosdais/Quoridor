@@ -18,7 +18,7 @@ bfs.o: bfs.c
 ai.o: ai.c
 	gcc -c ai.c
 
-# delete junk object  files
+# delete junk object files
 clear:
 	rm -f *.o
 
