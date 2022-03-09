@@ -30,7 +30,7 @@ The first player who reaches any of the squares opposite his baseline is the win
   playwall white b4 vertical(OR v) - white places a vertical wall starting at B4 <br/>
   
 > **genmove** player <br/>
-  example: genmove white - engine plays a move for the player specified.
+  example: genmove white - engine plays a move for the player specified
  
 > **showboard** <br/>
   Draw the board.
