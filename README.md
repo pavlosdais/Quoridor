@@ -73,7 +73,7 @@ The depths for each boardsize are: <br/>
 
 It's important to note that depth numbers and pseudo-depth were used in order to meet the time requirements for the Quoridor Cup Competition (UoA)^ so they can be changed in order to make the engine more powerful, albeit, slower. <br/>
 
-^ max 30 seconds/each move and 20*boardsize total time <br/>
+^ max 30 seconds/move and 20*boardsize total time <br/>
 
 Assignment 4, Semester 1, Department of Informatics and Telecommunications - UoA (2022)
 > Project made by Pavlos Dais (sdi2100122) and Stavros Prentzas (sdi2100164)
