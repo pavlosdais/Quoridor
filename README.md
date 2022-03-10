@@ -3,6 +3,7 @@
 Wiki: https://en.wikipedia.org/wiki/Quoridor <br/>
 YouTube Tutorial Video: https://www.youtube.com/watch?v=6ISruhN0Hc0
 
+**Rules**
 * **Board**:
 Quoridor is played on a game board of 81 square cells (9x9) and each player starts with 10 walls. However, the game can be also played in different boardsizes and with a different number of starting walls.
 
