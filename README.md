@@ -1,7 +1,7 @@
 # Quoridor AI based on minimax with alpha-beta pruning
 
 Wiki: https://en.wikipedia.org/wiki/Quoridor <br/>
-YouTube Tutorial Video: https://www.youtube.com/watch?v=6ISruhN0Hc0
+YouTube Tutorial Video: youtube.com/watch?v=6ISruhN0Hc0
 
 * **Board**:
 Quoridor is played on a game board of 81 square cells (9x9) and each player starts with 10 walls. However, the game can be also played in different boardsizes and with a different number of starting walls.
@@ -53,10 +53,9 @@ The first player who reaches any of the squares opposite his baseline is the win
 
 **Engine:** <br/>
 
-The engine changes its depth accordingly depending on the boardsize. It's also using a so-called pseudo-depth system (for certain boardsizes) where at the last depth
-it doesn't search all of the possible moves, but only key ones (pawn movement and wall placement near the enemy's pawn). This is used to further boost the engine lookahead ability and make the depth an even number. The evaluation uses a system similar to chess's one where if the evaluation is positive it's believed that white hasan advantage,
-if it's negative it's believed that black has an advantage and if it's 0, neither player has an advantage. The way it evaluates positions is by using 3 factors. The first
-factor is the steps both players need in order to win by using a factor of 1. The second is the number of steps each player needs in order to get to the next row by using a factor of 0.6. The third, and final, factor is the number of walls each player has remaining (factor 0.8). So, the evaluation comes as follows: <br/>
+The engine is based on a [Minimax](en.wikipedia.org/wiki/Minimax) with [Alpha -beta pruning](en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning). The depth where it's running
+at is found based on the boardsize. It's also using a so-called pseudo-depth system (for certain boardsizes) where at the last depth it doesn't search all of the possible moves, but only key ones (pawn movement and wall placement near the enemy's pawn). This is used to further boost the engine lookahead ability and make the depth an even 
+number. The evaluation uses a system similar to chess's one where if the evaluation is positive it's believed that white hasan advantage, if it's negative it's believed that black has an advantage and if it's 0, neither player has an advantage. The way it evaluates positions is by using 3 factors. The first factor is the steps both players need in order to win by using a factor of 1. The second is the number of steps each player needs in order to get to the next row by using a factor of 0.6. The third, and final, factor is the number of walls each player has remaining (factor 0.8). So, the evaluation comes as follows: <br/>
 > evaluation = blackDistanceFromWinning-whiteDistanceFromWinning + 0.6*(blackDistanceFromNextRow - whiteDistanceFromNextRow) + 0.8*(whiteWalls - blackWalls) <br/>
 
 The depths for each boardsize are: <br/>
