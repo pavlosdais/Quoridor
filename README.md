@@ -54,7 +54,7 @@ The first player who reaches any of the squares opposite his baseline is the win
 
 **Engine:** <br/>
 
-The engine is based on a [Minimax](https://en.wikipedia.org/wiki/Minimax) with [Alpha-beta pruning](https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning). The depth
+The engine is based on [Minimax](https://en.wikipedia.org/wiki/Minimax) with [Alpha-beta pruning](https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning). The depth
 where it's running at is found based on the boardsize. It's also using a so-called pseudo-depth system (for certain boardsizes) where at the last depth it doesn't search
 all of the possible moves, but only key ones (pawn movement and wall placement near the enemy's pawn). This is used to further boost the engine lookahead ability and make the 
 depth an even number. The evaluation uses a system similar to chess's one where if the evaluation is positive it's believed that white has an advantage on the position, if
