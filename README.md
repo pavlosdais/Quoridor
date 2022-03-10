@@ -50,5 +50,22 @@ The first player who reaches any of the squares opposite his baseline is the win
 > **list_commands** <br/>
   List all commands.
 
+**Engine:** <br/>
+
+The engine changes its depth accordingly depending on the boardsize. It's also using a so-called pseudo-depth system (for certain boardsizes) where at the last depth
+it doesn't search all of the possible moves, but only key ones (pawn movement and wall placement near the enemy's pawn). This is used to further boost the engine lookahead ability and make the depth an even number. The evaluation uses a system similar to chess's one where if the evaluation is positive it's believed that white hasan advantage,
+if it's negative it's believed that black has an advantage and if it's 0, neither player has an advantage. The way it evaluates positions is by using 3 factors. The first
+factor is the steps both players need in order to win by using a factor of 1. The second is the number of steps each player needs in order to get to the next row by using a factor of 0.6. The third, and final, factor is the number of walls each player has remaining (factor 0.8). So, the evaluation comes as follows: <br/>
+> evaluation = blackDistanceFromWinning-whiteDistanceFromWinning + 0.6*(blackDistanceFromNextRow - whiteDistanceFromNextRow) + 0.8*(whiteWalls - blackWalls) <br/>
+The depths for each boardsize are: <br/>
+*For boardsizes <= 5: depth = 6 <br/>
+*For boardsizes <= 7: depth = 4 <br/>
+*For boardsizes <= 9: pseudo-depth = 4 <br/>
+*For boardsizes <= 11: depth = 3 <br/>
+*For boardsizes <= 17: depth = 2 <br/>
+*For boardsizes <= 25: pseudo-depth = 2 <br/>
+
+It's important to note that depth numbers and pseudo-depth were used in order to meet the time requirements for the Quoridor Cup Competition (UoA) so they can be changed in order to make the engine more powerful, albeit, slower. <br/>
+
 Assignment 4, Semester 1, Department of Informatics and Telecommunications - UoA (2022)
 > Project made by Pavlos Dais (sdi2100122) and Stavros Prentzas (sdi2100164)
