@@ -63,7 +63,7 @@ The first is the steps both players need in order to win by using a factor of 1.
 by using a factor of 0.6. The third, and final, is the number of walls each player has remaining (factor 0.8). So, the evaluation comes as follows: <br/>
 > evaluation = blackDistanceFromWinning-whiteDistanceFromWinning + 0.6*(blackDistanceFromNextRow - whiteDistanceFromNextRow) + 0.8*(whiteWalls - blackWalls) <br/>
 
-The depths for each boardsize are: <br/>
+The depth for each boardsize is: <br/>
 *For boardsizes <= 5: depth = 6 <br/>
 *For boardsizes <= 7: depth = 4 <br/>
 *For boardsizes <= 9: pseudo-depth = 4 <br/>
