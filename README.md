@@ -1,7 +1,7 @@
 # Quoridor AI based on minimax with alpha-beta pruning
 
 Wiki: https://en.wikipedia.org/wiki/Quoridor <br/>
-YouTube Tutorial Video: https://www.youtube.com/watch?v=6ISruhN0Hc0
+YouTube Tutorial Video: https://www.youtube.com/watch?v=6ISruhN0Hc0 <br/>
 Play the game: http://quoridor.di.uoa.gr/
 
 **Rules:**
