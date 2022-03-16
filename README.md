@@ -2,6 +2,7 @@
 
 Wiki: https://en.wikipedia.org/wiki/Quoridor <br/>
 YouTube Tutorial Video: https://www.youtube.com/watch?v=6ISruhN0Hc0
+Play the game: http://quoridor.di.uoa.gr/
 
 **Rules:**
 * **Board**:
