@@ -32,7 +32,7 @@ char isQueueEmpty(queue* q);
 Function returns the steps a cell requires moving only up, down, left and right from a certain cell (startx, starty)
 in order to reach a certain row goalx. In this context it calculates how many steps a player either with the black or white
 colour needs in order to reach the row and win. In case of an allocating error it returns -2, and if such path doesn't
-exist it returns -2, in any other case a positive integer. */
+exist it returns -1, in any other case a positive integer. */
 
 int bfs(int boardsize, char** m, int startx, int starty, int goalx)
 {
@@ -94,7 +94,7 @@ int bfs(int boardsize, char** m, int startx, int starty, int goalx)
     }
     
     if (reached_the_end) return move_count;
-    return -1;
+    return -1;  // path does not exist
 }
 
 char explore_neighbours(queue* q, int cur_r, int cur_c, int boardsize, char** m, char** have_visited, int* nodes_next_in_layer)
