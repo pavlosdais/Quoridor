@@ -15,19 +15,19 @@ ipquoridor: $(OBJ)
 
 # make the object files needed
 ipquoridor.o: $(SRC_DIR)/ipquoridor.c
-	gcc -c $(SRC_DIR)/ipquoridor.c
+	$(CC) -c $(SRC_DIR)/ipquoridor.c
 
 commands.o: $(SRC_DIR)/commands.c 
-	gcc -c $(SRC_DIR)/commands.c 
+	$(CC) -c $(SRC_DIR)/commands.c 
 
 utilities.o: $(SRC_DIR)/utilities.c
-	gcc -c $(SRC_DIR)/utilities.c
+	$(CC) -c $(SRC_DIR)/utilities.c
 
 bfs.o: $(SRC_DIR)/bfs.c
-	gcc -c $(SRC_DIR)/bfs.c
+	$(CC) -c $(SRC_DIR)/bfs.c
 
 ai.o: $(SRC_DIR)/ai.c
-	gcc -c $(SRC_DIR)/ai.c
+	$(CC) -c $(SRC_DIR)/ai.c
 
 # delete excess object files
 clear:
