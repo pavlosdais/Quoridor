@@ -76,5 +76,5 @@ It's important to note that depth numbers and pseudo-depth were used in order to
 
 ^ max 30 seconds/move and 20*boardsize total time <br/>
 
-Assignment 4, Semester 1, Department of Informatics and Telecommunications - UoA (2022)
+Assignment 4, Semester 1, Department of Informatics and Telecommunications - UoA (2021)
 > Project made by Pavlos Dais (sdi2100122) and Stavros Prentzas (sdi2100164)
