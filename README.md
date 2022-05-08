@@ -76,5 +76,9 @@ It's important to note that depth numbers and pseudo-depth were used in order to
 
 ^ max 30 seconds/move and 20*boardsize total time <br/>
 
+Possible improvements of the agent: <br/>
+* Use iterative deepening to get the most depth in a given fixed move time <br/>
+* Implement a faster pathfinding algorithm (for example A*) <br/>
+
 Assignment 4, Semester 1, Department of Informatics and Telecommunications - UoA (2021)
 > Project made by Pavlos Dais (sdi2100122) and Stavros Prentzas (sdi2100164)

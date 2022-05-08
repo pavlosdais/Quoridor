@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "structs.h"
-#include "utilities.h"
-#include "ai.h"
+#include "../include/structs.h"
+#include "../include/utilities.h"
+#include "../include/ai.h"
 
 // Function Prototypes
 void unsuccessful_response(char *msg);

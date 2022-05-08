@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "structs.h"
-#include "bfs.h"
+#include "../include/structs.h"
+#include "../include/bfs.h"
 
 char isNumber(char* n)
 {

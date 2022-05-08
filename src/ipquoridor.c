@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "structs.h"
-#include "commands.h"
+#include "../include/structs.h"
+#include "../include/commands.h"
 
 int main(int argc, char* argv[])
 {
