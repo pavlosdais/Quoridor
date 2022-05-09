@@ -53,7 +53,7 @@ The first player who reaches any of the squares opposite his baseline is the win
 > **list_commands** <br/>
   List all commands.
 
-## **Engine:** <br/>
+## **Engine** <br/>
 
 The engine is based on [Minimax](https://en.wikipedia.org/wiki/Minimax) with [Alpha-beta pruning](https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning). The depth
 where it's running at is found based on the boardsize. It's also using a so-called pseudo-depth system (for certain boardsizes) where at the last depth it doesn't search
@@ -78,7 +78,7 @@ It's important to note that depth numbers and pseudo-depth were used in order to
 
 Possible improvements:
 * Use iterative deepening to get the most depth in a given fixed move time <br/>
-* Implement a faster pathfinding algorithm (for example A*) <br/>
+* Implement a faster pathfinding algorithm (for example A*) <br/><br/>
 
 Assignment 4, Semester 1, Department of Informatics and Telecommunications - UoA (2021)
 > Project made by Pavlos Dais (sdi2100122) and Stavros Prentzas (sdi2100164)
