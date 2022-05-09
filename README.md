@@ -23,7 +23,7 @@ Walls are flat two-cell-wide pieces which can be placed between 2 sets of 2 squa
 * **End of the game**:
 The first player who reaches any of the squares opposite his baseline is the winner.
 
-## **Ingame commands**:
+## **Ingame commands**
 > **playmove** player position <br/>
   *example*: playmove white e2 - move white's pawn to E2
   
