@@ -4,7 +4,7 @@ Wiki: https://en.wikipedia.org/wiki/Quoridor <br/>
 YouTube Tutorial Video: https://www.youtube.com/watch?v=6ISruhN0Hc0 <br/>
 Play the game: http://quoridor.di.uoa.gr/
 
-**Rules:**
+## **Rules**
 * **Board**:
 Quoridor is played on a game board of 81 square cells (9x9) and each player starts with 10 walls. However, the game can be also played in different boardsizes and with a different number of starting walls.
 
@@ -23,7 +23,7 @@ Walls are flat two-cell-wide pieces which can be placed between 2 sets of 2 squa
 * **End of the game**:
 The first player who reaches any of the squares opposite his baseline is the winner.
 
-**Ingame commands**:
+## **Ingame commands**:
 > **playmove** player position <br/>
   *example*: playmove white e2 - move white's pawn to E2
   
@@ -53,7 +53,7 @@ The first player who reaches any of the squares opposite his baseline is the win
 > **list_commands** <br/>
   List all commands.
 
-**Engine:** <br/>
+## **Engine:** <br/>
 
 The engine is based on [Minimax](https://en.wikipedia.org/wiki/Minimax) with [Alpha-beta pruning](https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning). The depth
 where it's running at is found based on the boardsize. It's also using a so-called pseudo-depth system (for certain boardsizes) where at the last depth it doesn't search
