@@ -2,7 +2,7 @@
 
 Wiki: https://en.wikipedia.org/wiki/Quoridor <br/>
 YouTube Tutorial Video: https://www.youtube.com/watch?v=6ISruhN0Hc0 <br/>
-Play the game (here)[http://quoridor.di.uoa.gr/]
+Play the game [here](http://quoridor.di.uoa.gr)
 
 ## **Rules**
 * **Board**:
@@ -24,7 +24,7 @@ Walls are flat two-cell-wide pieces which can be placed between 2 sets of 2 squa
 The first player who reaches any of the squares opposite his baseline is the winner.
 
 ## **Ingame commands**
-The commands follow the protocol that can be viewed in detail (here)[http://quoridor.di.uoa.gr/qtp/qtp.html]. In short:
+The commands follow the protocol that can be viewed in detail [here](http://quoridor.di.uoa.gr/qtp/qtp.html). In short:
 > **playmove** player position <br/>
   *example*: playmove white e2 - move white's pawn to E2
   
