@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+#include "../include/typedefs.h"
 #include "../include/utilities.h"
 
 typedef struct QueueNode
@@ -19,60 +22,56 @@ typedef struct
 }
 queue;
 
+/* matrices with the coordinates of adjacent cells of (c,r) 
+-south (c-1,r)
+-north (c+1,r)
+-east (c,r+1)
+-west (c,r-1) */
+static char dr[] = {-1, 1, 0, 0}, dc[] = {0, 0, 1, -1};
+
 // Function Prototypes
-char explore_neighbours(queue *q, int cur_r, int cur_c, int boardsize, char** m, char** have_visited, int* nodes_next_in_layer);
-void init_queue(queue* q);
-char enqueue(queue* q, int i, int j);
-void dequeue(queue* q, int* i, int* j);
-char isQueueEmpty(queue* q);
+static void explore_neighbours(queue *q, const int cur_r, const int cur_c, const int boardsize, char** m, char** have_visited, uint* nodes_next_in_layer);
+static void init_queue(queue* q);
+static void enqueue(queue* q, const int i, const int j);
+static void dequeue(queue* q, int* i, int* j);
+static bool isQueueEmpty(queue* q);
 
 /* Breadth-first search
 -wiki page: https://en.wikipedia.org/wiki/Breadth-first_search
 -pathfinding algorithm: https://www.youtube.com/watch?v=KiCBXu4P-2Y
 Function returns the steps a cell requires moving only up, down, left and right from a certain cell (startx, starty)
 in order to reach a certain row goalx. In this context it calculates how many steps a player either with the black or white
-colour needs in order to reach the row and win. In case of an allocating error it returns -2, and if such path doesn't
-exist it returns -1, in any other case a positive integer. */
+colour needs in order to reach the row and win. If such path doesn't exist it returns -1, in any other case a positive integer. */
 
-int bfs(int boardsize, char** m, int startx, int starty, int goalx)
+uint bfs(const int boardsize, char** m, const int startx, const int starty, const int goalx)
 {
+    // create and intialize an visited grid
     char **have_visited = malloc(sizeof(char*) * boardsize);
-    if (have_visited == NULL) return -2;
+    assert(have_visited != NULL);  // allocation failure
     for (int i = 0; i < boardsize; i++)
     {
         have_visited[i] = calloc(sizeof(char), boardsize);
-        if (have_visited == NULL) return -2;
+        assert(have_visited[i] != NULL);  // allocation failure
     }
 
-    int move_count = 0, nodes_left_in_layer = 1, nodes_next_in_layer = 0, nr, nc;
-    char reached_the_end = 0;
+    uint move_count = 0, nodes_left_in_layer = 1, nodes_next_in_layer = 0, nr, nc;
+
+    // create and initialize queue
     queue q;
     init_queue(&q);
 
-    if (!enqueue(&q, startx, starty)) return -2;
+    enqueue(&q, startx, starty);
 
     while (!isQueueEmpty(&q))
     {
         dequeue(&q, &nr, &nc);
         
-        if (nr == goalx)
-        {
-            reached_the_end = 1;
+        if (nr == goalx)  // reached the end
             break;
-        }
 
         // enqueue adjecent cells
-        if (!explore_neighbours(&q, nr, nc, boardsize, m, have_visited, &nodes_next_in_layer))  // error in enqueuing adject cells
-        {
-            QueueNode *tmp = NULL;
-            while(q.head != NULL)
-            {
-                tmp = q.head;
-                q.head = q.head->next;
-                free(tmp);
-            }
-            return -2;
-        }
+        explore_neighbours(&q, nr, nc, boardsize, m, have_visited, &nodes_next_in_layer);
+
         if (--nodes_left_in_layer == 0)
         {
             nodes_left_in_layer = nodes_next_in_layer;
@@ -80,6 +79,7 @@ int bfs(int boardsize, char** m, int startx, int starty, int goalx)
             move_count++;
         }
     }
+    
     // free array
     for (int i = 0; i < boardsize; i++) free(have_visited[i]);
     free(have_visited);
@@ -92,28 +92,23 @@ int bfs(int boardsize, char** m, int startx, int starty, int goalx)
         q.head = q.head->next;
         free(tmp);
     }
-    
-    if (reached_the_end) return move_count;
-    return -1;  // path does not exist
+
+    return move_count;
 }
 
-char explore_neighbours(queue* q, int cur_r, int cur_c, int boardsize, char** m, char** have_visited, int* nodes_next_in_layer)
+static void explore_neighbours(queue* q, const int cur_r, const int cur_c, const int boardsize, char** m, char** have_visited, uint* nodes_next_in_layer)
 {
-    /* matrices with the coordinates of adjacent cells of (c,r) 
-    -south (c-1,r)
-    -north (c+1,r)
-    -east (c,r+1)
-    -west (c,r-1) */
-    
-    int dr[] = {-1, 1, 0, 0}, dc[] = {0, 0, 1, -1}, rr, cc;
+    int rr, cc;
 
-    for (int i = 0; i < 4; i++)
+    for (small_int i = 0; i < 4; i++)
     {
         // new adjacent cell (rr, cc)
         rr = cur_r + dr[i];
         cc = cur_c + dc[i];
-        if (rr < 0 || cc < 0 || rr >= boardsize || cc >= boardsize) continue;  // cell out of bounds
-        if (have_visited[rr][cc]) continue;  // already have visited that cell
+        if (rr < 0 || cc < 0 || rr >= boardsize || cc >= boardsize)  // cell out of bounds
+            continue;
+        if (have_visited[rr][cc])  // already have visited that cell
+            continue;
         
         // There's a wall on the way
         if (i == 0 && wallBelow(cur_r, cur_c, m, boardsize)) continue;  // south
@@ -121,31 +116,34 @@ char explore_neighbours(queue* q, int cur_r, int cur_c, int boardsize, char** m,
         else if (i == 2 && wallOnTheRight(cur_r, cur_c, m, boardsize)) continue;  // east
         else if (i == 3 && wallOnTheLeft(cur_r, cur_c, m, boardsize)) continue;  // west
 
-        // Cell is valid, enqueue it 
-        if (!enqueue(q, rr, cc)) return 0;  // error in allocating memory
-        // Mark the cell as visited
-        have_visited[rr][cc] = 1;
+        // cell is valid, enqueue it 
+        enqueue(q, rr, cc);
+
+        // mark the cell as visited
+        have_visited[rr][cc] = true;
         (*nodes_next_in_layer)++;
     }
-    return 1;
 }
 
-void init_queue(queue* q)
+// initialize queue
+static void init_queue(queue* q)
 {
-    // Initialize Queue
     q->head = NULL;
     q->tail = NULL;
 }
 
-char isQueueEmpty(queue* q)
+// return true if the queue is empty
+static bool isQueueEmpty(queue* q)
 {
     return (q->head == NULL);
 }
 
-char enqueue(queue* q, int i, int j)
+// enqueue operation
+static void enqueue(queue* q, int i, int j)
 {
     QueueNode* newnode = malloc(sizeof(QueueNode));
-    if (newnode == NULL) return 0;  // error in allocating memory for a new node
+    assert(newnode != NULL);  // allocation failure
+
     newnode->i = i;
     newnode->j = j;
 
@@ -159,13 +157,11 @@ char enqueue(queue* q, int i, int j)
     // empty queue
     if (isQueueEmpty(q)) 
         q->head = newnode;
-    
-    return 1;  //  there was no problem in allocating memory for the new node
 }
 
-void dequeue(queue* q, int* i, int* j)
+// dequeue operation
+static void dequeue(queue* q, int* i, int* j)
 {
-    if (q->head == NULL) return;
     QueueNode* tmp = q->head;
     *i = tmp->i;
     *j = tmp->j;

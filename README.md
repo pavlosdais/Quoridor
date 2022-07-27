@@ -2,7 +2,7 @@
 
 Wiki: https://en.wikipedia.org/wiki/Quoridor <br/>
 YouTube Tutorial Video: https://www.youtube.com/watch?v=6ISruhN0Hc0 <br/>
-Play the game: http://quoridor.di.uoa.gr/
+Play the game (here)[http://quoridor.di.uoa.gr/]
 
 ## **Rules**
 * **Board**:
@@ -24,6 +24,7 @@ Walls are flat two-cell-wide pieces which can be placed between 2 sets of 2 squa
 The first player who reaches any of the squares opposite his baseline is the winner.
 
 ## **Ingame commands**
+The commands follow the protocol that can be viewed in detail (here)[http://quoridor.di.uoa.gr/qtp/qtp.html]. In short:
 > **playmove** player position <br/>
   *example*: playmove white e2 - move white's pawn to E2
   
@@ -53,32 +54,28 @@ The first player who reaches any of the squares opposite his baseline is the win
 > **list_commands** <br/>
   List all commands.
 
-## **Engine** <br/>
-
+## **Engine**
 The engine is based on [Minimax](https://en.wikipedia.org/wiki/Minimax) with [Alpha-beta pruning](https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning). The depth
-where it's running at is found based on the boardsize. It's also using a so-called pseudo-depth system (for certain boardsizes) where at the last depth it doesn't search
-all of the possible moves, but only key ones (pawn movement and wall placement near the enemy's pawn). This is used to further boost the engine lookahead ability and make the 
-depth an even number. The evaluation uses a system similar to chess's one where if the evaluation is positive it's believed that white has an advantage on the position, if
-it's negative it's believed that black has an advantage and if it's 0, neither player has an advantage. The way it evaluates positions is by using 3 pieces of information. 
-The first is the steps both players need in order to win by using a factor of 1. The second is the number of steps each player needs in order to get to the next row 
+where it's running at is calculated based on the boardsize, current number of walls as well as total moves played. A so-called pseudo-depth system (for certain boardsizes) is also used,
+where at the last depth we don't search all of the possible moves, but only key ones (pawn movement and wall placement near the enemy's pawn). This is used to further boost the engine 
+lookahead ability and make the  depth an even number. The evaluation uses a system similar to chess's one where if the evaluation is positive it is believed that white has an advantageous 
+position, if it is negative it's believed that black is the one with the advantage and if it is 0, neither player has an advantage. The way we evaluate positions is by using 3 pieces of
+information. The first is the steps both players need in order to win by using a factor of 1. The second is the number of steps each player needs in order to get to the next row 
 by using a factor of 0.6. The third, and final, is the number of walls each player has remaining (factor 0.8). So, the evaluation comes as follows: <br/>
-> evaluation = blackDistanceFromWinning-whiteDistanceFromWinning + 0.6*(blackDistanceFromNextRow - whiteDistanceFromNextRow) + 0.8*(whiteWalls - blackWalls) <br/>
+> evaluation = blackDistanceFromWinning-whiteDistanceFromWinning + 0.6*(blackDistanceFromNextRow - whiteDistanceFromNextRow) + 0.7*(whiteWalls - blackWalls) <br/>
 
-The depth for each boardsize is: <br/>
-*For boardsizes <= 5: depth = 6 <br/>
-*For boardsizes <= 7: depth = 4 <br/>
-*For boardsizes <= 9: pseudo-depth = 4 <br/>
-*For boardsizes <= 11: depth = 3 <br/>
-*For boardsizes <= 17: depth = 2 <br/>
-*For boardsizes <= 25: pseudo-depth = 2 <br/>
+## **Referee**
+A referee `quoridor_referee.py` that allows two programs that follow the protocol mentioned above to play against each other is also provided. Check the `makefile` for the usage at referee settings.
 
-It's important to note that depth numbers and pseudo-depth were used in order to meet the time requirements for the Quoridor Cup Competition (UoA)^ so they can be changed in order to make the engine more powerful, albeit, slower. <br/>
+## **Compilation**
+`make` to compile </br>
+`make play` to compile and play </br>
+`make clear` to clear excess object files created during compilation </br>
+`make ref` to use the referee, change referee settings at the makefile 
 
-^ max 30 seconds/move and 20*boardsize total time <br/>
+## **About**
+This project is based on assignment 4, semester 1, dpt. of Informatics and Telecommunications - UoA (2021), where it won first place at the department's local competition. Other programs including but not exclusively, from the competition can be found over at the `otherProgs` folder.
 
-Possible improvements:
-* Use iterative deepening to get the most depth in a given fixed move time <br/>
-* Implement a faster pathfinding algorithm (for example A*) <br/><br/>
-
-Assignment 4, Semester 1, Department of Informatics and Telecommunications - UoA (2021)
-> Project made by Pavlos Dais (sdi2100122) and Stavros Prentzas (sdi2100164)
+## **Authors**
+- [Pavlos Dais](https://github.com/pavlosdais)
+- [Stavros Prentzas](https://github.com/stavrosprentzas)

@@ -1,22 +1,59 @@
 typedef struct player player;
 typedef struct stacknode *stackptr;
 
+// prints the name of the program
 void print_name(char *p);
+
+// prints a message informing if the command read is recognized or not
 void known_command(void);
+
+// lists all possible commands
 void list_commands();
+
+// updates boardsize
 char update_boardsize(int* boardsize, int* prev_boardsize, char*** wall_matrix, player* white, player* black, stackptr* history, int* totalmoves);
+
+// clears board
 void clear_board(int boardsize, char** wall_matrix, player* white, player* black, stackptr* history, int* totalmoves);
+
+// updates walls for both players
 void update_walls(player* white, player* black, int* number_of_walls);
-char playmove(char* buff, player* white, player* black, char** wall_matrix, int boardsize, stackptr* history, int* totalmoves);
-char playwall(char* buff, player* white, player* black, char** wall_matrix, int boardsize, stackptr* history, int* totalmoves);
-char genmove(player* white, player* black, char** wall_matrix, int boardsize, stackptr* lastaddr, int* totalmoves);
+
+// plays a pawn move
+void playmove(char* buff, player* white, player* black, char** wall_matrix, const int boardsize, stackptr* history, int* totalmoves);
+
+// plays a wall
+void playwall(char* buff, player* white, player* black, char** wall_matrix, const int boardsize, stackptr* history, int* totalmoves);
+
+// ai plays a move for the player read
+void genmove(player* white, player* black, char** wall_matrix, int boardsize, stackptr* lastaddr, int* totalmoves);
+
+// undoes as many times as the user types
 void undo(char** wall_matrix, player* white, player* black, stackptr* last, int* totalmoves);
-void winner(player white, player black, int boardsize);
-void showboard(char** wall_matrix, int boardsize, player* white, player* black);
+
+// responds accordingly if there is a winner
+void winner(player white, player black, const int boardsize);
+
+// prints the current form of the board
+void showboard(char** wall_matrix, const int boardsize, player* white, player* black);
+
+// returns the "number" of the command
 char command_num(char* ans);
+
+// processes command, gets rid of whitespace characters and converts the command into lower case characters
 char command_preprocess(char* buff);
-void reset_pawns(int boardsize, player* white, player *black);
-char **allocate_memory(int boardsize);
-void free_array(char** A, int boardsize);
-void unsuccessful_response(char* msg);
-void successful_response(char* msg);
+
+// resets pawns to their original starting place
+void reset_pawns(const int boardsize, player* white, player *black);
+
+// allocates memory for the board
+char **allocate_memory(const int boardsize);
+
+// frees memory needed for the board
+void free_array(char** A, const int boardsize);
+
+// prints unsuccessful message
+void unsuccessful_response(const char* msg);
+
+// prints successful message
+void successful_response(const char* msg);
