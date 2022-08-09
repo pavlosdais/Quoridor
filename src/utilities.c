@@ -30,10 +30,8 @@ char is_vertex_valid(char hor, const int boardsize)
     return false;
 }
 
-// returns the player with the corresponding color
 player *check_color(char* p, player* black, player* white)
 {
-    
     if (strcmp(p, "white") == 0)
         return white;
     else if (strcmp(p, "w") == 0)
@@ -46,7 +44,6 @@ player *check_color(char* p, player* black, player* white)
         return NULL;
 }
 
-// returns color's value
 char colorValue(char* p)
 {
     if (strcmp(p, "white") == 0)
@@ -61,7 +58,6 @@ char colorValue(char* p)
         return -1;
 }
 
-// returns b for horizontal, r for vertical and -1 for unknown orientation
 char check_orientation(char* orientation)
 {
     if (strcmp(orientation, "horizontal") == 0)
@@ -87,10 +83,68 @@ char enough_arguments(char *argument)
     return true;
 }
 
-// returns 1 if the path is not blocked for neither player, 0 if it's blocked for at least one player
-char there_is_a_path(char** wall_matrix, const int boardsize, player* white, player* black, const char pl)
+char wallBelow(const int i, const int j, char** wall_matrix, const int boardsize)
 {
-    int path_exists = dfs(boardsize, wall_matrix, white->i, white->j, boardsize-1, 'w');  // white wins if he gets to the last row
+    if (i == 0) return false;
+    return (wall_matrix[i][j]=='b' || (j>0 && wall_matrix[i][j-1]=='b'));
+}
+
+char wallAbove(const int i, const int j, char **wall_matrix, const int boardsize)
+{
+    if (i == boardsize-1) return false;
+    return wallBelow(i+1, j, wall_matrix, boardsize);
+}
+
+char wallOnTheRight(const int i, const int j, char **wall_matrix, const int boardsize)
+{
+    if (j == boardsize-1) return false;
+    return (wall_matrix[i][j]=='r' || (i<boardsize-1 && wall_matrix[i+1][j]=='r'));
+}
+
+char wallOnTheLeft(const int i, const int j, char** wall_matrix, const int boardsize)
+{
+    if (j == 0) return false;
+    return wallOnTheRight(i, j-1, wall_matrix, boardsize);
+}
+
+char thereIsAWall(const char or, char** wall_matrix, const int boardsize, const int vertex_x, const int vertex_y)
+{
+    if (wall_matrix[vertex_x][vertex_y] != 0)
+        return true;
+    if (or == 'b')  // horizontal
+    {
+        if (wall_matrix[vertex_x][vertex_y+1] == or) return true;
+        else if (vertex_y > 0 && wall_matrix[vertex_x][vertex_y-1] == or) return true;
+    }
+    else  // if (or == 'r') - vertical
+    {
+        if (wall_matrix[vertex_x-1][vertex_y] == or) return true;
+        else if (vertex_x < boardsize-1 && wall_matrix[vertex_x+1][vertex_y] == or) return true;
+    }
+    return false;
+}
+
+char isValidWall(const int vertex_x, const int vertex_y, const int boardsize, char** wall_matrix, char orientation)
+{
+    if (!is_vertex_valid(vertex_x, boardsize) || !is_vertex_valid(vertex_y, boardsize) || 
+         vertex_x == 0 || vertex_y == boardsize-1)  // orientation out of bounds
+        return false;
+    else if (thereIsAWall(orientation, wall_matrix, boardsize, vertex_x, vertex_y))  // there's already a wall there
+        return false;
+    
+    // in any other case, a valid wall placement
+    return true;
+}
+
+char there_is_a_path(char** wall_matrix, const int boardsize, player* white, player* black)
+{
+    small_int walls_played = 3.5*boardsize - 11.5 - white->walls - black->walls;  // total number of walls placed
+
+    if (walls_played < 4)  // if there are less than 4 walls played, there is no way a path is being blocked for either player
+        return true;
+    
+    // check to see if a path for the goal row exists for both players
+    char path_exists = dfs(boardsize, wall_matrix, white->i, white->j, boardsize-1, 'w');  // white wins if he gets to the last row
     if (!path_exists)
         return false;
 
@@ -99,63 +153,6 @@ char there_is_a_path(char** wall_matrix, const int boardsize, player* white, pla
         return false;
     
     // the path is not blocked for neither player
-    return true;
-}
-
-// returns 0 if there's a wall below cell (i,j)
-char wallBelow(const int i, const int j, char** wall_matrix, const int boardsize)
-{
-    if (i==0) return false;
-    return (wall_matrix[i][j]=='b' || (j>0 && wall_matrix[i][j-1]=='b'));
-}
-
-// returns 0 if there's a wall above cell (i,j)
-char wallAbove(const int i, const int j, char **wall_matrix, const int boardsize)
-{
-    if (i==boardsize-1) return false;
-    return wallBelow(i+1, j, wall_matrix, boardsize);
-}
-
-// returns 0 if there's a wall on the right of cell (i,j)
-char wallOnTheRight(const int i, const int j, char **wall_matrix, const int boardsize)
-{
-    if (j==boardsize-1) return false;
-    return (wall_matrix[i][j]=='r' || (i<boardsize-1 && wall_matrix[i+1][j]=='r'));
-}
-
-// returns 0 if there's a wall on the left of cell (i,j)
-char wallOnTheLeft(const int i, const int j, char** wall_matrix, const int boardsize)
-{
-    if (j==0) return false;
-    return wallOnTheRight(i, j-1, wall_matrix, boardsize);
-}
-
-char thereIsAWall(const char or, char** wall_matrix, const int boardsize, const int vertex_x, const int vertex_y)
-{
-    if (wall_matrix[vertex_x][vertex_y] != 0)
-        return true;
-    if (or == 'b')
-    {
-        if (wall_matrix[vertex_x][vertex_y+1] == 'b') return true;
-        else if (vertex_y > 0 && wall_matrix[vertex_x][vertex_y-1] == 'b') return true;
-    }
-    else  // if (or == 'r')
-    {
-        if (wall_matrix[vertex_x-1][vertex_y] == 'r') return true;
-        else if (vertex_x < boardsize-1 && wall_matrix[vertex_x+1][vertex_y] == 'r') return true;
-    }
-    return false;
-}
-
-char isValidWall(const int vertex_x, const int vertex_y, const int boardsize, char** wall_matrix, char orientation)
-{
-    if (!is_vertex_valid(vertex_x, boardsize) || !is_vertex_valid(vertex_y, boardsize) || 
-    vertex_x == 0 || vertex_y == boardsize-1)  // orientation out of bounds
-        return false;
-    else if (thereIsAWall(orientation, wall_matrix, boardsize, vertex_x, vertex_y))  // there's already a wall there
-        return false;
-    
-    // in any other case, a valid wall placement
     return true;
 }
 
@@ -183,15 +180,15 @@ the position is equal so neither player has an advantage. */
 
 int positionEvaluation(player black, player white, const int boardsize, char** wall_matrix)
 {
-    if (black.i == 0)  // black reached the end
+    if (black.i == 0)  // black reached his goal row - win
         return BLACK_WINS;
-    else if (white.i == boardsize-1)  // white reached the end
+    else if (white.i == boardsize-1)  // white reached his goal row - win
         return WHITE_WINS;
 
-    // calculate the distance white needs to get to the end
+    // calculate the distance white needs to get to the goal row (win)
     uint whiteDistanceFromWinning = bfs(boardsize, wall_matrix, white.i, white.j, boardsize-1);
 
-    // calculate the distance black needs to get to the end
+    // calculate the distance black needs to get to the goal row (win)
     uint blackDistanceFromWinning = bfs(boardsize, wall_matrix, black.i, black.j, 0);
 
     // calculate the distance white needs to get to the next row
@@ -203,8 +200,8 @@ int positionEvaluation(player black, player white, const int boardsize, char** w
     return 10*(blackDistanceFromWinning-whiteDistanceFromWinning) + 6*(blackDistanceFromNextRow - whiteDistanceFromNextRow) + 7*(white.walls - black.walls);
 }
 
-/* the strength of the engine is basically determined here,
-increase the depth numbers to make the engine more powerful, abeit slower */
+/* The depth of the engine is calculated based on 3 parameters. The board size, the number of total moves played and the total number of available walls.
+The strength of the engine is basically determined here, increase the depth numbers to make the engine more powerful, abeit slower */
 small_int findDepth(const int boardsize, char* pseudo, float* max_time, const int total_moves, const int total_walls)
 {
     /* pseudodepth is used to simulate a further search to make the depth even.
@@ -212,9 +209,9 @@ small_int findDepth(const int boardsize, char* pseudo, float* max_time, const in
     responses instead of all possible answers. This means it will check pawn movement
     and wall placement near the enemy pawn to disrupt it's movement */
 
-    *max_time = 9.2;
+    *max_time = 9.2;  // max branch, search time
 
-    // first few moves do not really need much depth, just search at depth 1
+    // first few moves do not really require much depth, just search at depth 1
     if (total_moves + 3 < boardsize)
         return 1;
     
@@ -225,7 +222,7 @@ small_int findDepth(const int boardsize, char* pseudo, float* max_time, const in
         depth = 8;
         if (total_walls < 5)
             depth = 10;
-        if (total_walls < 3)
+        else if (total_walls < 3)
         {
             *max_time = 15;
             depth = 12;
@@ -293,12 +290,10 @@ small_int findDepth(const int boardsize, char* pseudo, float* max_time, const in
         else if (total_walls < 5)
             depth = 6;
     }
-    else if (boardsize < 20)
-        depth = 2;
+    else if (boardsize < 20)  // higher boardsizes
     {
         *pseudo = 1;
         depth = 2;
     }
-    
     return depth;
 }

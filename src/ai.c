@@ -6,12 +6,6 @@
 #include "../include/structs.h"
 #include "../include/utilities.h"
 
-typedef int (*QuitFunc)(int a, int b);
-typedef int (*ChangeFunc)(int* a);
-typedef void (*updateWallWallPlacement)(returningMove* evalMove, char orientation, int i, int j, int* eval, int* max_eval);
-
-#define SCOPE 1.5
-
 // Helper function prototypes
 static int minimax(char** wall_matrix, const int boardsize, const small_int depth, int alpha, int beta, player* white, player* black, char Maximizing, const char pseudo, const int range);
 static void uwp_white(returningMove* evalMove, const char orientation, const int i, const int j, int* eval, int* max_eval);
@@ -22,8 +16,8 @@ static void placeWall(player* pl, char** wall_matrix, char orientation, const in
 static void resetWallPlacement(player* pl, char** wall_matrix, const int i, const int j, char en);
 static void updateEvalWhite(int* max_eval, int* eval, int* alpha);
 static void updateEvalBlack(int* max_eval, int* eval, int* beta);
-static void check_walls(char** wall_matrix, player* white, player* black, player* curr_player, const int boardsize, const small_int depth, const char pseudo, const int start, 
-const int end, const float max_time, int* eval, int* best_eval, const clock_t t, returningMove* evalMove, QuitFunc quit, ChangeFunc change, const char cond, updateWallWallPlacement uwp);
+static void check_walls(char** wall_matrix, player* white, player* black, player* curr_player, const int boardsize, const small_int depth, const char pseudo, const int start, const int end,
+const float max_time, int* eval, int* best_eval, const clock_t t, returningMove* evalMove, QuitFunc quit, ChangeFunc change, const char cond, updateWallWallPlacement uwp);
 
 /* For each potential move the corresponding player has, search the evaluated best responses for both players up to a certain
 depth, or moves ahead, and return the move which is believed to be the most advantageous for the player who's playing assuming
@@ -31,7 +25,6 @@ optimal play for both sides. */
 
 int compare_white(int a, int b) { return a < b; }
 int change_white(int* a) { (*a)++; }
-
 int compare_black(int a, int b) { return a > b; }
 int change_black(int* a) { (*a)--; }
 
@@ -215,7 +208,8 @@ returningMove bestMove(char** wall_matrix, const int boardsize, const char pl, p
 
         start = black->i - range;
         if (start < 1) start = 1;
-        check_walls(wall_matrix, white, black, white, boardsize, depth, pseudo, start, end, max_time, &eval, &max_eval, t, &evalMove, compare_white, change_white, false, uwp_white);
+        check_walls(wall_matrix, white, black, white, boardsize, depth, pseudo, start, end, max_time, &eval, &max_eval, t, &evalMove,
+        compare_white, change_white, false, uwp_white);
     }
     else  // black plays
     {
@@ -394,7 +388,8 @@ returningMove bestMove(char** wall_matrix, const int boardsize, const char pl, p
         end = white->i - range;
         if (end < 0) end = 0;
 
-        check_walls(wall_matrix, white, black, black, boardsize, depth, pseudo, start, end, max_time, &eval, &min_eval, t, &evalMove, compare_black, change_black, true, uwp_black);
+        check_walls(wall_matrix, white, black, black, boardsize, depth, pseudo, start, end, max_time, &eval, &min_eval, t, &evalMove, 
+        compare_black, change_black, true, uwp_black);
     }
 
     return evalMove;
@@ -963,8 +958,8 @@ static void updateEvalBlack(int* min_eval, int* eval, int* beta)
     *beta = *beta < *eval ? *beta:*eval;
 }
 
-static void check_walls(char** wall_matrix, player* white, player* black, player* curr_player, const int boardsize, const small_int depth, const char pseudo, const int start, 
-const int end, const float max_time, int* eval, int* best_eval, const clock_t t, returningMove* evalMove, QuitFunc quit, ChangeFunc change, const char cond, updateWallWallPlacement uwp)
+static void check_walls(char** wall_matrix, player* white, player* black, player* curr_player, const int boardsize, const small_int depth, const char pseudo, const int start, const int end,
+const float max_time, int* eval, int* best_eval, const clock_t t, returningMove* evalMove, QuitFunc quit, ChangeFunc change, const char cond, updateWallWallPlacement uwp)
 {
     if (curr_player->walls == 0) return;  // player has no walls, return
     int i = start, range = boardsize/SCOPE;

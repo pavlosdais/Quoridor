@@ -66,9 +66,9 @@ uint bfs(const int boardsize, char** m, const int startx, const int starty, cons
     {
         dequeue(&q, &nr, &nc);
         
-        if (nr == goalx)  // reached the end
+        if (nr == goalx)  // reached the goal row
             break;
-
+        
         // enqueue adjecent cells
         explore_neighbours(&q, nr, nc, boardsize, m, have_visited, &nodes_next_in_layer);
 
@@ -116,7 +116,7 @@ static void explore_neighbours(queue* q, const int cur_r, const int cur_c, const
         else if (i == 2 && wallOnTheRight(cur_r, cur_c, m, boardsize)) continue;  // east
         else if (i == 3 && wallOnTheLeft(cur_r, cur_c, m, boardsize)) continue;  // west
 
-        // cell is valid, enqueue it 
+        // cell is valid, enqueue it
         enqueue(q, rr, cc);
 
         // mark the cell as visited

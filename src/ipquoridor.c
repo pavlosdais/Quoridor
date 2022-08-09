@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
     black.walls = white.walls = 10;
     
     char** wall_matrix = allocate_memory(boardsize);
-    if (wall_matrix == NULL)
+    if (wall_matrix == NULL)  // allocation failure
     {
         unsuccessful_response("allocation failure");
         return -1;

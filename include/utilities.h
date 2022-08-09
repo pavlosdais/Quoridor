@@ -29,7 +29,7 @@ char isValidWall(const int vertex_x, const int vertex_y, const int boardsize, ch
 // returns 1 if there's a wall at (vertex_x, vertex_y)
 char thereIsAWall(const char or, char** wall_matrix, const int boardsize, const int vertex_x, const int vertex_y);
 
-// returns 1 if there is a path for white and black to reach the end, 0 if not
+// returns 1 if there is a path for white and black to reach their respective goal rows, 0 if not
 char there_is_a_path(char** wall_matrix, const int boardsize, player* white, player* black);
 
 // returns 1 if there's a wall below (i, j), 0 if not

@@ -48,22 +48,25 @@ play: $(EXEC)
 help: $(EXEC)
 	valgrind --leak-check=full -v --show-leak-kinds=all --track-origins=yes ./ipquoridor
 
+
 ### USE REFEREE ##
 
-# other programs directory
+# other programs directory (competition & more)
 PROGS_DIR = otherProgs
 
-# give file executable permission
+# give a file executable permission
 file = $(PROGS_DIR)/other1
 exe:
 	chmod 744 $(file)
 
-# referee settings
-WHITE = $(PROGS_DIR)/1.1  # player with white
-BLACK = $(EXEC)  # player with black
-SIZE = 15  # size of the board
+################################
+### REFEREE SETTINGS SECTION ###
+################################
+WHITE = $(EXEC)  # player with white
+BLACK = $(PROGS_DIR)/other1  # player with black
+SIZE = 9  # board size
 GAMES = 1  # number of games
-VERBOSE = 2  # 2 to show board, 1 to hide
+VERBOSE = 2  # 2 to draw board, 1 to hide
 
 # run referee
 ref: $(EXEC)

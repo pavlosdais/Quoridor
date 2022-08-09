@@ -15,10 +15,7 @@ void free_array(char **A, const int boardsize);
 char command_num(char *ans);
 void reset_pawns(const int boardsize, player *white, player *black);
 
-void print_name(char *p)
-{
-    successful_response(p);
-}
+void print_name(char *p) { successful_response(p); }
 
 void known_command()
 {
@@ -103,7 +100,6 @@ void update_walls(player* white, player* black, int* number_of_walls)
         unsuccessful_response("invalid syntax");
 }
 
-// return 2 for random error, 0 for allocation error, 1 if all went good
 void playmove(char* buff, player* white, player* black, char** wall_mtx, const int boardsize, stackptr* lastaddr, int* totalmoves)
 {
     // get color
@@ -125,12 +121,7 @@ void playmove(char* buff, player* white, player* black, char** wall_mtx, const i
     char vertex_y = p[0] - 'a';
     char vertex_x = atoi(p+1) - 1;
 
-    if (!is_vertex_valid(vertex_x, boardsize) || !is_vertex_valid(vertex_y, boardsize))
-    {
-        unsuccessful_response("illegal move");
-        return;
-    }
-    if (vertex_x == op->i && vertex_y == op->j)
+    if (!is_vertex_valid(vertex_x, boardsize) || !is_vertex_valid(vertex_y, boardsize) || (vertex_x == op->i && vertex_y == op->j))
     {
         unsuccessful_response("illegal move");
         return;
@@ -200,7 +191,6 @@ void playmove(char* buff, player* white, player* black, char** wall_mtx, const i
     successful_response("");
 }
 
-// return 2 for random error, 0 for allocation error, 1 if all went good
 void playwall(char* buff, player* white, player* black, char** wall_matrix, const int boardsize, stackptr* lastaddr, int* totalmoves)
 {
     // Get color
@@ -257,7 +247,6 @@ void playwall(char* buff, player* white, player* black, char** wall_matrix, cons
     successful_response("");
 }
 
-// return 2 for random error, 0 for allocation error, 1 if all went good
 void genmove(player* white, player* black, char** wall_matrix, const int boardsize, stackptr* lastaddr, int* totalmoves)
 {
     char *p = strtok(NULL, " ");
@@ -331,22 +320,22 @@ void undo(char** wall_matrix, player* white, player* black, stackptr* last, int*
 
     for (int i = 0; i < times; i++)
     {
-        if (strcmp((*last)->type,"bm") == 0)
+        if (strcmp((*last)->type, "bm") == 0)
         {
             black->i = (*last)->i;
             black->j = (*last)->j;
         }
-        else if (strcmp((*last)->type,"wm") == 0)
+        else if (strcmp((*last)->type, "wm") == 0)
         {
             white->i = (*last)->i;
             white->j = (*last)->j;
         }
-        else if (strcmp((*last)->type,"bw") == 0)
+        else if (strcmp((*last)->type, "bw") == 0)
         {
             wall_matrix[(*last)->i][(*last)->j] = 0;
             (black->walls)++;
         }
-        else  // strcmp((*last)->type,"ww") == 0
+        else  // strcmp((*last)->type, "ww") == 0
         {
             wall_matrix[(*last)->i][(*last)->j] = 0;
             (white->walls)++;

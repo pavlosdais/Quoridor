@@ -62,7 +62,7 @@ bool dfs(const int boardsize, char** m, const int startx, const int starty, cons
     {
         stack_pop(st, &nr, &nc);
         
-        if (nr == goalx)  // reached the end
+        if (nr == goalx)  // reached the goal row
         {
             reached_the_end = true;
             break;

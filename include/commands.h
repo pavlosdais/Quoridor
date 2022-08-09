@@ -1,6 +1,10 @@
 typedef struct player player;
 typedef struct stacknode *stackptr;
 
+///////////////////////
+//  Ingame commands  //
+///////////////////////
+
 // prints the name of the program
 void print_name(char *p);
 
@@ -19,28 +23,28 @@ void clear_board(int boardsize, char** wall_matrix, player* white, player* black
 // updates walls for both players
 void update_walls(player* white, player* black, int* number_of_walls);
 
-// plays a pawn move
+// plays a pawn move for the player read
 void playmove(char* buff, player* white, player* black, char** wall_matrix, const int boardsize, stackptr* history, int* totalmoves);
 
-// plays a wall
+// plays a wall for the player read
 void playwall(char* buff, player* white, player* black, char** wall_matrix, const int boardsize, stackptr* history, int* totalmoves);
 
 // ai plays a move for the player read
 void genmove(player* white, player* black, char** wall_matrix, int boardsize, stackptr* lastaddr, int* totalmoves);
 
-// undoes as many times as the user types
+// undoes moves the times read
 void undo(char** wall_matrix, player* white, player* black, stackptr* last, int* totalmoves);
 
 // responds accordingly if there is a winner
 void winner(player white, player black, const int boardsize);
 
-// prints the current form of the board
+// draws board
 void showboard(char** wall_matrix, const int boardsize, player* white, player* black);
 
 // returns the "number" of the command
 char command_num(char* ans);
 
-// processes command, gets rid of whitespace characters and converts the command into lower case characters
+// processes command: gets rid of whitespace characters and converts the command into lower case characters
 char command_preprocess(char* buff);
 
 // resets pawns to their original starting place
