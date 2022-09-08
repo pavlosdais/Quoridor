@@ -1,6 +1,5 @@
 #include <limits.h>
 #define BUFFER_SIZE 81
-#define SCOPE 1.5
 #define INFINITY INT_MAX
 #define NEG_INFINITY INT_MIN
 

@@ -55,14 +55,9 @@ The commands follow the protocol that can be viewed in detail [here](http://quor
   List all commands.
 
 ## **Engine**
-The engine is based on [Minimax](https://en.wikipedia.org/wiki/Minimax) with [Alpha-beta pruning](https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning). The depth
-where it's running at is calculated based on the board size, current number of walls as well as total moves played. A so-called pseudo-depth system (for certain boardsizes) is also used,
-where at the last depth we don't search all of the possible moves, but only key ones (pawn movement and wall placement near the enemy's pawn). This is used to further boost the engine 
-lookahead ability and make the depth an even number. The evaluation uses a system similar to chess's one, where if the evaluation is positive it is believed that white has an advantageous 
-position, if it is negative it's believed that black is the one with the advantage and if it is 0, neither player has an advantage. The way we evaluate positions is by using 3 pieces of
-information. The first is the steps both players need in order to win by using a factor of 1. The second is the number of steps each player needs in order to get to the next row 
-by using a factor of 0.6. The third, and final, is the number of walls each player has remaining (factor 0.7). So, the evaluation comes as follows: <br/>
-> evaluation = blackDistanceFromWinning-whiteDistanceFromWinning + 0.6*(blackDistanceFromNextRow - whiteDistanceFromNextRow) + 0.7*(whiteWalls - blackWalls) <br/>
+* The engine is based on [Minimax](https://en.wikipedia.org/wiki/Minimax) with [Alpha-beta pruning](https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning). The depth where it's running at is calculated based on the board size, current number of walls as well as total moves played. A so-called pseudo-depth system (for certain boardsizes) is also used, where at the last depth we don't search all of the possible moves, but only key ones (pawn movement and wall placement near the enemy's pawn). This is used to further boost the engine lookahead ability and make the depth, when necessary, an even number.
+* The evaluation uses a system similar to chess's one, where if the evaluation is positive it is believed that white has an advantageous position, if it is negative it's believed that black is the one with the advantage and if it is 0, neither player has an advantage. The way we evaluate positions is by using 3 pieces of information. The first, is the steps both players need in order to win by using a factor of 1. The second, is the number of steps each player needs in order to get to the next row by using a factor of 0.6. The third, and final, is the number of walls each player has remaining (factor 0.7). So, the evaluation comes as follows: <br/>
+> blackDistanceFromWinning-whiteDistanceFromWinning + 0.6*(blackDistanceFromNextRow - whiteDistanceFromNextRow) + 0.7*(whiteWalls - blackWalls) <br/>
 
 ## **Referee**
 A referee `quoridor_referee.py` that allows two programs that follow the protocol mentioned above to play against each other is also provided. Check the `makefile` for its usage at referee settings section.

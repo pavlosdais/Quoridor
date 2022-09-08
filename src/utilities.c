@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <string.h>
 #include <stdbool.h>
+#include <string.h>
 #include <ctype.h>
 #include "../include/typedefs.h"
 #include "../include/structs.h"
@@ -23,7 +23,7 @@ char isNumber(char* n)
     return 1;
 }
 
-char is_vertex_valid(char hor, const int boardsize)
+char is_vertex_valid(char hor, cint boardsize)
 {
     if (hor >= 0 && hor < boardsize)
         return true;
@@ -83,31 +83,31 @@ char enough_arguments(char *argument)
     return true;
 }
 
-char wallBelow(const int i, const int j, char** wall_matrix, const int boardsize)
+char wallBelow(cint i, cint j, char** wall_matrix, cint boardsize)
 {
     if (i == 0) return false;
     return (wall_matrix[i][j]=='b' || (j>0 && wall_matrix[i][j-1]=='b'));
 }
 
-char wallAbove(const int i, const int j, char **wall_matrix, const int boardsize)
+char wallAbove(cint i, cint j, char **wall_matrix, cint boardsize)
 {
     if (i == boardsize-1) return false;
     return wallBelow(i+1, j, wall_matrix, boardsize);
 }
 
-char wallOnTheRight(const int i, const int j, char **wall_matrix, const int boardsize)
+char wallOnTheRight(cint i, cint j, char **wall_matrix, cint boardsize)
 {
     if (j == boardsize-1) return false;
     return (wall_matrix[i][j]=='r' || (i<boardsize-1 && wall_matrix[i+1][j]=='r'));
 }
 
-char wallOnTheLeft(const int i, const int j, char** wall_matrix, const int boardsize)
+char wallOnTheLeft(cint i, cint j, char** wall_matrix, cint boardsize)
 {
     if (j == 0) return false;
     return wallOnTheRight(i, j-1, wall_matrix, boardsize);
 }
 
-char thereIsAWall(const char or, char** wall_matrix, const int boardsize, const int vertex_x, const int vertex_y)
+char thereIsAWall(const char or, char** wall_matrix, cint boardsize, cint vertex_x, cint vertex_y)
 {
     if (wall_matrix[vertex_x][vertex_y] != 0)
         return true;
@@ -124,7 +124,7 @@ char thereIsAWall(const char or, char** wall_matrix, const int boardsize, const 
     return false;
 }
 
-char isValidWall(const int vertex_x, const int vertex_y, const int boardsize, char** wall_matrix, char orientation)
+char isValidWall(cint vertex_x, cint vertex_y, cint boardsize, char** wall_matrix, char orientation)
 {
     if (!is_vertex_valid(vertex_x, boardsize) || !is_vertex_valid(vertex_y, boardsize) || 
          vertex_x == 0 || vertex_y == boardsize-1)  // orientation out of bounds
@@ -136,27 +136,31 @@ char isValidWall(const int vertex_x, const int vertex_y, const int boardsize, ch
     return true;
 }
 
-char there_is_a_path(char** wall_matrix, const int boardsize, player* white, player* black)
+char there_is_a_path(char** wall_matrix, cint boardsize, player* white, player* black)
 {
-    small_int walls_played = 3.5*boardsize - 11.5 - white->walls - black->walls;  // total number of walls placed
-
-    if (walls_played < 4)  // if there are less than 4 walls played, there is no way a path is being blocked for either player
-        return true;
+    if (!dfs(boardsize, wall_matrix, black->i, black->j, 0, 'b'))
+        return false;
     
-    // check to see if a path for the goal row exists for both players
-    char path_exists = dfs(boardsize, wall_matrix, white->i, white->j, boardsize-1, 'w');  // white wins if he gets to the last row
-    if (!path_exists)
+    if (!dfs(boardsize, wall_matrix, white->i, white->j, boardsize-1, 'w'))
         return false;
 
-    path_exists = dfs(boardsize, wall_matrix, black->i, black->j, 0, 'b');  // black wins if he gets to the first row
-    if (!path_exists)
+    // the path is not blocked for neither player
+    return true;
+}
+
+char there_is_a_path_black(char** wall_matrix, cint boardsize, player* white, player* black)
+{
+    if (!dfs(boardsize, wall_matrix, white->i, white->j, boardsize-1, 'w'))
+        return false;
+
+    if (!dfs(boardsize, wall_matrix, black->i, black->j, 0, 'b'))
         return false;
     
     // the path is not blocked for neither player
     return true;
 }
 
-void addMove(stackptr* last, const int i, const int j, char* type)
+void addMove(stackptr* last, cint i, cint j, char* type)
 {
     stackptr temp = *last;
     *last = malloc(sizeof(struct stacknode));  // allocation failure
@@ -178,7 +182,7 @@ the position is equal so neither player has an advantage. */
 #define WHITE_WINS 999999
 #define BLACK_WINS -999999
 
-int positionEvaluation(player black, player white, const int boardsize, char** wall_matrix)
+int positionEvaluation(player black, player white, cint boardsize, char** wall_matrix)
 {
     if (black.i == 0)  // black reached his goal row - win
         return BLACK_WINS;
@@ -200,100 +204,153 @@ int positionEvaluation(player black, player white, const int boardsize, char** w
     return 10*(blackDistanceFromWinning-whiteDistanceFromWinning) + 6*(blackDistanceFromNextRow - whiteDistanceFromNextRow) + 7*(white.walls - black.walls);
 }
 
+#define SCOPE 1.5
+
+small_int findBoardsize5(char* pseudo, float* max_time, float* scope, cint total_walls)
+{
+    *scope = 1.2;
+    *max_time = 12;
+
+    if (total_walls < 3)
+        return 12;
+    else if (total_walls < 5)
+        return 10;
+
+    return 8;
+}
+
+small_int findBoardsize7(char* pseudo, float* max_time, float* scope, cint total_walls)
+{
+    *scope = 1;
+    *max_time = 11;  // max branch, search time
+
+    if (total_walls < 5)
+    {
+        return 8;
+    }
+    else if (total_walls < 8)
+    {
+        return 6;
+    }
+    else if (total_walls < 11)
+    {
+        *max_time = 12;  // max branch, search time
+        *pseudo = 1;
+        return 6;
+    }
+    return 4;
+}
+
+small_int findBoardsize9(char* pseudo, float* max_time, float* scope, cint total_walls)
+{
+    *scope = SCOPE;
+    *max_time = 9.2;  // max branch, search time
+
+    if (total_walls > 1 && total_walls < 7)
+    {
+        *pseudo = true;
+        return 6;
+    }
+    return 4;
+}
+
+small_int findBoardsize11(char* pseudo, float* max_time, float* scope, cint total_walls)
+{
+    *scope = SCOPE;
+    *max_time = 9;  // max branch, search time
+
+    *pseudo = true;
+    if (total_walls < 8)
+    {
+        return 6;
+    }
+    else if (total_walls < 16)
+    {
+        *pseudo = 0;
+    }
+    
+    return 4;
+}
+
+small_int findBoardsize13(char* pseudo, float* max_time, float* scope, cint total_walls)
+{
+    *scope = SCOPE;
+    *max_time = 8.5;  // max branch, search time
+
+    if (total_walls < 14)
+    {
+        *pseudo = true;
+        return 4;
+    }
+    else if (total_walls < 7)
+    {
+        return 6;
+    }
+    
+    return 3;
+}
+
+small_int findBoardsize15(char* pseudo, float* max_time, float* scope, cint total_walls)
+{
+    *scope = SCOPE;
+    *max_time = 8;  // max branch, search time
+
+    if (total_walls < 13)
+    {
+        *pseudo = true;
+        return 4;
+    }
+    else if (total_walls < 5)
+    {
+        return 6;
+    }
+
+    return 2;
+}
+
+small_int findBoardsizeOther(char* pseudo, float* max_time, float* scope)
+{
+    *scope = SCOPE;
+    *max_time = 9.2;  // max branch, search time
+
+    *pseudo = true;
+    return 2;
+}
+
 /* The depth of the engine is calculated based on 3 parameters. The board size, the number of total moves played and the total number of available walls.
 The strength of the engine is basically determined here, increase the depth numbers to make the engine more powerful, abeit slower */
-small_int findDepth(const int boardsize, char* pseudo, float* max_time, const int total_moves, const int total_walls)
+small_int findDepth(cint boardsize, char* pseudo, float* max_time, float* scope, cint total_moves, cint total_walls)
 {
+    // first few moves do not really require much depth, just search at depth 1
+    if (total_moves + 3 < boardsize)
+    {
+        *scope = SCOPE;
+        return 1;
+    }
+    
     /* pseudodepth is used to simulate a further search to make the depth even.
     If pseudodepth is true the last step will only check opponent's "most likely"
     responses instead of all possible answers. This means it will check pawn movement
     and wall placement near the enemy pawn to disrupt it's movement */
-
-    *max_time = 9.2;  // max branch, search time
-
-    // first few moves do not really require much depth, just search at depth 1
-    if (total_moves + 3 < boardsize)
-        return 1;
     
-    small_int depth;
-    if (boardsize < 6)  // boardsize = 5
-    {
-        *max_time = 12;
-        depth = 8;
-        if (total_walls < 5)
-            depth = 10;
-        else if (total_walls < 3)
-        {
-            *max_time = 15;
-            depth = 12;
-        }
-    }
-    else if (boardsize < 8)  // boardsize = 7
-    {
-        depth = 4;
-        if (total_walls > 1)
-        {
-            if (total_walls < 4)
-               depth = 8; 
-            else if (total_walls < 6)
-            {
-                *pseudo = 1;
-                depth = 8;
-            }
-            else if (total_walls < 9)
-                depth = 6;
-            else if (total_walls < 13)
-            {
-                *pseudo = 1;
-                depth = 6;
-            }
-        }
-    }
-    else if (boardsize < 10)  // boardsize = 9
-    {
-        depth = 4;
-        if (total_walls > 1 && total_walls < 7)
-        {
-            // pseudo-depth 6
-            depth = 6;
-            *pseudo = 1;
-        }
-    }
-    else if (boardsize < 12)  // boardsize = 11
-    {
-        *pseudo = 1;
-        depth = 4;
-        if (total_walls < 8)
-            depth = 6;
-        else if (total_walls < 16)
-            *pseudo = 0;
-    }
-    else if (boardsize < 14)  // boardsize = 13
-    {
-        depth = 3;
-        if (total_walls < 14)
-        {
-            *pseudo = 1;
-            depth = 4;
-        }
-        else if (total_walls < 7)
-            depth = 6;
-    }
-    else if (boardsize < 16)  // boardsize = 15
-    {
-        depth = 2;
-        if (total_walls < 13)
-        {
-            *pseudo = 1;
-            depth = 4;
-        }
-        else if (total_walls < 5)
-            depth = 6;
-    }
-    else if (boardsize < 20)  // higher boardsizes
-    {
-        *pseudo = 1;
-        depth = 2;
-    }
-    return depth;
+    if (boardsize < 6)
+        return findBoardsize5(pseudo, max_time, scope, total_walls);
+    
+    else if (boardsize < 8)
+        return findBoardsize7(pseudo, max_time, scope, total_walls);
+    
+    else if (boardsize < 10)
+        return findBoardsize9(pseudo, max_time, scope, total_walls);
+    
+    else if (boardsize < 12)
+        return findBoardsize11(pseudo, max_time, scope, total_walls);
+    
+    else if (boardsize < 14)
+        return findBoardsize13(pseudo, max_time, scope, total_walls);
+    
+    else if (boardsize < 16)
+        return findBoardsize15(pseudo, max_time, scope, total_walls);
+    
+    else
+        return findBoardsizeOther(pseudo, max_time, scope);
 }

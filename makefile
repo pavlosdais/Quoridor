@@ -6,7 +6,7 @@ OBJ = $(SRC_DIR)/ipquoridor.o \
 	  $(SRC_DIR)/commands.o \
 	  $(SRC_DIR)/utilities.o \
 	  $(SRC_DIR)/bfs.o \
-	  $(SRC_DIR)/ai.o \
+	  $(SRC_DIR)/engine.o \
 	  $(SRC_DIR)/dfs.o
 
 EXEC = ipquoridor
@@ -33,8 +33,8 @@ bfs.o: $(SRC_DIR)/bfs.c
 dfs.o: $(SRC_DIR)/dfs.c
 	$(CC) -c $(SRC_DIR)/dfs.c $(flags)
 
-ai.o: $(SRC_DIR)/ai.c
-	$(CC) -c $(SRC_DIR)/ai.c $(flags)
+engine.o: $(SRC_DIR)/engine.c
+	$(CC) -c $(SRC_DIR)/engine.c $(flags)
 
 # delete excess object files
 clear:
@@ -62,9 +62,9 @@ exe:
 ################################
 ### REFEREE SETTINGS SECTION ###
 ################################
-WHITE = $(EXEC)  # player with white
-BLACK = $(PROGS_DIR)/other1  # player with black
-SIZE = 9  # board size
+WHITE = $(PROGS_DIR)/other1  # player with white
+BLACK = $(EXEC)  # player with black
+SIZE = 5  # board size
 GAMES = 1  # number of games
 VERBOSE = 2  # 2 to draw board, 1 to hide
 

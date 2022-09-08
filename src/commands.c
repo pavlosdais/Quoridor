@@ -4,16 +4,17 @@
 #include <ctype.h>
 #include <stdbool.h>
 #include "../include/structs.h"
+#include "../include/typedefs.h"
 #include "../include/utilities.h"
-#include "../include/ai.h"
+#include "../include/engine.h"
 
 // Function Prototypes
 void unsuccessful_response(char *msg);
 void successful_response(char *msg);
-char **allocate_memory(const int boardsize);
-void free_array(char **A, const int boardsize);
+char **allocate_memory(cint boardsize);
+void free_array(char **A, cint boardsize);
 char command_num(char *ans);
-void reset_pawns(const int boardsize, player *white, player *black);
+void reset_pawns(cint boardsize, player *white, player *black);
 
 void print_name(char *p) { successful_response(p); }
 
@@ -70,7 +71,7 @@ char update_boardsize(int* boardsize, int* prev_boardsize, char*** wall_matrix, 
     return 1;
 }
 
-void clear_board(const int boardsize, char** wall_matrix, player* white, player* black, stackptr* history, int *totalmoves)
+void clear_board(cint boardsize, char** wall_matrix, player* white, player* black, stackptr* history, int *totalmoves)
 {
     // clear board of the walls
     for (int i = 0; i < boardsize; i++) 
@@ -100,7 +101,7 @@ void update_walls(player* white, player* black, int* number_of_walls)
         unsuccessful_response("invalid syntax");
 }
 
-void playmove(char* buff, player* white, player* black, char** wall_mtx, const int boardsize, stackptr* lastaddr, int* totalmoves)
+void playmove(char* buff, player* white, player* black, char** wall_mtx, cint boardsize, stackptr* lastaddr, int* totalmoves)
 {
     // get color
     char *p = strtok(NULL, " ");
@@ -191,7 +192,7 @@ void playmove(char* buff, player* white, player* black, char** wall_mtx, const i
     successful_response("");
 }
 
-void playwall(char* buff, player* white, player* black, char** wall_matrix, const int boardsize, stackptr* lastaddr, int* totalmoves)
+void playwall(char* buff, player* white, player* black, char** wall_matrix, cint boardsize, stackptr* lastaddr, int* totalmoves)
 {
     // Get color
     char *p = strtok(NULL, " ");
@@ -247,7 +248,7 @@ void playwall(char* buff, player* white, player* black, char** wall_matrix, cons
     successful_response("");
 }
 
-void genmove(player* white, player* black, char** wall_matrix, const int boardsize, stackptr* lastaddr, int* totalmoves)
+void genmove(player* white, player* black, char** wall_matrix, cint boardsize, stackptr* lastaddr, int* totalmoves)
 {
     char *p = strtok(NULL, " ");
     if (!enough_arguments(p)) return;
@@ -258,14 +259,14 @@ void genmove(player* white, player* black, char** wall_matrix, const int boardsi
         unsuccessful_response("invalid syntax");
         return;
     }
-	char pseudodepth = 0;
-    float max_time;
+	char pseudodepth = false;
+    float max_time, scope;
 
     // find the depth at which the ai will search
-	char depth = findDepth(boardsize, &pseudodepth, &max_time, *totalmoves, black->walls + white->walls);
+	char depth = findDepth(boardsize, &pseudodepth, &max_time, &scope, *totalmoves, black->walls + white->walls);
 
     // calculate ai move
-    returningMove evalMove = bestMove(wall_matrix, boardsize, pl, black, white, depth, pseudodepth, max_time);
+    returningMove evalMove = bestMove(wall_matrix, boardsize, pl, black, white, depth, pseudodepth, max_time, scope);
 
     if (evalMove.move == 'w')  // ai evaluated placing a wall
     {
@@ -349,7 +350,7 @@ void undo(char** wall_matrix, player* white, player* black, stackptr* last, int*
     successful_response("");
 }
 
-void winner(player white, player black, const int boardsize)
+void winner(player white, player black, cint boardsize)
 {
     if (white.i==boardsize-1)
         successful_response("true white");
@@ -376,7 +377,7 @@ void winner(player white, player black, const int boardsize)
    right of D5 keeps going on the right of D4. The same applies for cells with 'r'/'b'. Even though a wall does not start
    beneath them / on their right, it is possible that a wall starts below their left cell / on the right of the cell above and keeps going
    adjacently to the specific cell. */
-void showboard(char** wall_matrix, const int boardsize, player* white, player* black)
+void showboard(char** wall_matrix, cint boardsize, player* white, player* black)
 {
     printf("=\n");
     /*min field width is the greatest power of 10 in which when 10 is raised gives a result less than or equal to boardsize
@@ -463,7 +464,7 @@ void showboard(char** wall_matrix, const int boardsize, player* white, player* b
 
 // Functions needed in main program
 
-void reset_pawns(const int boardsize, player* white, player* black)
+void reset_pawns(cint boardsize, player* white, player* black)
 {
     // White's position
     white->i = 0;
@@ -504,7 +505,7 @@ void unsuccessful_response(char* msg)
     fflush(stdout);
 }
 
-char **allocate_memory(const int boardsize)
+char **allocate_memory(cint boardsize)
 {
     char **A = malloc(boardsize*sizeof(char *));
     if (A == NULL) return NULL;  // error allocating memory, exit
@@ -518,7 +519,7 @@ char **allocate_memory(const int boardsize)
     return A;
 }
 
-void free_array(char** A, const int boardsize)
+void free_array(char** A, cint boardsize)
 {
     for (int i = 0; i < boardsize; i++)
         free(A[i]);
