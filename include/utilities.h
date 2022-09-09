@@ -33,10 +33,6 @@ char thereIsAWall(const char or, char** wall_matrix, const int boardsize, const 
 // checks first if there is a path for black, then for white
 char there_is_a_path(char** wall_matrix, const int boardsize, player* white, player* black);
 
-// returns 1 if there is a path for white and black to reach their respective goal rows, 0 if not
-// checks first if there is a path for white, then for black
-char there_is_a_path_black(char** wall_matrix, const int boardsize, player* white, player* black);
-
 // returns 1 if there's a wall below (i, j), 0 if not
 char wallBelow(const int i, const int j, char** wall_matrix, const int boardsize);
 
@@ -51,9 +47,3 @@ char wallOnTheLeft(const int i, const int j, char** wall_matrix, const int board
 
 // adds move to the stack (history)
 void addMove(stackptr* last, const int i, const int j, char* type);
-
-// returns the evaluation of the current position (negative if black has an advantage, positive if white has an advantage)
-int positionEvaluation(player black, player white, const int boardsize, char** wall_matrix);
-
-// returns the depth in which to search, takes account board size, total moves and total walls
-unsigned char findDepth(const int boardsize, char* pseudo, float* max_time, float* scope, const int total_moves, const int total_walls);

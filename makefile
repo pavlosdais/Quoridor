@@ -1,13 +1,18 @@
 # source directory
 SRC_DIR = ./src
 
+# engine directory
+ENG_DIR = ./src/engine
+
 # object files
 OBJ = $(SRC_DIR)/ipquoridor.o \
 	  $(SRC_DIR)/commands.o \
 	  $(SRC_DIR)/utilities.o \
 	  $(SRC_DIR)/bfs.o \
-	  $(SRC_DIR)/engine.o \
-	  $(SRC_DIR)/dfs.o
+	  $(SRC_DIR)/dfs.o \
+	  $(ENG_DIR)/engine.o \
+	  $(ENG_DIR)/depth.o \
+	  $(ENG_DIR)/eng_helper.o 
 
 EXEC = ipquoridor
 CC = gcc
@@ -33,8 +38,14 @@ bfs.o: $(SRC_DIR)/bfs.c
 dfs.o: $(SRC_DIR)/dfs.c
 	$(CC) -c $(SRC_DIR)/dfs.c $(flags)
 
-engine.o: $(SRC_DIR)/engine.c
-	$(CC) -c $(SRC_DIR)/engine.c $(flags)
+engine.o: $(ENG_DIR)/engine.c
+	$(CC) -c $(ENG_DIR)/engine.c $(flags)
+
+depth.o: $(ENG_DIR)/depth.c
+	$(CC) -c $(ENG_DIR)/depth.c $(flags)
+
+eng_helper.o: $(ENG_DIR)/eng_helper.c
+	$(CC) -c $(ENG_DIR)/eng_helper.c $(flags)
 
 # delete excess object files
 clear:
@@ -62,9 +73,9 @@ exe:
 ################################
 ### REFEREE SETTINGS SECTION ###
 ################################
-WHITE = $(PROGS_DIR)/other1  # player with white
+WHITE = $(PROGS_DIR)/other1 # player with white
 BLACK = $(EXEC)  # player with black
-SIZE = 5  # board size
+SIZE = 9  # board size
 GAMES = 1  # number of games
 VERBOSE = 2  # 2 to draw board, 1 to hide
 

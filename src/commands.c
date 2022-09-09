@@ -7,6 +7,7 @@
 #include "../include/typedefs.h"
 #include "../include/utilities.h"
 #include "../include/engine.h"
+#include "../include/depth.h"
 
 // Function Prototypes
 void unsuccessful_response(char *msg);
