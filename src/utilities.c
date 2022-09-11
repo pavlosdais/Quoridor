@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <stdbool.h>
 #include <string.h>
+#include <stdbool.h>
 #include <ctype.h>
 #include "../include/typedefs.h"
 #include "../include/structs.h"
@@ -22,7 +22,7 @@ char isNumber(char* n)
     return 1;
 }
 
-char is_vertex_valid(char hor, cint boardsize)
+char is_vertex_valid(char hor, const int boardsize)
 {
     if (hor >= 0 && hor < boardsize)
         return true;
@@ -82,31 +82,31 @@ char enough_arguments(char *argument)
     return true;
 }
 
-char wallBelow(cint i, cint j, char** wall_matrix, cint boardsize)
+char wallBelow(const int i, const int j, char** wall_matrix, const int boardsize)
 {
     if (i == 0) return false;
     return (wall_matrix[i][j]=='b' || (j>0 && wall_matrix[i][j-1]=='b'));
 }
 
-char wallAbove(cint i, cint j, char **wall_matrix, cint boardsize)
+char wallAbove(const int i, const int j, char **wall_matrix, const int boardsize)
 {
     if (i == boardsize-1) return false;
     return wallBelow(i+1, j, wall_matrix, boardsize);
 }
 
-char wallOnTheRight(cint i, cint j, char **wall_matrix, cint boardsize)
+char wallOnTheRight(const int i, const int j, char **wall_matrix, const int boardsize)
 {
     if (j == boardsize-1) return false;
     return (wall_matrix[i][j]=='r' || (i<boardsize-1 && wall_matrix[i+1][j]=='r'));
 }
 
-char wallOnTheLeft(cint i, cint j, char** wall_matrix, cint boardsize)
+char wallOnTheLeft(const int i, const int j, char** wall_matrix, const int boardsize)
 {
     if (j == 0) return false;
     return wallOnTheRight(i, j-1, wall_matrix, boardsize);
 }
 
-char thereIsAWall(const char or, char** wall_matrix, cint boardsize, cint vertex_x, cint vertex_y)
+char thereIsAWall(const char or, char** wall_matrix, const int boardsize, const int vertex_x, const int vertex_y)
 {
     if (wall_matrix[vertex_x][vertex_y] != 0)
         return true;
@@ -123,7 +123,7 @@ char thereIsAWall(const char or, char** wall_matrix, cint boardsize, cint vertex
     return false;
 }
 
-char isValidWall(cint vertex_x, cint vertex_y, cint boardsize, char** wall_matrix, char orientation)
+char isValidWall(const int vertex_x, const int vertex_y, const int boardsize, char** wall_matrix, char orientation)
 {
     if (!is_vertex_valid(vertex_x, boardsize) || !is_vertex_valid(vertex_y, boardsize) || 
          vertex_x == 0 || vertex_y == boardsize-1)  // orientation out of bounds
@@ -135,19 +135,27 @@ char isValidWall(cint vertex_x, cint vertex_y, cint boardsize, char** wall_matri
     return true;
 }
 
-char there_is_a_path(char** wall_matrix, cint boardsize, player* white, player* black)
+char there_is_a_path(char** wall_matrix, const int boardsize, player* white, player* black)
 {
-    if (!dfs(boardsize, wall_matrix, black->i, black->j, 0, 'b'))
-        return false;
+    small_int walls_played = 3.5*boardsize - 11.5 - white->walls - black->walls;  // total number of walls placed
+
+    if (walls_played < 4)  // if there are less than 4 walls played, there is no way a path is being blocked for either player
+        return true;
     
-    if (!dfs(boardsize, wall_matrix, white->i, white->j, boardsize-1, 'w'))
+    // check to see if a path for the goal row exists for both players
+    char path_exists = dfs(boardsize, wall_matrix, white->i, white->j, boardsize-1, 'w');  // white wins if he gets to the last row
+    if (!path_exists)
         return false;
 
+    path_exists = dfs(boardsize, wall_matrix, black->i, black->j, 0, 'b');  // black wins if he gets to the first row
+    if (!path_exists)
+        return false;
+    
     // the path is not blocked for neither player
     return true;
 }
 
-void addMove(stackptr* last, cint i, cint j, char* type)
+void addMove(stackptr* last, const int i, const int j, char* type)
 {
     stackptr temp = *last;
     *last = malloc(sizeof(struct stacknode));  // allocation failure

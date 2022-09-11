@@ -4,8 +4,8 @@
 #include <ctype.h>
 #include <stdbool.h>
 #include "../include/structs.h"
-#include "../include/typedefs.h"
 #include "../include/utilities.h"
+#include "../include/typedefs.h"
 #include "../include/engine.h"
 #include "../include/depth.h"
 
@@ -72,7 +72,7 @@ char update_boardsize(int* boardsize, int* prev_boardsize, char*** wall_matrix, 
     return 1;
 }
 
-void clear_board(cint boardsize, char** wall_matrix, player* white, player* black, stackptr* history, int *totalmoves)
+void clear_board(cint boardsize, char** wall_matrix, player* white, player* black, stackptr* history, int* totalmoves)
 {
     // clear board of the walls
     for (int i = 0; i < boardsize; i++) 
@@ -149,13 +149,9 @@ void playmove(char* buff, player* white, player* black, char** wall_mtx, cint bo
     else  // dist == 2
     {
         if (vertex_x == pl->i && op->i == pl->i && pl->j+vertex_y == 2*op->j) // in the same row, with opponent in the middle
-        {
             ok = !wallOnTheRight(op->i, op->j, wall_mtx, boardsize) && !wallOnTheLeft(op->i, op->j, wall_mtx, boardsize);
-        }
         else if (vertex_y == pl->j && op->j == pl->j && pl->i+vertex_x == 2*op->i) // in the same column, with opponent in the middle
-        {
             ok = !wallAbove(op->i, op->j, wall_mtx, boardsize) && !wallBelow(op->i, op->j, wall_mtx, boardsize);
-        }
         else if (vertex_x != pl->i && vertex_y != pl->j)  // diagonally by 1 vertex
         {
             if (vertex_x == op->i && pl->j == op->j)
@@ -172,9 +168,9 @@ void playmove(char* buff, player* white, player* black, char** wall_mtx, cint bo
 
                 if (vertex_x < op->i && wallBelow(op->i, op->j, wall_mtx, boardsize) || vertex_x > op->i && wallAbove(op->i, op->j, wall_mtx, boardsize)) ok = 0;
             }
-            else ok = 0;
+            else ok = false;
         }
-        else ok = 0;
+        else ok = false;
     }
 
     if (!ok)
@@ -260,14 +256,14 @@ void genmove(player* white, player* black, char** wall_matrix, cint boardsize, s
         unsuccessful_response("invalid syntax");
         return;
     }
-	char pseudodepth = false;
-    float max_time, scope;
+	char pseudodepth = 0;
+    float max_time;
 
     // find the depth at which the ai will search
-	char depth = findDepth(boardsize, &pseudodepth, &max_time, &scope, *totalmoves, black->walls + white->walls);
+	char depth = findDepth(boardsize, &pseudodepth, &max_time, *totalmoves, black->walls + white->walls);
 
     // calculate ai move
-    returningMove evalMove = bestMove(wall_matrix, boardsize, pl, black, white, depth, pseudodepth, max_time, scope);
+    returningMove evalMove = bestMove(wall_matrix, boardsize, pl, black, white, depth, pseudodepth, max_time);
 
     if (evalMove.move == 'w')  // ai evaluated placing a wall
     {
