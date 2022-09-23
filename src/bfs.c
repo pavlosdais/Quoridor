@@ -8,8 +8,8 @@
 typedef struct QueueNode
 {
     // player's coordinates
-    int i;
-    int j;
+    unsigned char i;
+    unsigned char j;
 
     struct QueueNode* next;
 }
@@ -30,9 +30,9 @@ queue;
 static char dr[] = {-1, 1, 0, 0}, dc[] = {0, 0, 1, -1};
 
 // Function Prototypes
-static void explore_neighbours(queue *q, const int cur_r, const int cur_c, const int boardsize, char** m, char** have_visited, uint* nodes_next_in_layer);
+static void explore_neighbours(queue *q, cint cur_r, cint cur_c, cint boardsize, char** m, char** have_visited, uint* nodes_next_in_layer);
 static void init_queue(queue* q);
-static void enqueue(queue* q, const int i, const int j);
+static void enqueue(queue* q, cint i, cint j);
 static void dequeue(queue* q, int* i, int* j);
 static bool isQueueEmpty(queue* q);
 
@@ -43,7 +43,7 @@ Function returns the steps a cell requires moving only up, down, left and right 
 in order to reach a certain row goalx. In this context it calculates how many steps a player either with the black or white
 colour needs in order to reach the row and win. If such path doesn't exist it returns -1, in any other case a positive integer. */
 
-uint bfs(const int boardsize, char** m, const int startx, const int starty, const int goalx)
+uint bfs(cint boardsize, char** m, cint startx, cint starty, cint goalx)
 {
     // create and intialize an visited grid
     char **have_visited = malloc(sizeof(char*) * boardsize);
@@ -96,7 +96,7 @@ uint bfs(const int boardsize, char** m, const int startx, const int starty, cons
     return move_count;
 }
 
-static void explore_neighbours(queue* q, const int cur_r, const int cur_c, const int boardsize, char** m, char** have_visited, uint* nodes_next_in_layer)
+static void explore_neighbours(queue* q, cint cur_r, cint cur_c, cint boardsize, char** m, char** have_visited, uint* nodes_next_in_layer)
 {
     int rr, cc;
 

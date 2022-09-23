@@ -27,10 +27,11 @@ typedef struct StackSet* Stack;
 static char dc[] = {0, 1, -1, 0};
 
 // Function Prototypes
-static void explore_neighbours(Stack q, const int cur_r, const int cur_c, const int boardsize, char** m, char** have_visited, const char pl);
+void explore_neighbours_white(Stack q, cint cur_r, cint cur_c, cint boardsize, char** m, char** have_visited);
+void explore_neighbours_black(Stack q, cint cur_r, cint cur_c, cint boardsize, char** m, char** have_visited);
 static void stack_init(Stack* S, const char col);
 static bool is_empty_stack(Stack S);
-static void stack_push(Stack S, const int i, const int j);
+static void stack_push(Stack S, cint i, cint j);
 static void stack_pop(Stack S, int* i, int* j);
 static void stack_destroy(Stack S);
 
@@ -38,7 +39,9 @@ static void stack_destroy(Stack S);
 -wiki page: https://en.wikipedia.org/wiki/Depth-first_search
 */
 
-bool dfs(const int boardsize, char** m, const int startx, const int starty, const int goalx, const char player)
+typedef void (*explore)(Stack q, cint cur_r, cint cur_c, cint boardsize, char** m, char** have_visited);
+
+bool dfs(cint boardsize, char** m, cint startx, cint starty, cint goalx, const char player)
 {
     // create and intialize an visited grid
     char **have_visited = malloc(sizeof(char*) * boardsize);
@@ -55,8 +58,10 @@ bool dfs(const int boardsize, char** m, const int startx, const int starty, cons
     // create and initialize stack
     Stack st;
     stack_init(&st, player);
-
     stack_push(st, startx, starty);
+
+    explore explore_func = explore_neighbours_white;
+    if (player == 'b') explore_func = explore_neighbours_black;
 
     while (!is_empty_stack(st))
     {
@@ -69,7 +74,7 @@ bool dfs(const int boardsize, char** m, const int startx, const int starty, cons
         }
 
         // enqueue adjecent cells
-        explore_neighbours(st, nr, nc, boardsize, m, have_visited, player);
+        explore_func(st, nr, nc, boardsize, m, have_visited);
     }
 
     // free array
@@ -82,7 +87,7 @@ bool dfs(const int boardsize, char** m, const int startx, const int starty, cons
     return reached_the_end;
 }
 
-static void explore_neighbours(Stack q, const int cur_r, const int cur_c, const int boardsize, char** m, char** have_visited, char pl)
+void explore_neighbours_white(Stack q, cint cur_r, cint cur_c, cint boardsize, char** m, char** have_visited)
 {   
     int rr, cc;
 
@@ -97,18 +102,38 @@ static void explore_neighbours(Stack q, const int cur_r, const int cur_c, const 
             continue;
         
         // There's a wall on the way
+        if (i == 0 && wallBelow(cur_r, cur_c, m, boardsize)) continue;  // south
         if (i == 1 && wallOnTheRight(cur_r, cur_c, m, boardsize)) continue;  // north
         else if (i == 2 && wallOnTheLeft(cur_r, cur_c, m, boardsize)) continue;  // east
-        else if (pl == 'w')
-        {
-            if (i == 0 && wallBelow(cur_r, cur_c, m, boardsize)) continue;  // south
-            else if (i == 3 && wallAbove(cur_r, cur_c, m, boardsize)) continue;  // west
-        }
-        else if (pl == 'b')
-        {
-            if (i == 0 && wallAbove(cur_r, cur_c, m, boardsize)) continue;  // south
-            else if (i == 3 && wallBelow(cur_r, cur_c, m, boardsize)) continue;  // west
-        }
+        else if (i == 3 && wallAbove(cur_r, cur_c, m, boardsize)) continue;  // west
+        
+        // cell is valid, enqueue it
+        stack_push(q, rr, cc);
+        
+        // mark the cell as visited
+        have_visited[rr][cc] = true;
+    }
+}
+
+void explore_neighbours_black(Stack q, cint cur_r, cint cur_c, cint boardsize, char** m, char** have_visited)
+{   
+    int rr, cc;
+
+    for (small_int i = 0; i < 4; i++)
+    {
+        // new adjacent cell (rr, cc)
+        rr = cur_r + q->dr[i];
+        cc = cur_c + dc[i];
+        if (rr < 0 || cc < 0 || rr >= boardsize || cc >= boardsize)  // cell out of bounds
+            continue;
+        if (have_visited[rr][cc])  // already have visited that cell
+            continue;
+        
+        // There's a wall on the way
+        if (i == 0 && wallAbove(cur_r, cur_c, m, boardsize)) continue;  // south
+        else if (i == 1 && wallOnTheRight(cur_r, cur_c, m, boardsize)) continue;  // north
+        else if (i == 2 && wallOnTheLeft(cur_r, cur_c, m, boardsize)) continue;  // east
+        else if (i == 3 && wallBelow(cur_r, cur_c, m, boardsize)) continue;  // west
         
         // cell is valid, enqueue it 
         stack_push(q, rr, cc);
@@ -148,7 +173,7 @@ static bool is_empty_stack(Stack S)
 }
 
 // push operation
-static void stack_push(Stack S, const int i, const int j)
+static void stack_push(Stack S, cint i, cint j)
 {
     StackNodePointer* head = &(S->top);
 
@@ -167,9 +192,6 @@ static void stack_push(Stack S, const int i, const int j)
 // pop operation
 static void stack_pop(Stack S, int* i, int* j)
 {
-    if (is_empty_stack(S))  // stack empty, there is nothing to pop
-        return;
-
     StackNodePointer head = S->top;
     *i = head->i;
     *j = head->j;

@@ -1,9 +1,13 @@
 typedef struct player player;
 typedef struct stacknode *stackptr;
+typedef struct _gameState *gameState;
 
 ///////////////////////
 //  Ingame commands  //
 ///////////////////////
+
+// initializes game state
+gameState game_state_init(uint number_of_walls, uint boardsize);
 
 // prints the name of the program
 void print_name(char *p);
@@ -15,31 +19,31 @@ void known_command(void);
 void list_commands();
 
 // updates boardsize
-char update_boardsize(int* boardsize, int* prev_boardsize, char*** wall_matrix, player* white, player* black, stackptr* history, int* totalmoves);
+char update_boardsize(gameState game_state, int* prev_boardsize, stackptr* history);
 
 // clears board
-void clear_board(int boardsize, char** wall_matrix, player* white, player* black, stackptr* history, int* totalmoves);
+void clear_board(gameState game_state);
 
 // updates walls for both players
-void update_walls(player* white, player* black, int* number_of_walls);
+void update_walls(gameState game_state);
 
 // plays a pawn move for the player read
-void playmove(char* buff, player* white, player* black, char** wall_matrix, const int boardsize, stackptr* history, int* totalmoves);
+void playmove(gameState game_state, stackptr* history);
 
 // plays a wall for the player read
-void playwall(char* buff, player* white, player* black, char** wall_matrix, const int boardsize, stackptr* history, int* totalmoves);
+void playwall(gameState game_state, stackptr* history);
 
 // ai plays a move for the player read
-void genmove(player* white, player* black, char** wall_matrix, int boardsize, stackptr* lastaddr, int* totalmoves);
+void genmove(gameState game_state, stackptr* lastaddr);
 
 // undoes moves the times read
-void undo(char** wall_matrix, player* white, player* black, stackptr* last, int* totalmoves);
+void undo(gameState game_state, stackptr* last);
 
 // responds accordingly if there is a winner
-void winner(player white, player black, const int boardsize);
+void winner(gameState game_state);
 
 // draws board
-void showboard(char** wall_matrix, const int boardsize, player* white, player* black);
+void showboard(gameState game_state);
 
 // returns the "number" of the command
 char command_num(char* ans);
@@ -47,8 +51,8 @@ char command_num(char* ans);
 // processes command: gets rid of whitespace characters and converts the command into lower case characters
 char command_preprocess(char* buff);
 
-// resets pawns to their original starting place
-void reset_pawns(const int boardsize, player* white, player *black);
+// destroys game state
+void destroy_game(gameState game_state);
 
 // allocates memory for the board
 char **allocate_memory(const int boardsize);

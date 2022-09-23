@@ -1,23 +1,60 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 #include <ctype.h>
 #include <stdbool.h>
 #include "../include/structs.h"
 #include "../include/utilities.h"
 #include "../include/typedefs.h"
 #include "../include/engine.h"
-#include "../include/depth.h"
+#include "../include/zobrist_hashing.h"
+#include "../include/transposition_table.h"
 
-// Function Prototypes
+// function prototypes
 void unsuccessful_response(char *msg);
 void successful_response(char *msg);
 char **allocate_memory(cint boardsize);
-void free_array(char **A, cint boardsize);
+void free_array(char** A, const int boardsize);
 char command_num(char *ans);
 void reset_pawns(cint boardsize, player *white, player *black);
 
+
 void print_name(char *p) { successful_response(p); }
+
+gameState game_state_init(uint number_of_walls, uint boardsize)
+{
+    gameState new_game_state = malloc(sizeof(*new_game_state));
+    assert(new_game_state != NULL);
+
+    new_game_state->wall_matrix = allocate_memory(boardsize);
+    assert(new_game_state != NULL);
+
+    reset_pawns(boardsize, &(new_game_state->white), &(new_game_state->black));  // default walues
+
+    new_game_state->totalmoves = 0;
+    new_game_state->white.walls = number_of_walls; new_game_state->black.walls = number_of_walls;
+    new_game_state->boardsize = boardsize;
+
+    // create zobrist keys & get the starting position id
+    createZobristKeys(new_game_state);
+    generateStartingPositionID(new_game_state);
+
+    // initialize the transposition table
+    tt_init(&(new_game_state->game_tt));
+
+    return new_game_state;
+}
+
+void destroy_game(gameState game_state)
+{
+    tt_destroy(game_state->game_tt);
+    destroyZobristKeys(game_state);
+    free_array(game_state->wall_matrix, game_state->boardsize);
+    free(game_state->zobrist_values);
+    free(game_state->wall_matrix);
+    free(game_state);
+}
 
 void known_command()
 {
@@ -38,30 +75,33 @@ void list_commands()
     fflush(stdout);
 }
 
-char update_boardsize(int* boardsize, int* prev_boardsize, char*** wall_matrix, player* white, player* black, stackptr* history, int* totalmoves)
+char update_boardsize(gameState game_state, int* prev_boardsize, stackptr* history)
 {
     char *p = strtok(NULL, " ");
     if (!enough_arguments(p)) return 2;
     if (isNumber(p) && p[0] != '-')
     {
-        *boardsize = atoi(p);
+        // destroy previous board keys
+        // - since the boardsize is changing we need to create new ones
+        destroyBoardKeys(game_state);
+
+        game_state->boardsize = atoi(p);  // new boardsize
 
         // free previous grid
-        free_array(*wall_matrix, *prev_boardsize);
-        free(*wall_matrix);
+        free_array(game_state->wall_matrix, *prev_boardsize);
+        free(game_state->wall_matrix);
 
         // allocate memory for the new grid
-        *wall_matrix = allocate_memory(*boardsize);
-        if (wall_matrix == NULL)
-        {
-            unsuccessful_response("allocation failure");
-            return 0;
-        }
+        game_state->wall_matrix = allocate_memory(game_state->boardsize);
+        assert(game_state->wall_matrix != NULL);
 
-        reset_pawns(*boardsize, white, black);
-        
-        *prev_boardsize = *boardsize;
-	    *totalmoves = 0;
+        reset_pawns(game_state->boardsize, &(game_state->white), &(game_state->black));
+
+        createBoardKeys(game_state);
+        generateStartingPositionID(game_state);
+
+        *prev_boardsize = game_state->boardsize;
+	    game_state->totalmoves = 0;
         successful_response("");
     }
     else
@@ -72,49 +112,60 @@ char update_boardsize(int* boardsize, int* prev_boardsize, char*** wall_matrix, 
     return 1;
 }
 
-void clear_board(cint boardsize, char** wall_matrix, player* white, player* black, stackptr* history, int* totalmoves)
+void clear_board(gameState game_state)
 {
     // clear board of the walls
-    for (int i = 0; i < boardsize; i++) 
-        for (int j = 0; j < boardsize; j++) 
-            wall_matrix[i][j] = false;
+    for (int i = 0; i < game_state->boardsize; i++) 
+        for (int j = 0; j < game_state->boardsize; j++) 
+            game_state->wall_matrix[i][j] = false;
     
     // white's and black's pawns return to their starting position
-    reset_pawns(boardsize, white, black);
-    *totalmoves = 0;
+    reset_pawns(game_state->boardsize, &(game_state->white), &(game_state->black));
+    game_state->totalmoves = 0;
     
     successful_response("");
 }
 
-void update_walls(player* white, player* black, int* number_of_walls)
+void update_walls(gameState game_state)
 {
     char *p = strtok(NULL, " ");   // number of walls
     if (!enough_arguments(p)) return;
 
     if (isNumber(p) && p[0] != '-')
     {
-        *number_of_walls = atoi(p);
-        black->walls = *number_of_walls;
-        white->walls = *number_of_walls;
+        int number_of_walls = atoi(p);
+        destroyWallKeys(game_state);
+
+        game_state->black.walls = number_of_walls;
+        game_state->white.walls = number_of_walls;
+
+        createWallKeys(game_state);
+
+        generatePositionID(game_state);
+
+        if (tt_size(game_state->game_tt) != 0)
+            tt_clear(game_state->game_tt);
+        
         successful_response("");
     }
     else
         unsuccessful_response("invalid syntax");
 }
 
-void playmove(char* buff, player* white, player* black, char** wall_mtx, cint boardsize, stackptr* lastaddr, int* totalmoves)
+void playmove(gameState game_state, stackptr* history)
 {
     // get color
     char *p = strtok(NULL, " ");
     if (!enough_arguments(p)) return;  // not enough arguments
 
-    player *pl = check_color(p, black, white);  // player
+    player *pl = check_color(p, &(game_state->black), &(game_state->white));  // player
     if (pl == NULL)
     {
         unsuccessful_response("invalid syntax");
         return;
     }
-    player *op = (pl == white) ? black : white;  // opponent
+    
+    player *op = (pl == &(game_state->black)) ? &(game_state->white) : &(game_state->black);  // opponent
     
     // Get vertex
     if (!enough_arguments(p)) return;
@@ -122,13 +173,16 @@ void playmove(char* buff, player* white, player* black, char** wall_mtx, cint bo
 
     char vertex_y = p[0] - 'a';
     char vertex_x = atoi(p+1) - 1;
+    
+    char** wall_mtx = game_state->wall_matrix;
+    uint boardsize = game_state->boardsize;
 
     if (!is_vertex_valid(vertex_x, boardsize) || !is_vertex_valid(vertex_y, boardsize) || (vertex_x == op->i && vertex_y == op->j))
     {
         unsuccessful_response("illegal move");
         return;
     }
-
+    
     char ok;
     uint dist = abs(pl->i - vertex_x) + abs(pl->j - vertex_y);
 
@@ -179,23 +233,36 @@ void playmove(char* buff, player* white, player* black, char** wall_mtx, cint bo
         return;
     }
     
-    // add pawn movement to history
-    char *type = (pl == white) ? "wm" : "bm";
-    addMove(lastaddr, pl->i, pl->j, type);  // adding pawn's position to history before moving the pawn
-    (*totalmoves)++;
+    // hash pawn movement
+    if (pl == &(game_state->white))  // white
+    {
+        addMove(history, pl->i, pl->j, "wm");
+        game_state->position_id ^= game_state->zobrist_values->white_pawn[pl->i][pl->j];
+        game_state->position_id ^= game_state->zobrist_values->white_pawn[vertex_x][vertex_y];
+    }
+    else  // black
+    {
+        addMove(history, pl->i, pl->j, "bm");
+        game_state->position_id ^= game_state->zobrist_values->black_pawn[pl->i][pl->j];
+        game_state->position_id ^= game_state->zobrist_values->black_pawn[vertex_x][vertex_y];
+    }
 
+    // move pawn
     pl->i = vertex_x;
     pl->j = vertex_y;
+
+    (game_state->totalmoves)++;
     successful_response("");
 }
 
-void playwall(char* buff, player* white, player* black, char** wall_matrix, cint boardsize, stackptr* lastaddr, int* totalmoves)
+void playwall(gameState game_state, stackptr* history)
 {
     // Get color
     char *p = strtok(NULL, " ");
     if (!enough_arguments(p)) return;  // not enough arguments
     
-    player *pl = check_color(p, black, white);
+    player *pl = check_color(p, &(game_state->black), &(game_state->white));
+
     if (pl == NULL)
     {
         unsuccessful_response("invalid syntax");
@@ -219,34 +286,51 @@ void playwall(char* buff, player* white, player* black, char** wall_matrix, cint
         unsuccessful_response("invalid syntax");
         return;
     }
-    else if (!isValidWall(vertex_x, vertex_y, boardsize, wall_matrix, orientation))
+    else if (!isValidWall(vertex_x, vertex_y, game_state, orientation))
     {
         unsuccessful_response("illegal move");
         return;
     }
 
-    wall_matrix[vertex_x][vertex_y] = orientation;  // place wall
+    game_state->wall_matrix[vertex_x][vertex_y] = orientation;  // place wall
     
     // check to see if by placing the wall the path towards the end is blocked for either player
-    if (!there_is_a_path(wall_matrix, boardsize, white, black))  // by placing the wall the path is blocked for at least a player
+    if (!there_is_a_path(game_state))  // by placing the wall the path is blocked for at least a player
     {
-        wall_matrix[vertex_x][vertex_y] = 0;    // reset placing the wall
+        game_state->wall_matrix[vertex_x][vertex_y] = 0;    // reset placing the wall
         unsuccessful_response("illegal move");
         return;
     }
 
-    (pl->walls)--;
+    // hash wall placement
+    if (orientation == 'b')  // horizontal
+        game_state->position_id ^= game_state->zobrist_values->horizontal_walls[vertex_x][vertex_y];
+    else  // vertical
+        game_state->position_id ^= game_state->zobrist_values->vertical_walls[vertex_x][vertex_y];
     
-    // add wall placement to history
-    char *type = (pl == white) ? "ww" : "bw";
-    addMove(lastaddr, vertex_x, vertex_y, type);
-    (*totalmoves)++;
+    // hash wall value
+    if (pl == &(game_state->white))  // white
+    {
+        addMove(history, vertex_x, vertex_y, "ww");
+        game_state->position_id ^= game_state->zobrist_values->white_walls[game_state->white.walls];
+        game_state->position_id ^= game_state->zobrist_values->white_walls[--(game_state->white.walls)];
+    }
+    else  // black
+    {
+        addMove(history, vertex_x, vertex_y, "bw");
+        game_state->position_id ^= game_state->zobrist_values->black_walls[game_state->black.walls];
+        game_state->position_id ^= game_state->zobrist_values->black_walls[--(game_state->black.walls)];
+    }
+    
+    (game_state->totalmoves)++;
    
     successful_response("");
 }
 
-void genmove(player* white, player* black, char** wall_matrix, cint boardsize, stackptr* lastaddr, int* totalmoves)
+void genmove(gameState game_state, stackptr* lastaddr)
 {
+    // printf("White walls = %d, black walls = %d\n", game_state->white.walls, game_state->black.walls);
+
     char *p = strtok(NULL, " ");
     if (!enough_arguments(p)) return;
     
@@ -256,61 +340,22 @@ void genmove(player* white, player* black, char** wall_matrix, cint boardsize, s
         unsuccessful_response("invalid syntax");
         return;
     }
-	char pseudodepth = 0;
-    float max_time;
-
-    // find the depth at which the ai will search
-	char depth = findDepth(boardsize, &pseudodepth, &max_time, *totalmoves, black->walls + white->walls);
-
-    // calculate ai move
-    returningMove evalMove = bestMove(wall_matrix, boardsize, pl, black, white, depth, pseudodepth, max_time);
-
-    if (evalMove.move == 'w')  // ai evaluated placing a wall
-    {
-        wall_matrix[evalMove.x][evalMove.y] = evalMove.or;
-        if (pl == 'w') --white->walls;
-        else --black->walls;
-
-        if (evalMove.or == 'b')  // horizontal
-            printf("= %c%d %c\n\n", 'A'+evalMove.y, evalMove.x+1, 'h');
-            
-        else  // vertical
-            printf("= %c%d %c\n\n", 'A'+evalMove.y, evalMove.x+1, 'v');
-        
-        // add wall placement to history
-        char *type = (pl == 'w') ? "ww" : "bw";
-        addMove(lastaddr, evalMove.x, evalMove.y, type);
-    }
-    else if (evalMove.move == 'm')  // ai evaluated a pawn movement
-    {
-        char *type = (pl == 'w') ? "wm" : "bm";
-        if (pl == 'w')
-        {
-            addMove(lastaddr, white->i, white->j, type);  // adding pawn's position to history before moving the pawn
-            white->i = evalMove.x;
-            white->j = evalMove.y;
-        }
-        else
-        {
-            addMove(lastaddr, black->i, black->j, type);  // adding pawn's position to history before moving the pawn
-            black->i = evalMove.x;
-            black->j = evalMove.y;
-        }
-        printf("= %c%d\n\n", 'A'+evalMove.y, evalMove.x+1);
-    }
     
-    (*totalmoves)++;
-    fflush(stdout);
+    // return and play the engine move
+    returningMove evalMove = iterativeDeepening(game_state, pl);
+    playGenMove(game_state, pl, evalMove, lastaddr);  // play engine move
+    
+    (game_state->totalmoves)++;
 }
 
-void undo(char** wall_matrix, player* white, player* black, stackptr* last, int* totalmoves)
-{    
+void undo(gameState game_state, stackptr* last)
+{
     int times;
     char *p = strtok(NULL, " ");
     if (p == NULL) times = 1;
     else times = atoi(p);
     
-    if (*totalmoves < times)
+    if (game_state->totalmoves < times)
     {
         unsuccessful_response("cannot undo");
         return;
@@ -318,40 +363,54 @@ void undo(char** wall_matrix, player* white, player* black, stackptr* last, int*
 
     for (int i = 0; i < times; i++)
     {
-        if (strcmp((*last)->type, "bm") == 0)
+        if (strcmp((*last)->type, "bm") == 0)  // black pawn movement
         {
-            black->i = (*last)->i;
-            black->j = (*last)->j;
+            game_state->position_id ^= game_state->zobrist_values->black_pawn[game_state->black.i][game_state->black.j];
+            game_state->black.i = (*last)->i;
+            game_state->black.j = (*last)->j;
+            game_state->position_id ^= game_state->zobrist_values->black_pawn[game_state->black.i][game_state->black.j];
         }
-        else if (strcmp((*last)->type, "wm") == 0)
+        else if (strcmp((*last)->type, "wm") == 0)  // white pawn movement
         {
-            white->i = (*last)->i;
-            white->j = (*last)->j;
+            game_state->position_id ^= game_state->zobrist_values->white_pawn[game_state->white.i][game_state->white.j];
+            game_state->white.i = (*last)->i;
+            game_state->white.j = (*last)->j;
+            game_state->position_id ^= game_state->zobrist_values->white_pawn[game_state->white.i][game_state->white.j];
         }
-        else if (strcmp((*last)->type, "bw") == 0)
+        else  // wall placement
         {
-            wall_matrix[(*last)->i][(*last)->j] = 0;
-            (black->walls)++;
-        }
-        else  // strcmp((*last)->type, "ww") == 0
-        {
-            wall_matrix[(*last)->i][(*last)->j] = 0;
-            (white->walls)++;
+            if (game_state->wall_matrix[(*last)->i][(*last)->j]  == 'b')  // horizontal
+                game_state->position_id ^= game_state->zobrist_values->horizontal_walls[(*last)->i][(*last)->j];
+            else
+                game_state->position_id ^= game_state->zobrist_values->vertical_walls[(*last)->i][(*last)->j];
+            
+            if (strcmp((*last)->type, "bw") == 0)  // black wall placement
+            {
+                game_state->position_id ^= game_state->zobrist_values->black_walls[game_state->black.walls];
+                game_state->position_id ^= game_state->zobrist_values->black_walls[(++(game_state->black.walls))];
+                game_state->wall_matrix[(*last)->i][(*last)->j] = 0;
+            }
+            else  // white wall placement
+            {
+                game_state->position_id ^= game_state->zobrist_values->white_walls[game_state->white.walls];
+                game_state->position_id ^= game_state->zobrist_values->white_walls[(++(game_state->white.walls))];
+                game_state->wall_matrix[(*last)->i][(*last)->j] = 0;
+            }
         }
 
         stackptr temp = *last;
         *last = (*last)->next;
         free(temp);
     }
-    *totalmoves -= times;
+    game_state->totalmoves -= times;
     successful_response("");
 }
 
-void winner(player white, player black, cint boardsize)
+void winner(gameState game_state)
 {
-    if (white.i==boardsize-1)
+    if (game_state->white.i == game_state->boardsize-1)
         successful_response("true white");
-    else if (black.i==0)
+    else if (game_state->black.i==0)
         successful_response("true black");
     else
         successful_response("false");
@@ -374,13 +433,13 @@ void winner(player white, player black, cint boardsize)
    right of D5 keeps going on the right of D4. The same applies for cells with 'r'/'b'. Even though a wall does not start
    beneath them / on their right, it is possible that a wall starts below their left cell / on the right of the cell above and keeps going
    adjacently to the specific cell. */
-void showboard(char** wall_matrix, cint boardsize, player* white, player* black)
+void showboard(gameState game_state)
 {
     printf("=\n");
     /*min field width is the greatest power of 10 in which when 10 is raised gives a result less than or equal to boardsize
     More simply, it is the number of digits of boardsize, eg. boardsize 9 -> mfw 1, boardsize 10 -> mfw 2*/
     int mfw = 0;
-    int tempb = boardsize;
+    int tempb = game_state->boardsize;
     while (tempb>0)
     {
         mfw++;
@@ -390,38 +449,38 @@ void showboard(char** wall_matrix, cint boardsize, player* white, player* black)
     int i, j, ch;
     // letters above
     for (i = 1; i <= mfw+1; i++) putchar(' ');
-    for (i = 1; i <= boardsize; i++) printf("  %c ", 'A'+i-1);
+    for (i = 1; i <= game_state->boardsize; i++) printf("  %c ", 'A'+i-1);
     putchar('\n');
     
     // top edge
     for (i=1; i<= mfw+1; i++) putchar(' ');
-    for (i=1; i<=boardsize; i++) printf("+---");
+    for (i=1; i<=game_state->boardsize; i++) printf("+---");
     printf("+\n");
     
     // main board
-    for (i = boardsize-1; i >= 0; i--)
+    for (i = game_state->boardsize-1; i >= 0; i--)
     {
         // printing the cell contents and the seperating lines/walls
         printf("%*d |", mfw, i+1);
-        for (j = 0; j <= boardsize-1; j++)
+        for (j = 0; j <= game_state->boardsize-1; j++)
         {
             // the cell content
             putchar(' ');
-            if (black->i == i && black->j == j) putchar('B');
-            else if (white->i == i && white->j == j) putchar('W');
+            if (game_state->black.i == i && game_state->black.j == j) putchar('B');
+            else if (game_state->white.i == i && game_state->white.j == j) putchar('W');
             else putchar(' ');
             putchar(' ');
             
-            if (j==boardsize-1) break;
+            if (j==game_state->boardsize-1) break;
             
             // the vertical seperating line/wall
-            if (wall_matrix[i][j]=='r') putchar('H');
-            else if (i<boardsize-1 && wall_matrix[i+1][j]=='r') putchar('H');
+            if (game_state->wall_matrix[i][j]=='r') putchar('H');
+            else if (i<game_state->boardsize-1 && game_state->wall_matrix[i+1][j]=='r') putchar('H');
             else putchar('|');
         }
         printf("| %-*d  ", mfw, i+1);
-        if (i==boardsize-1) printf("Black walls: %d", black->walls);
-        else if (i==boardsize-2) printf("White walls: %d", white->walls);
+        if (i==game_state->boardsize-1) printf("Black walls: %d", game_state->black.walls);
+        else if (i==game_state->boardsize-2) printf("White walls: %d", game_state->white.walls);
         putchar('\n');
         
         if (i==0) break;  // so that the bottom edge is printed without checking for walls
@@ -429,19 +488,19 @@ void showboard(char** wall_matrix, cint boardsize, player* white, player* black)
         // printing grid lines 
         for (j = 1; j <= mfw+1; j++) putchar(' ');
         putchar('+');
-        for (j = 0; j <= boardsize-1; j++)
+        for (j = 0; j <= game_state->boardsize-1; j++)
         {
             // the horizontal seperating lines/walls
-            if (wall_matrix[i][j]=='b') ch = '=';
-            else if (j>0 && wall_matrix[i][j-1]=='b') ch = '=';
+            if (game_state->wall_matrix[i][j]=='b') ch = '=';
+            else if (j>0 && game_state->wall_matrix[i][j-1]=='b') ch = '=';
             else ch = '-';
             printf("%c%c%c", ch, ch, ch);
             
-            if (j==boardsize-1) break;
+            if (j==game_state->boardsize-1) break;
             
             // the intersection of grid lines
-            if(wall_matrix[i][j]=='b') putchar('=');
-            else if (wall_matrix[i][j]=='r') putchar('H');
+            if(game_state->wall_matrix[i][j]=='b') putchar('=');
+            else if (game_state->wall_matrix[i][j]=='r') putchar('H');
             else putchar('+');
         }
         printf("+\n");
@@ -449,12 +508,12 @@ void showboard(char** wall_matrix, cint boardsize, player* white, player* black)
     
     // bottom edge
     for (i=1; i<= mfw+1; i++) putchar(' ');
-    for (i=1; i<=boardsize; i++) printf("+---");
+    for (i=1; i<=game_state->boardsize; i++) printf("+---");
     printf("+\n");
     
     // letters below
     for (i=1; i<= mfw+1; i++) putchar(' ');
-    for (i=1; i<=boardsize; i++) printf("  %c ", 'A'+i-1);
+    for (i=1; i<=game_state->boardsize; i++) printf("  %c ", 'A'+i-1);
     printf("\n\n");
     fflush(stdout);
 }

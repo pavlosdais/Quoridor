@@ -67,7 +67,7 @@ char check_orientation(char* orientation)
         return 'r';
     else if (strcmp(orientation, "v")  == 0)
         return 'r'; 
-    return -1; // error
+    return -1;  // error
 }
 
 char enough_arguments(char *argument)
@@ -106,49 +106,58 @@ char wallOnTheLeft(const int i, const int j, char** wall_matrix, const int board
     return wallOnTheRight(i, j-1, wall_matrix, boardsize);
 }
 
-char thereIsAWall(const char or, char** wall_matrix, const int boardsize, const int vertex_x, const int vertex_y)
+static char thereIsAWall(const char or, gameState gs, const int vertex_x, const int vertex_y)
 {
-    if (wall_matrix[vertex_x][vertex_y] != 0)
+    if (gs->wall_matrix[vertex_x][vertex_y] != 0)
         return true;
     if (or == 'b')  // horizontal
     {
-        if (wall_matrix[vertex_x][vertex_y+1] == or) return true;
-        else if (vertex_y > 0 && wall_matrix[vertex_x][vertex_y-1] == or) return true;
+        if (gs->wall_matrix[vertex_x][vertex_y+1] == or) return true;
+        else if (vertex_y > 0 && gs->wall_matrix[vertex_x][vertex_y-1] == or) return true;
     }
     else  // if (or == 'r') - vertical
     {
-        if (wall_matrix[vertex_x-1][vertex_y] == or) return true;
-        else if (vertex_x < boardsize-1 && wall_matrix[vertex_x+1][vertex_y] == or) return true;
+        if (gs->wall_matrix[vertex_x-1][vertex_y] == or) return true;
+        else if (vertex_x < gs->boardsize-1 && gs->wall_matrix[vertex_x+1][vertex_y] == or) return true;
     }
     return false;
 }
 
-char isValidWall(const int vertex_x, const int vertex_y, const int boardsize, char** wall_matrix, char orientation)
+char thereIsAWallHorizontally(gameState gs, const int vertex_x, const int vertex_y)
 {
-    if (!is_vertex_valid(vertex_x, boardsize) || !is_vertex_valid(vertex_y, boardsize) || 
-         vertex_x == 0 || vertex_y == boardsize-1)  // orientation out of bounds
+    if (gs->wall_matrix[vertex_x][vertex_y] != 0)
+        return true;
+    if (gs->wall_matrix[vertex_x][vertex_y+1] == 'b') return true;
+    else if (vertex_y > 0 && gs->wall_matrix[vertex_x][vertex_y-1] == 'b') return true;
+    return false;
+}
+
+char thereIsAWallVertically(gameState gs, const int vertex_x, const int vertex_y)
+{
+    if (gs->wall_matrix[vertex_x][vertex_y] != 0)
+        return true;
+    if (gs->wall_matrix[vertex_x-1][vertex_y] == 'r') return true;
+    else if (vertex_x < gs->boardsize-1 && gs->wall_matrix[vertex_x+1][vertex_y] == 'r') return true;
+    return false;
+}
+
+char isValidWall(const int vertex_x, const int vertex_y, gameState gs, char orientation)
+{
+    if (!is_vertex_valid(vertex_x, gs->boardsize) || !is_vertex_valid(vertex_y, gs->boardsize) || vertex_x == 0 || vertex_y == gs->boardsize-1)  // orientation out of bounds
         return false;
-    else if (thereIsAWall(orientation, wall_matrix, boardsize, vertex_x, vertex_y))  // there's already a wall there
+    else if (thereIsAWall(orientation, gs, vertex_x, vertex_y))  // there's already a wall there
         return false;
     
     // in any other case, a valid wall placement
     return true;
 }
 
-char there_is_a_path(char** wall_matrix, const int boardsize, player* white, player* black)
+char there_is_a_path(gameState gs)
 {
-    small_int walls_played = 3.5*boardsize - 11.5 - white->walls - black->walls;  // total number of walls placed
-
-    if (walls_played < 4)  // if there are less than 4 walls played, there is no way a path is being blocked for either player
-        return true;
-    
-    // check to see if a path for the goal row exists for both players
-    char path_exists = dfs(boardsize, wall_matrix, white->i, white->j, boardsize-1, 'w');  // white wins if he gets to the last row
-    if (!path_exists)
+    if (!dfs(gs->boardsize, gs->wall_matrix, gs->black.i, gs->black.j, 0, 'b'))
         return false;
-
-    path_exists = dfs(boardsize, wall_matrix, black->i, black->j, 0, 'b');  // black wins if he gets to the first row
-    if (!path_exists)
+    
+    if (!dfs(gs->boardsize, gs->wall_matrix, gs->white.i, gs->white.j, gs->boardsize-1, 'w'))
         return false;
     
     // the path is not blocked for neither player
@@ -165,4 +174,67 @@ void addMove(stackptr* last, const int i, const int j, char* type)
     (*last)->j = j;
     (*last)->type = type;
     (*last)->next = temp;
+}
+
+void playGenMove(gameState gs, char pl, returningMove evalMove, stackptr* lastaddr)
+{
+    // engine evaluated a wall placement
+    if (evalMove.move == 'w')
+    {
+        // hash wall placement
+        if (evalMove.or == 'b')  // horizontal
+            gs->position_id ^= gs->zobrist_values->horizontal_walls[evalMove.x][evalMove.y];
+        else  // vertical
+            gs->position_id ^= gs->zobrist_values->vertical_walls[evalMove.x][evalMove.y];
+        
+        if (pl == 'w')  // white
+        {
+            addMove(lastaddr, evalMove.x, evalMove.y, "ww");  // add wall placement to history
+
+            // hash wall value
+            gs->position_id ^= gs->zobrist_values->white_walls[gs->white.walls];
+            gs->position_id ^= gs->zobrist_values->white_walls[--(gs->white.walls)];
+        }
+        else  // black
+        {
+            addMove(lastaddr, evalMove.x, evalMove.y, "bw");  // add wall placement to history
+
+            // hash wall value
+            gs->position_id ^= gs->zobrist_values->black_walls[gs->black.walls];
+            gs->position_id ^= gs->zobrist_values->black_walls[--(gs->black.walls)];
+        }
+
+        // place wall
+        gs->wall_matrix[evalMove.x][evalMove.y] = evalMove.or;
+
+        // print the move
+        printf("= %c%d %c\n\n", 'A'+evalMove.y, evalMove.x+1, (evalMove.or == 'b')? 'h' : 'v');
+    }
+
+    // engine evaluated a pawn movement
+    else
+    {
+        if (pl == 'w')  // white
+        {
+            addMove(lastaddr, gs->white.i, gs->white.j, "wm");  // add move into history
+
+            // hash pawn movement
+            gs->position_id ^= gs->zobrist_values->white_pawn[gs->white.i][gs->white.j];
+            gs->white.i = evalMove.x;  gs->white.j = evalMove.y;  // move pawn
+            gs->position_id ^= gs->zobrist_values->white_pawn[gs->white.i][gs->white.j];
+        }
+        else  // black
+        {
+            addMove(lastaddr, gs->black.i, gs->black.j, "bm");  // add move into history
+            
+            // hash pawn movement
+            gs->position_id ^= gs->zobrist_values->black_pawn[gs->black.i][gs->black.j];
+            gs->black.i = evalMove.x; gs->black.j = evalMove.y;  // move pawn
+            gs->position_id ^= gs->zobrist_values->black_pawn[gs->black.i][gs->black.j];
+        }
+        
+        // print the move
+        printf("= %c%d\n\n", 'A'+evalMove.y, evalMove.x+1);
+    }
+    fflush(stdout);
 }

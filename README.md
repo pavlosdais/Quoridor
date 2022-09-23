@@ -1,8 +1,5 @@
-# Quoridor engine based on minimax with alpha-beta pruning
-
-Wiki: https://en.wikipedia.org/wiki/Quoridor <br/>
-YouTube Tutorial Video: https://www.youtube.com/watch?v=6ISruhN0Hc0 <br/>
-Play the game [here](http://quoridor.di.uoa.gr)
+# Quoridor engine
+Play [Quoridor](https://en.wikipedia.org/wiki/Quoridor) [here](http://quoridor.di.uoa.gr)
 
 ## **Rules**
 * **Board:**
@@ -55,8 +52,8 @@ The commands follow the protocol that can be viewed in detail [here](http://quor
   List all commands.
 
 ## **Engine**
-The engine is based on [Minimax](https://en.wikipedia.org/wiki/Minimax) with [Alpha-beta pruning](https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning). 
-* The depth where it's running at is calculated based on the board size, current number of walls as well as total moves played. A so-called pseudo-depth system (for certain boardsizes) is also used, where at the last depth we don't search all of the possible moves, but only key ones (pawn movement and wall placement near the enemy's pawn). This is used to further boost the engine lookahead ability and make the depth, when necessary, an even number.
+* The engine is based on [Alpha-beta pruning](https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning) that uses iterative deepening in order to search at the maximum depth possible at a fixed, set, time. A [transposition table](https://en.wikipedia.org/wiki/Transposition_table) is also used as an enhancement to this idea by saving and using previously found search results when faced with transpositions (positions that can be reached through a different move order).
+
 * The evaluation uses a system similar to chess's one, where if the evaluation is positive it is believed that white has an advantageous position, if it is negative it's believed that black is the one with the advantage and if it is 0, neither player has an advantage. The way we evaluate positions is by using 3 pieces of information. The first, is the steps both players need in order to win by using a factor of 1. The second, is the number of steps each player needs in order to get to the next row by using a factor of 0.6. The third, and final, is the number of walls each player has remaining (factor 0.7). So, the evaluation comes as follows: <br/>
 > blackDistanceFromWinning-whiteDistanceFromWinning + 0.6*(blackDistanceFromNextRow - whiteDistanceFromNextRow) + 0.7*(whiteWalls - blackWalls) <br/>
 
@@ -67,7 +64,7 @@ A referee `quoridor_referee.py` that allows two programs that follow the protoco
 - `make` to compile </br>
 - `make play` to compile and play </br>
 - `make clear` to clear excess object files created during compilation </br>
-- `make ref` to use the referee, change referee settings at the makefile 
+- `make ref` to use the referee, the settings can be changed at the makefile 
 
 ## **About**
 The project is based on assignment 4, semester 1, dpt. of Informatics and Telecommunications - UoA (2021), where it won first place at the department's local competition. Other programs, including but not exclusively, from the competition can be found over at the `otherProgs` folder.
