@@ -13,24 +13,10 @@
 clock_t start_time; float timeout_time;
 bool timeOut;
 
-// engine search time for each board size
-static float end_time(gameState gs)
-{
-    if (gs->boardsize < 6)
-        return 14;
-    else if (gs->boardsize < 8)
-        return 12;
-    else if (gs->boardsize < 10)
-        return 6;
-    else if (gs->boardsize < 14)
-        return 5;
-    else
-        return 4;
-}
-
 returningMove iterativeDeepening(gameState gs, cchar pl)
 {
-    timeout_time = end_time(gs); timeOut = false;
+    timeOut = false;
+    find_end_time(gs, timeout_time)
 
     returningMove moveFound, best_move;
 
@@ -74,10 +60,10 @@ returningMove bestMove(gameState gs, cchar pl, small_int depth)
                 return evalMove;
             }
             action = pq_remove(moves);
-            playMoveWhite(gs, action);
+            playMoveWhite(gs, action)
 
             int eval = -minimax(gs, depth-1, NEG_INFINITY, INFINITY, -1);
-            undoMoveWhite(gs, action);
+            undoMoveWhite(gs, action)
 
             if (eval > best_eval)
             {
@@ -100,11 +86,11 @@ returningMove bestMove(gameState gs, cchar pl, small_int depth)
                 return evalMove;
             }
             action = pq_remove(moves);
-            playMoveBlack(gs, action);
+            playMoveBlack(gs, action)
 
             int eval = minimax(gs, depth-1, NEG_INFINITY, INFINITY, 1);
 
-            undoMoveBlack(gs, action);
+            undoMoveBlack(gs, action)
 
             if (eval < best_eval)
             {
@@ -148,12 +134,12 @@ int minimax(gameState gs, small_int depth, int alpha, int beta, char maximizing)
     {
         // play the move
         move action = pq_remove(legal_moves);
-        playMove(gs, action, maximizing);
+        playMove(gs, action, maximizing)
 
         eval = -minimax(gs, depth-1, -beta, -alpha, -maximizing);
         
         // undo the move
-        undoMove(gs, action, maximizing);
+        undoMove(gs, action, maximizing)
 
         if (eval > max_eval) max_eval = eval;
         if (max_eval > alpha) alpha = max_eval;

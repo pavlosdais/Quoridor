@@ -62,3 +62,9 @@ typedef struct _move
 }
 _move;
 typedef struct _move* move;
+
+typedef enum
+{
+    OPENING, MIDDLEGAME, ENDGAME
+}
+current_phase;
