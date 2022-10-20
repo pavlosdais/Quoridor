@@ -63,12 +63,14 @@ int tt_search(transposition_table TT, int* alpha, int* beta, int depth, U64 key)
     {
         if (position->flag == EXACT)  // exact evaluation
             return position->evaluation;
-
-        if (position->flag == UPPERBOUND)  // lowerbound
-            *alpha = MAX(*alpha, position->evaluation);
-
+        else if (position->flag == UPPERBOUND)  // lowerbound
+        {
+            if (position->evaluation > *alpha) *alpha = position->evaluation;
+        }
         else if (position->flag == LOWERBOUND)  // upperbound
-            *beta = MIN(*beta, position->evaluation);
+        {
+            if (position->evaluation < *beta) *beta = position->evaluation;
+        }
 
         if (*alpha >= *beta)
             return position->evaluation;

@@ -33,6 +33,8 @@ typedef struct _move
 static void swap_nodes(node a, node b);
 static int compare_eval(Pointer v1, Pointer v2);
 
+#define compare_eval(v1, v2)  (((move)v1)->move_eval - ((move)v1)->move_eval)
+
 void pq_init(PQ* pq)
 {
     *pq = malloc(sizeof(_pq));
@@ -59,7 +61,6 @@ bool is_pq_empty(PQ pq)
 
 void pq_insert(PQ pq, Pointer value)
 {
-    assert(pq != NULL);
     pq->arr[pq->rear++].data = value;
 
     // queue is full, double its size
@@ -131,10 +132,4 @@ static void swap_nodes(node a, node b)
     b->data = tmp;
 }
 
-static int compare_eval(Pointer v1, Pointer v2)
-{
-    move a = (move)v1, b = (move)v2;
 
-    // descending order
-    return a->move_eval - b->move_eval;
-}

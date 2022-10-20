@@ -67,4 +67,4 @@ typedef enum
 {
     OPENING, MIDDLEGAME, ENDGAME
 }
-current_phase;
+game_phaze;

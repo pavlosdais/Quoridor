@@ -15,13 +15,13 @@ bool timeOut;
 
 returningMove iterativeDeepening(gameState gs, cchar pl)
 {
-    timeOut = false;
     find_end_time(gs, timeout_time)
+    timeOut = false;
 
     returningMove moveFound, best_move;
 
     // find the depth (for the first few moves we search at depth 1)
-    small_int max_depth = (gs->totalmoves + 3 < gs->boardsize || ( (gs->white.walls == 0) && (gs->black.walls == 0) ))? 1 : gs->boardsize*3;
+    small_int max_depth = (gs->totalmoves + 3 < gs->boardsize || ( (gs->white.walls == 0) && (gs->black.walls == 0) ))? 1 : gs->boardsize*6;
     
     // start the timer
     start_time = clock();

@@ -272,10 +272,10 @@ static void generate_pawn_moves_black(gameState gs, PQ moves)
 static void generate_walls_white(gameState gs, PQ moves)
 {
     move a;
-    for (unsigned char i = 1; i < gs->boardsize; i++)
+    for (small_int i = 1; i < gs->boardsize; i++)
     {
         int a = ABS(gs->white.i, i);
-        for (unsigned char j = 0; j < gs->boardsize-1; j++)
+        for (small_int j = 0; j < gs->boardsize-1; j++)
         {
             int distance = a + ABS(gs->white.j, j);
             if (!thereIsAWallHorizontally(gs, i, j))
@@ -284,7 +284,7 @@ static void generate_walls_white(gameState gs, PQ moves)
                 gs->wall_matrix[i][j] = 'b';
 
                 if (there_is_a_path_white(gs))
-                    pq_insert(moves, create_move('w', i, j, distance, 'w', 'b'));
+                    pq_insert(moves, create_move('w', i, j, distance, 'w', HORIZONTAL_WALL));
                 
                 gs->wall_matrix[i][j] = 0;  // resest wall placement
             }
@@ -305,19 +305,19 @@ static void generate_walls_white(gameState gs, PQ moves)
 static void generate_walls_black(gameState gs, PQ moves)
 {
     move a;
-    for (unsigned char i = gs->boardsize-1; i > 0; i--)
+    for (small_int i = gs->boardsize-1; i > 0; i--)
     {
         int a = ABS(gs->white.i, i);
-        for (unsigned char j = 0; j < gs->boardsize-1; j++)
+        for (small_int j = 0; j < gs->boardsize-1; j++)
         {
             int distance = a + ABS(gs->white.j, j);
             if (!thereIsAWallHorizontally(gs, i, j))
             {
                 // place horizontal wall
-                gs->wall_matrix[i][j] = 'b';
+                gs->wall_matrix[i][j] = HORIZONTAL_WALL;
 
                 if (there_is_a_path_black(gs))
-                    pq_insert(moves, create_move('b', i, j, distance, 'w', 'b'));
+                    pq_insert(moves, create_move('b', i, j, distance, 'w', HORIZONTAL_WALL));
 
                 gs->wall_matrix[i][j] = 0;  // resest wall placement
             }
@@ -369,11 +369,6 @@ PQ generate_moves_black(gameState gs)
         pq_sort(moves, pawn_moves-1);
     }
     return moves;
-}
-
-PQ generateMoves(gameState gs, char player)
-{
-    return ( (player == 1)? generate_moves_white(gs) : generate_moves_black(gs));
 }
 
 static move create_move(cchar player, csint prev_i, csint prev_j, int eval, char m, cchar or)
