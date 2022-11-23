@@ -58,11 +58,10 @@ returningMove bestMove(gameState gs, cchar pl, small_int depth)
         int alpha = NEG_INFINITY;
         while(!is_pq_empty(moves))
         {
-            if (RAN_OUT_OF_TIME())  // ran out of time
+            if (timeOut || RAN_OUT_OF_TIME())  // ran out of time
             {
                 timeOut = true;
-                pq_destroy(moves);
-                return evalMove;
+                break;
             }
             action = pq_remove(moves);
             playMoveWhite(gs, action)
@@ -88,11 +87,10 @@ returningMove bestMove(gameState gs, cchar pl, small_int depth)
         int beta = INFINITY;
         while(!is_pq_empty(moves))
         {
-            if (RAN_OUT_OF_TIME())  // ran out of time
+            if (timeOut || RAN_OUT_OF_TIME())  // ran out of time
             {
                 timeOut = true;
-                pq_destroy(moves);
-                return evalMove;
+                break;
             }
             action = pq_remove(moves);
             playMoveBlack(gs, action)

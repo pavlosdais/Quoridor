@@ -11,7 +11,7 @@ typedef unsigned long long U64;
 typedef struct n
 {
     U64 position_id;      // "almost" unique position identifier
-    unsigned char depth;  // 
+    unsigned char depth;  // depth of the node
     flags flag;           // flag the type of node (UPPERBOUND, LOWERBOUND, EXACT)
     int evaluation;       // evaluation (alpha/beta/exact)
 }
