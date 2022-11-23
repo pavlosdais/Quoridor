@@ -16,6 +16,9 @@ typedef char (*check_path)(char** wall_matrix, cint boardsize, player* white, pl
 #define MAX(a, b) (a > b ? a:b)
 #define MIN(a, b) (a < b ? a:b)
 
+#define WHITE 'w'
+#define BLACK 'm'
+
 // engine helper prototypes
 returningMove bestMove(gameState gs, cchar pl, small_int depth);
 int minimax(gameState gs, small_int depth, int alpha, int beta, char maximizing);

@@ -42,7 +42,6 @@ void pq_init(PQ* pq)
     
     // allocate memory for the array of nodes
     (*pq)->arr = calloc(MIN_SIZE, sizeof( *((*pq)->arr)) );
-
     assert((*pq)->arr != NULL);  // allocation failure
 
     (*pq)->rear = (*pq)->front = 0;
@@ -66,11 +65,10 @@ void pq_insert(PQ pq, Pointer value)
     // queue is full, double its size
     if (pq->rear == pq->capacity)
     {
-        node new_arr = realloc(pq->arr, 2*pq->capacity * sizeof(*new_arr));
-        assert(new_arr != NULL);  // allocation failure
-        
-        uint old_size = pq->rear;
         pq->capacity *= 2;
+
+        node new_arr = realloc(pq->arr, pq->capacity * sizeof(*new_arr));
+        assert(new_arr != NULL);  // allocation failure
         
         pq->arr = new_arr;
     }
@@ -131,5 +129,3 @@ static void swap_nodes(node a, node b)
     a->data = b->data;
     b->data = tmp;
 }
-
-

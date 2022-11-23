@@ -49,7 +49,7 @@ returningMove bestMove(gameState gs, cchar pl, small_int depth)
 
     int best_eval;
 
-    if (pl == 'w')  // white plays
+    if (pl == WHITE)  // white plays
     {
         best_eval = NEG_INFINITY;
         
@@ -61,6 +61,7 @@ returningMove bestMove(gameState gs, cchar pl, small_int depth)
             if (RAN_OUT_OF_TIME())  // ran out of time
             {
                 timeOut = true;
+                pq_destroy(moves);
                 return evalMove;
             }
             action = pq_remove(moves);
@@ -90,6 +91,7 @@ returningMove bestMove(gameState gs, cchar pl, small_int depth)
             if (RAN_OUT_OF_TIME())  // ran out of time
             {
                 timeOut = true;
+                pq_destroy(moves);
                 return evalMove;
             }
             action = pq_remove(moves);
