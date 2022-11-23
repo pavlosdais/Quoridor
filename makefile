@@ -100,7 +100,7 @@ exe:
 ################################
 WHITE = $(PROGS_DIR)/other1  # player with white
 BLACK = $(EXEC)  # player with black
-SIZE = 5  # board size
+SIZE = 9  # board size
 GAMES = 1  # number of games to play
 VERBOSE = 2  # 2 to draw board, 1 to hide
 MEMORY_LIMIT = 950  # maximum megabytes of memory that can be used for players at each point of the game

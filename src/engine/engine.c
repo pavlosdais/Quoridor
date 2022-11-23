@@ -10,6 +10,9 @@
 #include "../../include/generate_moves.h"
 #include "../../include/engine_utilities.h"
 
+#define MAXIMIZING 1
+#define MINIMIZING -1
+
 clock_t start_time; float timeout_time;
 bool timeOut;
 
@@ -52,6 +55,7 @@ returningMove bestMove(gameState gs, cchar pl, small_int depth)
         
         moves = generate_moves_white(gs);  // generate white's legal moves
 
+        int alpha = NEG_INFINITY;
         while(!is_pq_empty(moves))
         {
             if (RAN_OUT_OF_TIME())  // ran out of time
@@ -62,7 +66,7 @@ returningMove bestMove(gameState gs, cchar pl, small_int depth)
             action = pq_remove(moves);
             playMoveWhite(gs, action)
 
-            int eval = -minimax(gs, depth-1, NEG_INFINITY, INFINITY, -1);
+            int eval = -minimax(gs, depth-1, alpha, INFINITY, MINIMIZING);
             undoMoveWhite(gs, action)
 
             if (eval > best_eval)
@@ -70,6 +74,8 @@ returningMove bestMove(gameState gs, cchar pl, small_int depth)
                 if (action->move == 'm') updatePawnMovement(&evalMove, action, &eval, &best_eval);
                 else updateWallPlacement(&evalMove, action, &eval, &best_eval);
             }
+
+            if (best_eval > alpha) alpha = best_eval;
         }
     }
     else  // black plays
@@ -78,6 +84,7 @@ returningMove bestMove(gameState gs, cchar pl, small_int depth)
 
         best_eval = INFINITY;
 
+        int beta = INFINITY;
         while(!is_pq_empty(moves))
         {
             if (RAN_OUT_OF_TIME())  // ran out of time
@@ -88,7 +95,7 @@ returningMove bestMove(gameState gs, cchar pl, small_int depth)
             action = pq_remove(moves);
             playMoveBlack(gs, action)
 
-            int eval = minimax(gs, depth-1, NEG_INFINITY, INFINITY, 1);
+            int eval = minimax(gs, depth-1, NEG_INFINITY, beta, MAXIMIZING);
 
             undoMoveBlack(gs, action)
 
@@ -97,6 +104,8 @@ returningMove bestMove(gameState gs, cchar pl, small_int depth)
                 if (action->move == 'm') updatePawnMovement(&evalMove, action, &eval, &best_eval);
                 else updateWallPlacement(&evalMove, action, &eval, &best_eval);
             }
+
+            if (beta < best_eval) beta = best_eval;
         }
     }
     pq_destroy(moves);
@@ -110,7 +119,7 @@ returningMove bestMove(gameState gs, cchar pl, small_int depth)
 
 int minimax(gameState gs, small_int depth, int alpha, int beta, char maximizing)
 {
-    if (RAN_OUT_OF_TIME())  // ran out of time
+    if (RAN_OUT_OF_TIME())  // ran out of time - stop searching
     {
         timeOut = true;
         return alpha;
@@ -123,6 +132,7 @@ int minimax(gameState gs, small_int depth, int alpha, int beta, char maximizing)
     if ((eval = tt_search(gs->game_tt, &alpha, &beta, depth, gs->position_id)) != UNKNOWN)
         return eval;
     
+    // base case
     if (depth == 0 || gs->white.i == gs->boardsize-1 || gs->black.i == 0)
         return maximizing * positionEvaluation(gs);
 
