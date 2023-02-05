@@ -28,13 +28,14 @@ queue;
 -east (c,r+1)
 -west (c,r-1) */
 static char dr[] = {-1, 1, 0, 0}, dc[] = {0, 0, 1, -1};
+static isThereWall wall_exists[] = {wallBelow, wallAbove, wallOnTheRight, wallOnTheLeft};
 
 // Function Prototypes
-static void explore_neighbours(queue *q, cint cur_r, cint cur_c, cint boardsize, char** m, char** have_visited, uint* nodes_next_in_layer);
-static void init_queue(queue* q);
-static void enqueue(queue* q, cint i, cint j);
-static void dequeue(queue* q, int* i, int* j);
-static bool isQueueEmpty(queue* q);
+static inline void explore_neighbours(queue *, cint, cint , cint, char**, char**, uint*);
+static inline void init_queue(queue*);
+static inline void enqueue(queue*, cint, cint);
+static inline void dequeue(queue*, int*, int*);
+static inline bool isQueueEmpty(queue*);
 
 /* Breadth-first search
 -wiki page: https://en.wikipedia.org/wiki/Breadth-first_search
@@ -42,8 +43,7 @@ static bool isQueueEmpty(queue* q);
 Function returns the steps a cell requires moving only up, down, left and right from a certain cell (startx, starty)
 in order to reach a certain row goalx. In this context it calculates how many steps a player either with the black or white
 colour needs in order to reach the row and win. If such path doesn't exist it returns -1, in any other case a positive integer. */
-
-uint bfs(cint boardsize, char** m, cint startx, cint starty, cint goalx)
+unsigned int bfs(const int boardsize, char** m, const int startx, const int starty, const int goalx)
 {
     // create and intialize an visited grid
     char **have_visited = malloc(sizeof(char*) * boardsize);
@@ -96,7 +96,7 @@ uint bfs(cint boardsize, char** m, cint startx, cint starty, cint goalx)
     return move_count;
 }
 
-static void explore_neighbours(queue* q, cint cur_r, cint cur_c, cint boardsize, char** m, char** have_visited, uint* nodes_next_in_layer)
+static inline void explore_neighbours(queue* q, cint cur_r, cint cur_c, cint boardsize, char** m, char** have_visited, uint* nodes_next_in_layer)
 {
     int rr, cc;
 
@@ -110,11 +110,8 @@ static void explore_neighbours(queue* q, cint cur_r, cint cur_c, cint boardsize,
         if (have_visited[rr][cc])  // already have visited that cell
             continue;
         
-        // There's a wall on the way
-        if (i == 0 && wallBelow(cur_r, cur_c, m, boardsize)) continue;  // south
-        else if (i == 1 && wallAbove(cur_r, cur_c, m, boardsize)) continue;  // north
-        else if (i == 2 && wallOnTheRight(cur_r, cur_c, m, boardsize)) continue;  // east
-        else if (i == 3 && wallOnTheLeft(cur_r, cur_c, m, boardsize)) continue;  // west
+        if (wall_exists[i](cur_r, cur_c, m, boardsize))
+            continue;
 
         // cell is valid, enqueue it
         enqueue(q, rr, cc);
@@ -126,23 +123,22 @@ static void explore_neighbours(queue* q, cint cur_r, cint cur_c, cint boardsize,
 }
 
 // initialize queue
-static void init_queue(queue* q)
+static inline void init_queue(queue* q)
 {
     q->head = NULL;
     q->tail = NULL;
 }
 
 // return true if the queue is empty
-static bool isQueueEmpty(queue* q)
+static inline bool isQueueEmpty(queue* q)
 {
     return (q->head == NULL);
 }
 
 // enqueue operation
-static void enqueue(queue* q, int i, int j)
+static inline void enqueue(queue* q, int i, int j)
 {
     QueueNode* newnode = malloc(sizeof(QueueNode));
-    assert(newnode != NULL);  // allocation failure
 
     newnode->i = i;
     newnode->j = j;
@@ -160,7 +156,7 @@ static void enqueue(queue* q, int i, int j)
 }
 
 // dequeue operation
-static void dequeue(queue* q, int* i, int* j)
+static inline void dequeue(queue* q, int* i, int* j)
 {
     QueueNode* tmp = q->head;
     *i = tmp->i;

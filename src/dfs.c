@@ -25,15 +25,17 @@ StackSet;
 typedef struct StackSet* Stack;
 
 static char dc[] = {0, 1, -1, 0};
+static isThereWall wall_exists_white[] = {wallBelow, wallOnTheRight, wallOnTheLeft, wallAbove};
+static isThereWall wall_exists_black[] = {wallAbove, wallOnTheRight, wallOnTheLeft, wallBelow};
 
 // Function Prototypes
-void explore_neighbours_white(Stack q, cint cur_r, cint cur_c, cint boardsize, char** m, char** have_visited);
-void explore_neighbours_black(Stack q, cint cur_r, cint cur_c, cint boardsize, char** m, char** have_visited);
-static void stack_init(Stack* S, const char col);
-static bool is_empty_stack(Stack S);
-static void stack_push(Stack S, cint i, cint j);
-static void stack_pop(Stack S, int* i, int* j);
-static void stack_destroy(Stack S);
+void explore_neighbours_white(Stack, cint, cint, cint, char**, char**);
+void explore_neighbours_black(Stack, cint, cint, cint, char**, char**);
+static inline void stack_init(Stack*, const char);
+static inline bool is_empty_stack(Stack);
+static inline void stack_push(Stack, cint, cint);
+static inline void stack_pop(Stack, int*, int*);
+static inline void stack_destroy(Stack);
 
 /* depth-first search
 -wiki page: https://en.wikipedia.org/wiki/Depth-first_search
@@ -87,7 +89,7 @@ bool dfs(cint boardsize, char** m, cint startx, cint starty, cint goalx, const c
     return reached_the_end;
 }
 
-void explore_neighbours_white(Stack q, cint cur_r, cint cur_c, cint boardsize, char** m, char** have_visited)
+void inline explore_neighbours_white(Stack q, cint cur_r, cint cur_c, cint boardsize, char** m, char** have_visited)
 {   
     int rr, cc;
 
@@ -102,10 +104,8 @@ void explore_neighbours_white(Stack q, cint cur_r, cint cur_c, cint boardsize, c
             continue;
         
         // There's a wall on the way
-        if (i == 0 && wallBelow(cur_r, cur_c, m, boardsize)) continue;  // south
-        if (i == 1 && wallOnTheRight(cur_r, cur_c, m, boardsize)) continue;  // north
-        else if (i == 2 && wallOnTheLeft(cur_r, cur_c, m, boardsize)) continue;  // east
-        else if (i == 3 && wallAbove(cur_r, cur_c, m, boardsize)) continue;  // west
+        if (wall_exists_white[i](cur_r, cur_c, m, boardsize))
+            continue;
         
         // cell is valid, enqueue it
         stack_push(q, rr, cc);
@@ -115,7 +115,7 @@ void explore_neighbours_white(Stack q, cint cur_r, cint cur_c, cint boardsize, c
     }
 }
 
-void explore_neighbours_black(Stack q, cint cur_r, cint cur_c, cint boardsize, char** m, char** have_visited)
+void inline explore_neighbours_black(Stack q, cint cur_r, cint cur_c, cint boardsize, char** m, char** have_visited)
 {   
     int rr, cc;
 
@@ -130,10 +130,8 @@ void explore_neighbours_black(Stack q, cint cur_r, cint cur_c, cint boardsize, c
             continue;
         
         // There's a wall on the way
-        if (i == 0 && wallAbove(cur_r, cur_c, m, boardsize)) continue;  // south
-        else if (i == 1 && wallOnTheRight(cur_r, cur_c, m, boardsize)) continue;  // north
-        else if (i == 2 && wallOnTheLeft(cur_r, cur_c, m, boardsize)) continue;  // east
-        else if (i == 3 && wallBelow(cur_r, cur_c, m, boardsize)) continue;  // west
+        if (wall_exists_black[i](cur_r, cur_c, m, boardsize))
+            continue;
         
         // cell is valid, enqueue it 
         stack_push(q, rr, cc);
@@ -144,7 +142,7 @@ void explore_neighbours_black(Stack q, cint cur_r, cint cur_c, cint boardsize, c
 }
 
 // initialize stack
-static void stack_init(Stack* S, const char col)
+static inline void stack_init(Stack* S, const char col)
 {
     *S = malloc(sizeof(StackSet));
     assert(*S != NULL);  // allocation failure
@@ -167,13 +165,13 @@ static void stack_init(Stack* S, const char col)
 }
 
 // return true if the stack is empty
-static bool is_empty_stack(Stack S)
+static inline bool is_empty_stack(Stack S)
 {
     return S->top == NULL;
 }
 
 // push operation
-static void stack_push(Stack S, cint i, cint j)
+static inline void stack_push(Stack S, cint i, cint j)
 {
     StackNodePointer* head = &(S->top);
 
@@ -190,7 +188,7 @@ static void stack_push(Stack S, cint i, cint j)
 }
 
 // pop operation
-static void stack_pop(Stack S, int* i, int* j)
+static inline void stack_pop(Stack S, int* i, int* j)
 {
     StackNodePointer head = S->top;
     *i = head->i;
@@ -204,7 +202,7 @@ static void stack_pop(Stack S, int* i, int* j)
 }
 
 // destroy stack
-static void stack_destroy(Stack S)
+static inline void stack_destroy(Stack S)
 {
     StackNodePointer head = S->top;
 

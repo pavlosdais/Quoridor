@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <time.h>
 #include <stdbool.h>
 #include "../../include/structs.h"
 #include "../../include/typedefs.h"
@@ -12,13 +11,13 @@
 #include "../../include/pq.h"
 
 // function prototype
-static move create_move(cchar player, csint prev_i, csint prev_j, int eval, char m, cchar or);
+static inline move create_move(cchar, csint, csint, int, char, cchar);
 
 #define PAWN_MOVE 'm'
 #define WALL_MOVE 'w'
 #define NONE -1
 
-static void generate_pawn_moves_white(gameState gs, PQ moves)
+static inline void generate_pawn_moves_white(gameState gs, PQ moves)
 {
     int board_lim = gs->boardsize-1;
     move a;
@@ -147,7 +146,7 @@ static void generate_pawn_moves_white(gameState gs, PQ moves)
     }
 }
 
-static void generate_pawn_moves_black(gameState gs, PQ moves)
+static inline void generate_pawn_moves_black(gameState gs, PQ moves)
 {
     int board_lim = gs->boardsize-1;
     move a;
@@ -275,7 +274,7 @@ static void generate_pawn_moves_black(gameState gs, PQ moves)
     }
 }
 
-static void generate_walls_white(gameState gs, PQ moves)
+static inline void generate_walls_white(gameState gs, PQ moves)
 {
     move a;
     for (small_int i = 1; i < gs->boardsize; i++)
@@ -283,7 +282,7 @@ static void generate_walls_white(gameState gs, PQ moves)
         int a = ABS(gs->white.i, i);
         for (small_int j = 0; j < gs->boardsize-1; j++)
         {
-            int distance = a + ABS(gs->white.j, j);
+            int distance = a + ABS(gs->white.j, j) + i;
             if (!thereIsAWallHorizontally(gs, i, j))
             {
                 // place horizontal wall
@@ -308,7 +307,7 @@ static void generate_walls_white(gameState gs, PQ moves)
     }
 }
 
-static void generate_walls_black(gameState gs, PQ moves)
+static inline void generate_walls_black(gameState gs, PQ moves)
 {
     move a;
     for (small_int i = gs->boardsize-1; i > 0; i--)
@@ -316,7 +315,7 @@ static void generate_walls_black(gameState gs, PQ moves)
         int a = ABS(gs->white.i, i);
         for (small_int j = 0; j < gs->boardsize-1; j++)
         {
-            int distance = a + ABS(gs->white.j, j);
+            int distance = a + ABS(gs->white.j, j) + (gs->boardsize-1-i);
             if (!thereIsAWallHorizontally(gs, i, j))
             {
                 // place horizontal wall
@@ -377,11 +376,10 @@ PQ generate_moves_black(gameState gs)
     return moves;
 }
 
-static move create_move(cchar player, csint prev_i, csint prev_j, int eval, char m, cchar or)
+static inline move create_move(cchar player, csint prev_i, csint prev_j, int eval, char m, cchar or)
 {
     // allocate memory for the move
     move new_move = malloc(sizeof(*new_move));
-    assert(new_move != NULL);
 
     new_move->col = player;
     new_move->move = m;
