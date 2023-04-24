@@ -1,93 +1,79 @@
-# source directory
-SRC_DIR = ./src
-
-# engine directory
-ENG_DIR = ./src/engine
-
-# modules directory
-MOD_DIR = ./modules
-
-# object files needed
-OBJ = $(SRC_DIR)/ipquoridor.o \
-	  $(SRC_DIR)/commands.o \
-	  $(SRC_DIR)/utilities.o \
-	  $(SRC_DIR)/bfs.o \
-	  $(SRC_DIR)/dfs.o \
-	  $(SRC_DIR)/zobrist_hashing.o \
-	  $(MOD_DIR)/transposition_table.o \
-	  $(MOD_DIR)/pq.o \
-	  $(ENG_DIR)/generate_moves.o \
-	  $(ENG_DIR)/engine.o \
-	  $(ENG_DIR)/engine_utilities.o 
-
-EXEC = ipquoridor
+# Compiler settings
 CC = gcc
-flags = -ggdb3
+CFLAGS = -g
+LDFLAGS =
 
-# make the executable file
-$(EXEC): $(OBJ)
-	$(CC) -o $(EXEC) $(OBJ) $(flags)
+# Directories
+SRC_DIR = src
+MODULES_DIR = modules
+OBJ_DIR = obj
+BIN_DIR = bin
 
+# Source files
+SRC_FILES = $(wildcard $(SRC_DIR)/*.c)
+MODULES_FILES = $(wildcard $(MODULES_DIR)/*.c)
 
-# make the object files needed
+# Object files
+OBJ_FILES = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC_FILES)) \
+            $(patsubst $(MODULES_DIR)/%.c, $(OBJ_DIR)/%.o, $(MODULES_FILES))
 
-# GAME
-$(EXEC).o: $(SRC_DIR)/$(EXEC).c
-	$(CC) -c $(SRC_DIR)/$(EXEC).c $(flags)
+# Executable program
+EXEC_NAME = ipquoridor
+EXEC = $(BIN_DIR)/$(EXEC_NAME)
 
-commands.o: $(SRC_DIR)/commands.c 
-	$(CC) -c $(SRC_DIR)/commands.c $(flags)
+# Program command line arguments
+CLA = 
 
-utilities.o: $(SRC_DIR)/utilities.c
-	$(CC) -c $(SRC_DIR)/utilities.c $(flags)
+# OS
+OS := LIN
+ifeq ($(OS), WIN)
+	CC = x86_64-w64-mingw32-gcc
+	EXEC = $(BIN_DIR)/$(EXEC_NAME).exe
+endif
 
-# PATHFINDING
-bfs.o: $(SRC_DIR)/bfs.c
-	$(CC) -c $(SRC_DIR)/bfs.c $(flags)
+# Targets
+.PHONY:
+	all clear help play final exe ref
 
-dfs.o: $(SRC_DIR)/dfs.c
-	$(CC) -c $(SRC_DIR)/dfs.c $(flags)
+all: $(EXEC)
 
-# MODULES
-transposition_table.o: $(MOD_DIR)/transposition_table.c
-	$(CC) -c $(MOD_DIR)/transposition_table.c $(flags)
+# Create the executable program
+$(EXEC): $(OBJ_FILES)
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(LDFLAGS) $^ -o $@
 
-pq.o: $(MOD_DIR)/pq.c
-	$(CC) -c $(MOD_DIR)/pq.c $(flags)
+# Compile
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
 
-# ENGINE 
-engine.o: $(ENG_DIR)/engine.c
-	$(CC) -c $(ENG_DIR)/engine.c $(flags)
+$(OBJ_DIR)/%.o: $(MODULES_DIR)/%.c
+	@mkdir -p $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
 
-generate_moves.o: $(ENG_DIR)/generate_moves.c
-	$(CC) -c $(ENG_DIR)/generate_moves.c $(flags)
+# Play the game
+play:
+	./$(EXEC) $(CLA)
 
-engine_utilities.o: $(ENG_DIR)/engine_utilities.c
-	$(CC) -c $(ENG_DIR)/engine_utilities.c $(flags)
-
-zobrist_hashing.o: $(SRC_DIR)/zobrist_hashing.c
-	$(CC) -c $(SRC_DIR)/zobrist_hashing.c $(flags)
-
-# delete excess object files
+# Clear files used by the program
 clear:
-	rm -f $(OBJ)
+	rm -rf $(OBJ_DIR) $(BIN_DIR)
 
-# play the game
-play: $(EXEC)
-	./$(EXEC)
-
-# run valgrind
+# Use valgrind - Output is saved at bin/valgrind.log
 help: $(EXEC)
-	valgrind --leak-check=full -v --show-leak-kinds=all --track-origins=yes ./$(EXEC)
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=./bin/valgrind.log ./$(EXEC) $(CLA)
 
+# Final build // use optimization flags
+final: CFLAGS = -Ofast
+final: LDFLAGS = 
+final: all
 
-### USE REFEREE ##
+### REFEREE SETTINGS ##
 
 # other programs directory (competition & more)
 PROGS_DIR = otherProgs
 
 # give some files executable permission
-file = $(PROGS_DIR)/1.2
 exe:
 	chmod 744 quoridor_referee.py
 	chmod 744 $(PROGS_DIR)/1.1

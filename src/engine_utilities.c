@@ -2,12 +2,12 @@
 #include <stdlib.h>
 #include <time.h>
 #include <stdbool.h>
-#include "../../include/typedefs.h"
-#include "../../include/structs.h"
-#include "../../include/utilities.h"
-#include "../../include/engine_utilities.h"
-#include "../../include/dfs.h"
-#include "../../include/bfs.h"
+#include "../include/typedefs.h"
+#include "../include/structs.h"
+#include "../include/utilities.h"
+#include "../include/engine_utilities.h"
+#include "../include/dfs.h"
+#include "../include/bfs.h"
 
 bool there_is_a_path_black(gameState gs)
 {

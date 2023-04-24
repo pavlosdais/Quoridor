@@ -2,13 +2,13 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <stdbool.h>
-#include "../../include/structs.h"
-#include "../../include/typedefs.h"
-#include "../../include/utilities.h"
-#include "../../include/engine_utilities.h"
-#include "../../include/bfs.h"
-#include "../../include/dfs.h"
-#include "../../include/pq.h"
+#include "../include/structs.h"
+#include "../include/typedefs.h"
+#include "../include/utilities.h"
+#include "../include/engine_utilities.h"
+#include "../include/bfs.h"
+#include "../include/dfs.h"
+#include "../include/pq.h"
 
 // function prototype
 static inline move create_move(cchar, csint, csint, int, char, cchar);

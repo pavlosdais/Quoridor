@@ -3,12 +3,12 @@
 #include <time.h>
 #include <time.h>
 #include <stdbool.h>
-#include "../../include/typedefs.h"
-#include "../../include/structs.h"
-#include "../../include/pq.h"
-#include "../../include/transposition_table.h"
-#include "../../include/generate_moves.h"
-#include "../../include/engine_utilities.h"
+#include "../include/typedefs.h"
+#include "../include/structs.h"
+#include "../include/pq.h"
+#include "../include/transposition_table.h"
+#include "../include/generate_moves.h"
+#include "../include/engine_utilities.h"
 
 #define MAXIMIZING 1
 #define MINIMIZING -1
